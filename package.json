@@ -1,0 +1,24 @@
+{
+  "name": "Easy-Motion",
+  "version": "1.0.0",
+  "description": "Easy Motion es una platafprma que te ofrece distintas rutinas y planes rutinarios para seguirlos y lograr tus metas",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yaeljasso7/Easy-Motion.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yaeljasso7/Easy-Motion/issues"
+  },
+  "homepage": "https://github.com/yaeljasso7/Easy-Motion#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3"
+  }
+}
