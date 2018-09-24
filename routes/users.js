@@ -1,6 +1,7 @@
 const express = require('express'); //llamar express
 const router = express.Router(); //usando solo un modulo de express
 const usersCtrl = require('../controllers/users');
+//const {usersCtrl} = require('../controllers');
 
 //rutas
 //request  /info relativa del cliente
