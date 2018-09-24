@@ -1,25 +1,9 @@
 //controladores users
+const db = require('../db');
 
 //get all users
 exports.getAllUsers = function(req, res){
-  const users = [
-    {
-      id: 1,
-      name: 'juana',
-      email: 'juan@correo',
-    },
-    {
-      id: 2,
-      name: 'juan',
-      email: 'juan@correo',
-    },
-  ]
-
-  const json = {
-    response: 'ok',
-    data: users,
-    total: 2
-  }
+  db.query();
 
   res.send(json);
 }

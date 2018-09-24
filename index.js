@@ -1,8 +1,10 @@
 //app.js
+require('dotenv').config();
 const express = require('express');
 const router = require('./routes')
 const app = express();
-require('dotenv').config();
+
+
 
 app.use(router);
 
