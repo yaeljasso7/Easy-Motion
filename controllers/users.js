@@ -1,11 +1,25 @@
 //controladores users
 const db = require('../db');
-
 //get all users
 exports.getAllUsers = function(req, res){
-  db.query();
-
+  console.log('jeje');
+  this.users = db.get('user');
+  const json={
+    response: 'ok',
+    data: this.users,
+  };
   res.send(json);
+  /*
+  db.con.query('SELECT * FROM user', (err, rows, fields) =>{
+    if(!err){
+      console.log(rows);
+      res.json(rows);
+    }else {
+      console.log(err);
+    }
+  });
+  */
+
 }
 
 exports.getOneUser = function (req, res) {
