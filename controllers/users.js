@@ -1,54 +1,46 @@
 //controladores users
 const db = require('../db');
+const User = require('../models/user');
+
+class UserCtrl {
+  constructor(){
+
+    this.getAll = this.getAll.bind(this);
+    this.createUser = this.createUser.bind(this);
+    this.updateUser = this.updateUser.bind(this);
+    this.deleteUser = this.deleteUser.bind(this);
+    this.getUser  = this.getUser.bind(this);
+  }
+
+  getAll(req, res){
+
+    db.get("user", function (err, resultaditos){
+      //console.log(resultaditos);
+       var resultJson = JSON.stringify(resultaditos);
+      // resultJson = JSON.parse(resultJson);
+      // console.log(resultJson);
+       res.send(resultJson);
+
+    });
+
+
+  }
+
+  getUser(req, res){
+
+  }
+
+  createUser(req, res){
+
+  }
+
+  updateUser(req, res){
+
+  }
+
+  deleteUser(req, res){
+
+  }
+}
+module.exports = new UserCtrl();
 //get all users
-exports.getAllUsers = function(req, res){
-  console.log('jeje');
-  this.users = db.get('user');
-  const json={
-    response: 'ok',
-    data: this.users,
-  };
-  res.send(json);
-  /*
-  db.con.query('SELECT * FROM user', (err, rows, fields) =>{
-    if(!err){
-      console.log(rows);
-      res.json(rows);
-    }else {
-      console.log(err);
-    }
-  });
-  */
-
-}
-
-exports.getOneUser = function (req, res) {
-  const user = {
-    id: req.params.id,
-    name: `usuario${req.params.id}`,
-    email: `usuario${req.params.id}@correo`,
-  }
-  res.send(user);
-}
-
-exports.createOneUser =  function (req, res) {
-  const json = {
-    response: 'ok',
-    data: {
-      id: 100,
-      name: req.body.name,
-      mail: req.body.mail,
-      password: req.body.password,
-    }
-  }
-  res.send(json);
-}
-
-exports.updateOneUser = function (req, res) {
-  res.send('editado');
-}
-
-exports.deleteOneUser = function (req, res) {
-
-  res.send('eliminado');
-}
