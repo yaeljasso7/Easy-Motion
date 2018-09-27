@@ -25,9 +25,19 @@ class DB{
 
   }
 
-  get(table, callback){
+  getAll(table, callback){
       var json = '';
       this.con.query(`SELECT * FROM ${table}`, (err, rows, fields) =>{
+      if(!err){
+        callback(err, rows);
+      }else {
+        console.log(err);
+      }
+    });
+  }
+
+  get(table,id,callback){
+    this.con.query(`SELECT * FROM ${table} WHERE id_User = ?`, [id] ,(err, rows, fields) =>{
       if(!err){
         callback(err, rows);
       }else {

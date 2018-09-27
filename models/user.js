@@ -2,7 +2,6 @@ const db = require('../db');
 
 class User{
   constructor(...arg){
-
     this.id_User =  1;
     this.name_User = 2;
     this.mobile_User = 3;
@@ -16,17 +15,23 @@ class User{
     db.new(this);//table,this
   }
 
-  static test(){
-    console.log('jaja');
-  }
-
-  getUsers(){
-    
+  getUsers(callback){
+    db.getAll("user", function (err, resultados){
+       var resultJson = JSON.stringify(resultados); //recoge rows
+       callback(err, resultJson); //envia json
+      // resultJson = JSON.parse(resultJson);
+      //   console.log(resultJson);
+    });
    }
 
-   getList(){
-
+   getUser(id, callback){
+     db.get("user",id, (err, resultado) => {
+       var resultJson = JSON.stringify(resultado);
+       callback(err, resultJson);
+     });
    }
+
+
 
 }
 
