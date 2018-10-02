@@ -1,58 +1,91 @@
 //controladores users
-const db = require('../db');
-const User = require('../models/user');
+const { User } = require('../models');
 
-class UserCtrl {
+class UserCtrl{
   constructor(){
-
     this.getAll = this.getAll.bind(this);
-    this.createUser = this.createUser.bind(this);
-    this.updateUser = this.updateUser.bind(this);
-    this.deleteUser = this.deleteUser.bind(this);
-    this.getUser  = this.getUser.bind(this);
-
+    this.get = this.get.bind(this);
+    this.create = this.create.bind(this);
+    this.delete = this.delete.bind(this);
+    this.update = this.update.bind(this);
   }
 
-  getAll(req, res){
+   async getAll(req, res){
 
-    User.getUsers( (err, users) => {
-        console.log(users);
-        res.send(users);
-    });
+     let data = await User.getUsers();
 
-    /*
-    db.get("user", function (err, resultaditos){
-      //console.log(resultaditos);
-       var resultJson = JSON.stringify(resultaditos);
-      // resultJson = JSON.parse(resultJson);
-      // console.log(resultJson);
-       res.send(resultJson);
+     const json = {
+       data: data,
+       total_count: data.length,
+       per_page: data.length,
+       page: 0,
+     };
 
-    });
-    */
-    //res.send(JSON.stringify({"status": 500, "error": error, "response": null}));
-    //res.send([]);
+     // In case user was not found
+     if (data.length === 0) {
+       res.status(204);
+     }
+
+     res.send(json);
   }
 
-  getUser(req, res){
-    const {id} = req.params;
-    User.getUser( id ,(err, users) => {
-        console.log(users);
-        res.send(users);
-    });
+  async get(req, res){
+      let data = await User.getUser(req.params.idUser);
+      console.log("ctl-get", data);
+      if (data.length === 0) {
+        res.status(204);
+      }
+
+      res.send(data);
   }
 
-  createUser(req, res){
-
+  async create(req, res, next){
+    try {
+      let data = await User.createUser(req.body);
+      console.log("ctrl-create",data);
+      res.status(201).send(data);
+    } catch (e) {
+      //db error
+      next(e);
+    }
   }
 
-  updateUser(req, res){
+  async delete(req, res, next){
+    const deleted = await User.deleteUser(req.params.idUser);
 
+      if (deleted) {
+        res.status(200); // OK
+      } else {
+        res.status(404); // Not Found
+      }
+
+      res.send();
   }
 
-  deleteUser(req, res){
+  async update(req, res, next) {
 
-  }
+   const data = await User.getUser(req.params.idUser);
+
+   if (data.length === 0) {
+     res.status(404).send(data); // Not Found
+   }
+
+   try{
+     const updated = await data.updateUser(req.body);
+     if (updated) {
+       res.status(200); // OK
+     } else {
+       res.status(409); // Conflict
+     }
+   }catch(e){
+     res.status(409);
+     next(e);
+   }
+
+   res.send(data);
+ }
+
+
+
 }
 module.exports = new UserCtrl();
-//get all users
