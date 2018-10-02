@@ -1,3 +1,5 @@
+const db = require('../db');
+
 class Exercise {
   constructor({id, difficulty, executionTime, trainingType, bodyPart}) {
     this.id = id;
@@ -7,8 +9,13 @@ class Exercise {
     this.bodyPart = bodyPart;
   }
 
-  static getExercises() {
-
+  static async getExercises() {
+    const data = await db.selectAll('exercises');
+    const response = [];
+    data.forEach( (row) => {
+      response.push(new Exercise(row));
+    } );
+    return response;
   }
 
   static getExercise(exerciseId) {

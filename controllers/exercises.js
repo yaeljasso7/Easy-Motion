@@ -1,6 +1,6 @@
 const { Exercise } = require('../models');
 
-class ExerciseCtrl {
+class ExercisesCtrl {
   constructor() {
     this.getAll = this.getAll.bind(this);
     this.get = this.get.bind(this);
@@ -9,11 +9,18 @@ class ExerciseCtrl {
     this.update = this.update.bind(this);
   }
 
-  getAll(req, res) {
-
+  async getAll(req, res) {
+    const data = await Exercise.getExercises();
+    const json = {
+      data,
+      total_count:  data.length,
+      per_page: data.length,
+      page: 0,
+    };
+    res.send(json);
   }
 
-  get(req, res) {
+  async get(req, res) {
 
   }
 
@@ -30,4 +37,4 @@ class ExerciseCtrl {
   }
 }
 
-module.exports = new ExerciseCtrl();
+module.exports = new ExercisesCtrl();
