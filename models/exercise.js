@@ -27,7 +27,7 @@ class Exercise {
     let response;
     try {
       response = await db.insert('exercises', {difficulty, executionTime, trainingType, bodyPart});
-    } catch (e) {
+    } catch (err) {
       throw e;
     }
 
@@ -38,8 +38,15 @@ class Exercise {
     return [];
   }
 
-  static updateExercise(exerciseId, fields) {
-
+  static async updateExercise(exerciseId, fields) {
+    console.log('update-model');
+    let res;
+    try {
+      res = await db.update('exercises', fields, exerciseId);
+    } catch (err) {
+      throw err;
+    }
+    return res.affectedRows > 0;
   }
 
   static deleteExercise(exerciseId) {

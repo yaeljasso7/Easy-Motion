@@ -32,13 +32,27 @@ class ExercisesCtrl {
     try {
       const data = await Exercise.createExercise(req.body);
       res.send(data);
-    } catch (e) {
+    } catch (err) {
       throw e;
     }
   }
 
-  update(req, res) {
-
+  async update(req, res, next) {
+    const id = req.params.exerciseId;
+    console.log('update-ctrl');
+    const data = await Exercise.getExercise(id);
+    if( data.length === 0 ) {
+      res.status(404).send(data);
+    }
+    let status;
+    try {
+      const updated = await Exercise.updateExercise(id, req.body);
+      status = updated ? 200 : 409;
+    } catch (err) {
+      res.status(409);
+      next(err);
+    }
+    res.status(status).send(data);
   }
 
   delete(req, res) {
