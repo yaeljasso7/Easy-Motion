@@ -8,9 +8,22 @@ const router = require('./routes');
 
 const app = express();
 
+const path = require('path');
+const http = require('http');
+const port = process.env.PORT || 8080;
+const server = http.Server(app);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(router);
 
+
+app.listen(port, () => {
+  console.log('Express server listening on port ! ! !', port)
+});
+
+/*
+
 app.listen(process.env.PORT, () => console.log('App listening on port 3000'));
+
+*/
