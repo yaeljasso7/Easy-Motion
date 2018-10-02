@@ -1,0 +1,2 @@
+
+exports.exercisesCtrl = require('./exercises');
