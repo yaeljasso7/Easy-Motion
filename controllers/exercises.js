@@ -13,11 +13,11 @@ class ExercisesCtrl {
     const data = await Exercise.getExercises();
     const json = {
       data,
-      total_count:  data.length,
+      total_count: data.length,
       per_page: data.length,
       page: 0,
     };
-    res.send(json);
+    res.status(data.length ? 200 : 204).send(json);
   }
 
   async get(req, res) {
@@ -25,15 +25,15 @@ class ExercisesCtrl {
     const json = {
       data,
     };
-    res.send(json);
+    res.status(data.length ? 200 : 204).send(json);
   }
 
-  async create(req, res) {
+  async create(req, res, next) {
     try {
       const data = await Exercise.createExercise(req.body);
-      res.send(data);
+      res.status(201).send(data);
     } catch (err) {
-      throw e;
+      next(err);
     }
   }
 
@@ -41,7 +41,7 @@ class ExercisesCtrl {
     const id = req.params.exerciseId;
     console.log('update-ctrl');
     const data = await Exercise.getExercise(id);
-    if( data.length === 0 ) {
+    if (data.length === 0) {
       res.status(404).send(data);
     }
     let status;
@@ -55,7 +55,7 @@ class ExercisesCtrl {
     res.status(status).send(data);
   }
 
-  delete(req, res) {
+  delete (req, res, next) {
 
   }
 }
