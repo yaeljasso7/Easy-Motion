@@ -4,7 +4,7 @@ class DB{
 
   constructor(){
     this.con = mysql.createConnection({
-      host: "85.10.205.173:3306",
+      host: "db4free.net",
       user: "ichris96",
       password: "12345678",
       database: "easymotionsql"
