@@ -1,2 +1,2 @@
 
-exports.Exercise = require(./exercise);
+exports.Exercise = require('./exercise');

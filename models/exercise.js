@@ -20,7 +20,7 @@ class Exercise {
   }
 
   static updateExercise(exerciseId, fields) {
-    
+
   }
 
   static deleteExercise(exerciseId) {
@@ -28,3 +28,5 @@ class Exercise {
   }
 
 }
+
+module.exports = Exercise;
