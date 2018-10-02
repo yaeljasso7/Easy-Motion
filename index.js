@@ -17,9 +17,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(router);
 
+app.use('/', express.static(path.join(__dirname, 'testheroku')));
 
 app.listen(port, () => {
-  console.log('Express server listening on port ! ! !', port)
+  console.log(`Listening on http://localhost:${port}/`);
 });
 
 /*
