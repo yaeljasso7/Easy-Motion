@@ -13,6 +13,7 @@ class DB{
 //    this.con.connect();
     this.con.connect((err) => {
       if(err){
+        console.log("No se pudo conectar a la db");
         console.log(err);
       }else{
         console.log('Db Conect!');
