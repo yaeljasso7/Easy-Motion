@@ -21,7 +21,11 @@ class ExercisesCtrl {
   }
 
   async get(req, res) {
-
+    const data = await Exercise.getExercise(req.params.exerciseId);
+    const json = {
+      data,
+    };
+    res.send(json);
   }
 
   create(req, res) {

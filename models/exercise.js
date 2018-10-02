@@ -18,8 +18,9 @@ class Exercise {
     return response;
   }
 
-  static getExercise(exerciseId) {
-
+  static async getExercise(exerciseId) {
+    const data = await db.select('exercises', exerciseId);
+    return data.length !== 0 ? new Exercise(...data) : null;
   }
 
   static createExercise({difficulty, executionTime, trainingType, bodyPart}) {
