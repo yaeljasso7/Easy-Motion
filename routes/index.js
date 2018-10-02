@@ -1,19 +1,12 @@
-//manipulador de rutas
-const express = require('express'); //llamar express
-const router = express.Router(); //usando solo un modulo de express
-const bodyParser = require('body-parser'); //req.body
-const usersRouter = require('./users'); //cargamos modulo users
+// manipulador de rutas
+const router = require('express').Router();
+const usersRouter = require('./users');
+const exercisesRouter = require('./exercises');
 
-
-//body-parser
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({ extended: true }));
-
-router.get('/', (req,res) => res.send('hello'));
+router.get('/', (req, res) => res.send('hello'));
 
 router.use('/users', usersRouter);
-/*
-AGREGAR NUEVAS RUTAS
-*/
+
+router.use('/exercises', exercisesRouter);
 
 module.exports = router;
