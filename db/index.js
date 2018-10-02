@@ -5,9 +5,9 @@ class DB{
   constructor(){
     this.con = mysql.createConnection({
       host: "85.10.205.173:3306",
-      user: ichris96,
+      user: "ichris96",
       password: "12345678",
-      database: easymotionsql
+      database: "easymotionsql"
     });
 
 //    this.con.connect();
