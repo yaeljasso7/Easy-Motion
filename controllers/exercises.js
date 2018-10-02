@@ -10,27 +10,33 @@ class ExercisesCtrl {
   }
 
   async getAll(req, res) {
-    const data = await Exercise.getExercises();
+    const data = await Exercise.getAll();
     const json = {
       data,
       total_count: data.length,
       per_page: data.length,
       page: 0,
     };
-    res.status(data.length ? 200 : 204).send(json);
+    if (data.length === 0) {
+      res.status(204);
+    }
+    res.send(json);
   }
 
   async get(req, res) {
-    const data = await Exercise.getExercise(req.params.exerciseId);
+    const data = await Exercise.get(req.params.exerciseId);
     const json = {
       data,
     };
-    res.status(data.length ? 200 : 204).send(json);
+    if (data.length === 0) {
+      res.status(204);
+    }
+    res.send(json);
   }
 
   async create(req, res, next) {
     try {
-      const data = await Exercise.createExercise(req.body);
+      const data = await Exercise.create(req.body);
       res.status(201).send(data);
     } catch (err) {
       next(err);
@@ -39,14 +45,13 @@ class ExercisesCtrl {
 
   async update(req, res, next) {
     const id = req.params.exerciseId;
-    console.log('update-ctrl');
-    const data = await Exercise.getExercise(id);
+    const data = await Exercise.get(id);
     if (data.length === 0) {
       res.status(404).send(data);
     }
     let status;
     try {
-      const updated = await Exercise.updateExercise(id, req.body);
+      const updated = await Exercise.update(id, req.body);
       status = updated ? 200 : 409;
     } catch (err) {
       res.status(409);

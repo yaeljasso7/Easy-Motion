@@ -1,7 +1,9 @@
 const db = require('../db');
 
 class Exercise {
-  constructor({id, difficulty, executionTime, trainingType, bodyPart}) {
+  constructor({
+    id, difficulty, executionTime, trainingType, bodyPart,
+  }) {
     this.id = id;
     this.difficulty = difficulty;
     this.executionTime = executionTime;
@@ -9,37 +11,42 @@ class Exercise {
     this.bodyPart = bodyPart;
   }
 
-  static async getExercises() {
+  static async getAll() {
     const data = await db.selectAll('exercises');
     const response = [];
-    data.forEach( (row) => {
+    data.forEach((row) => {
       response.push(new Exercise(row));
-    } );
+    });
     return response;
   }
 
-  static async getExercise(exerciseId) {
+  static async get(exerciseId) {
     const data = await db.select('exercises', exerciseId);
-    return data.length !== 0 ? new Exercise(...data) : null;
+    return data.length !== 0 ? new Exercise(data[0]) : [];
   }
 
-  static async createExercise({difficulty, executionTime, trainingType, bodyPart}) {
+  static async create({
+    difficulty, executionTime, trainingType, bodyPart,
+  }) {
     let response;
     try {
-      response = await db.insert('exercises', {difficulty, executionTime, trainingType, bodyPart});
+      response = await db.insert('exercises', {
+        difficulty, executionTime, trainingType, bodyPart,
+      });
     } catch (err) {
-      throw e;
+      throw err;
     }
 
     const id = response.insertId;
     if (id > 0) {
-      return new Exercise({id, difficulty, executionTime, trainingType, bodyPart});
+      return new Exercise({
+        id, difficulty, executionTime, trainingType, bodyPart,
+      });
     }
     return [];
   }
 
-  static async updateExercise(exerciseId, fields) {
-    console.log('update-model');
+  static async update(exerciseId, fields) {
     let res;
     try {
       res = await db.update('exercises', fields, exerciseId);
@@ -49,10 +56,9 @@ class Exercise {
     return res.affectedRows > 0;
   }
 
-  static deleteExercise(exerciseId) {
+  static delete(exerciseId) {
 
   }
-
 }
 
 module.exports = Exercise;
