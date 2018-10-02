@@ -28,8 +28,13 @@ class ExercisesCtrl {
     res.send(json);
   }
 
-  create(req, res) {
-
+  async create(req, res) {
+    try {
+      const data = await Exercise.createExercise(req.body);
+      res.send(data);
+    } catch (e) {
+      throw e;
+    }
   }
 
   update(req, res) {

@@ -23,8 +23,19 @@ class Exercise {
     return data.length !== 0 ? new Exercise(...data) : null;
   }
 
-  static createExercise({difficulty, executionTime, trainingType, bodyPart}) {
+  static async createExercise({difficulty, executionTime, trainingType, bodyPart}) {
+    let response;
+    try {
+      response = await db.insert('exercises', {difficulty, executionTime, trainingType, bodyPart});
+    } catch (e) {
+      throw e;
+    }
 
+    const id = response.insertId;
+    if (id > 0) {
+      return new Exercise({id, difficulty, executionTime, trainingType, bodyPart});
+    }
+    return [];
   }
 
   static updateExercise(exerciseId, fields) {
