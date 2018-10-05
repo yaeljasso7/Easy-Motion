@@ -12,7 +12,7 @@ class Exercise {
   }
 
   static async getAll() {
-    const data = await db.selectAll('exercises');
+    const data = await db.selectAll('v_exercises');
     const response = [];
     data.forEach((row) => {
       response.push(new Exercise(row));
@@ -21,7 +21,7 @@ class Exercise {
   }
 
   static async get(exerciseId) {
-    const data = await db.select('exercises', exerciseId);
+    const data = await db.select('v_exercises', exerciseId);
     return data.length !== 0 ? new Exercise(data[0]) : [];
   }
 
