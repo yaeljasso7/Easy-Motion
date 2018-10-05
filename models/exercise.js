@@ -2,9 +2,10 @@ const db = require('../db');
 
 class Exercise {
   constructor({
-    id, difficulty, executionTime, trainingType, bodyPart,
+    id, name, difficulty, executionTime, trainingType, bodyPart,
   }) {
     this.id = id;
+    this.name = name;
     this.difficulty = difficulty;
     this.executionTime = executionTime;
     this.trainingType = trainingType;
@@ -26,12 +27,12 @@ class Exercise {
   }
 
   static async create({
-    difficulty, executionTime, trainingType, bodyPart,
+    name, difficulty, executionTime, trainingType, bodyPart,
   }) {
     let response;
     try {
       response = await db.insert('exercises', {
-        difficulty, executionTime, trainingType, bodyPart,
+        name, difficulty, executionTime, trainingType, bodyPart,
       });
     } catch (err) {
       throw err;
