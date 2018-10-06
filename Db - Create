@@ -1,0 +1,7 @@
+//Blog
+CREATE TABLE `web_easym`.`blog` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `date` DATE NULL,
+  `autor` VARCHAR(45) NULL,
+  `data` VARCHAR(850) NOT NULL,
+  PRIMARY KEY (`id`));

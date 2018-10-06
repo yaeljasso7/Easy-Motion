@@ -42,11 +42,10 @@ class Blog{
   }
 
   static async createBlog({ date, autor, data }) {
-
     let response;
     try {
       response = await db.insert('blog', { date, autor, data });
-      console.log("soy response:", response);
+    //  console.log("soy response:", response);
     } catch (e) {
       //error de la db
       throw e;
