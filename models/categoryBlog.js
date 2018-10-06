@@ -22,7 +22,7 @@ class categoryBlog{
    }
 
    static async getcategoryBlog(idcategoryBlog) {
-    const data = await db.get('categoryBlog', idBlog);
+    const data = await db.get('categoryBlog', idcategoryBlog);
     return data.length !== 0 ? new categoryBlog(data[0]) : data; //elemento 0 de rowDataPackege
   }
 

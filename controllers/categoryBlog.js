@@ -53,6 +53,7 @@ class categoryBlogCtrl{
   }
 
   async delete(req, res, next){
+    //console.log(req.params.idcategoryBlog); asignado en rutas
     const deleted = await categoryBlog.deletecategoryBlog(req.params.idcategoryBlog);
 
       if (deleted) {

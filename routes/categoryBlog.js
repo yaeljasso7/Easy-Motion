@@ -10,7 +10,7 @@ router.get('/', categoryBlogCtrl.getAll);
 router.get('/:idcategoryBlog', categoryBlogCtrl.get);
 router.post('/', categoryBlogCtrl.create);
 router.put('/:idcategoryBlog', categoryBlogCtrl.update);
-router.delete('/:idBcategoryBlog', categoryBlogCtrl.delete);
+router.delete('/:idcategoryBlog', categoryBlogCtrl.delete);
 
 
 module.exports = router;
