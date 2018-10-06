@@ -5,7 +5,7 @@ class DB{
 
   constructor(){
     this.con = mysql.createConnection({
-      host: "db4free.net",
+      host: "db4free.net", //testing db con heroku
       user: "ichris96",
       password: "12345678",
       database: "easymotionsql"
