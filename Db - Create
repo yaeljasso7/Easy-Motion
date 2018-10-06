@@ -5,3 +5,9 @@ CREATE TABLE `web_easym`.`blog` (
   `autor` VARCHAR(45) NULL,
   `data` VARCHAR(850) NOT NULL,
   PRIMARY KEY (`id`));
+  
+//categoryBlog
+  CREATE TABLE `web_easym`.`categoryBlog` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(45) NOT NULL,
+    PRIMARY KEY (`id`));
