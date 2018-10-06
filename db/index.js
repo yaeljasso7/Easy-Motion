@@ -48,7 +48,7 @@ class DB{
           let err = this.processError(error);
           return reject(err);
         }
-        
+
         //console.log("db-delete",results);
         return resolve(results);
       });
@@ -56,9 +56,6 @@ class DB{
   }
 
   update(table, obj, id) {
-    console.log(obj);
-    console.log(id);
-    console.log(table);
     return new Promise((resolve, reject) => {
       this.con.query('UPDATE ?? SET ? WHERE id = ?', [table, obj, id], (error, results) => {
         if (error) {
