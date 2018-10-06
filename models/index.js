@@ -1,2 +1,3 @@
 exports.User = require('./user');
-exports.User = require('./blog');
+exports.Blog = require('./blog');
+exports.categoryBlog = require('./categoryBlog');
