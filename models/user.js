@@ -44,9 +44,11 @@ class User{
   }
 
   static async createUser({ name, mobile, weight, height, password, mail }) {
+
     let response;
     try {
       response = await db.insert('user', { name, mobile, weight, height, password, mail });
+      console.log("soy response:", response);
     } catch (e) {
       //error de la db
       throw e;

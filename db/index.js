@@ -48,7 +48,7 @@ class DB{
           let err = this.processError(error);
           return reject(err);
         }
-      //  console.log("db-delete",results);
+        console.log("db-delete",results);
         return resolve(results);
       });
     });
@@ -64,6 +64,7 @@ class DB{
           let err = this.processError(error);
           return reject(err);
         }
+        console.log("rows--update", results);
         resolve(results);
       //  console.log(results);
       });
@@ -71,12 +72,12 @@ class DB{
   }
 
   insert(table, resource) {
-    console.log(resource); //{ name: juan, mobile: 21421, }
+    console.log("Resourse Db Insert: ",resource); //{ name: juan, mobile: 21421, }
     return new Promise((resolve, reject) => {
       this.con.query('INSERT INTO ?? SET ?', [table, resource], (error, results) => {
         if (error) {
             //error de la base de datos como mail repetido...
-          console.log(error);
+          console.log("Insert DB Error: ", error);
           let err = this.processError(error);
           return reject(err);
         }
