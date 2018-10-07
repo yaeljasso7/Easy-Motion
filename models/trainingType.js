@@ -9,7 +9,7 @@ class TrainingType {
   }
 
   static async getAll() {
-    const data = await db.selectAll('training_types');
+    const data = await db.getAll('training_types');
     const response = [];
     data.forEach((row) => {
       response.push(new TrainingType(row));
@@ -18,7 +18,7 @@ class TrainingType {
   }
 
   static async get(TrainingTypeId) {
-    const data = await db.select('training_types', TrainingTypeId);
+    const data = await db.get('training_types', TrainingTypeId);
     return data.length !== 0 ? new TrainingType(data[0]) : [];
   }
 

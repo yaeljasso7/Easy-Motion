@@ -9,7 +9,7 @@ class BodyPart {
   }
 
   static async getAll() {
-    const data = await db.selectAll('body_parts');
+    const data = await db.getAll('body_parts');
     const response = [];
     data.forEach((row) => {
       response.push(new BodyPart(row));
@@ -18,7 +18,7 @@ class BodyPart {
   }
 
   static async get(BodyPartId) {
-    const data = await db.select('body_parts', BodyPartId);
+    const data = await db.get('body_parts', BodyPartId);
     return data.length !== 0 ? new BodyPart(data[0]) : [];
   }
 
