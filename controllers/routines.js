@@ -60,7 +60,7 @@ class RoutinesCtrl {
       res.status(409);
       next(err);
     }
-    res.status(status).send(data);
+    res.status(status).send(Object.assign(data, req.body));
   }
 
   delete (req, res, next) {
@@ -93,7 +93,7 @@ class RoutinesCtrl {
   }
 
   removeExercise(req, res, next) {
-    
+
   }
 }
 
