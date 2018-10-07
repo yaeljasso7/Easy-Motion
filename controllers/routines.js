@@ -60,8 +60,18 @@ class RoutinesCtrl {
     res.status(status).send(Object.assign(data, req.body));
   }
 
-  delete (req, res, next) {
-
+  async delete (req, res, next) {
+    const id = req.params.routineId;
+    try {
+      const deleted = await Routine.delete(id);
+      if (!deleted) {
+        res.status(409);
+      }
+    } catch (err) {
+      res.status(409);
+      next(err);
+    }
+    res.send();
   }
 }
 

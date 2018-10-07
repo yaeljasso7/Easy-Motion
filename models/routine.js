@@ -2,7 +2,8 @@ const db = require('../db');
 
 class Routine {
   constructor({
-    id, name, difficulty, executionTime, trainingType, bodyPart, url,
+    id, name, difficulty, executionTime,
+    trainingType, bodyPart, url, isDeleted,
   }) {
     this.id = id;
     this.name = name;
@@ -11,6 +12,7 @@ class Routine {
     this.trainingType = trainingType;
     this.bodyPart = bodyPart;
     this.url = url;
+    this.isDeleted = isDeleted;
   }
 
   static async getAll() {
@@ -28,7 +30,8 @@ class Routine {
   }
 
   static async create({
-    name, difficulty, executionTime, trainingType, bodyPart, url,
+    name, difficulty, executionTime,
+    trainingType, bodyPart, url,
   }) {
     let response;
     try {
@@ -58,8 +61,14 @@ class Routine {
     return res.affectedRows > 0;
   }
 
-  static delete(routineId) {
-
+  static async delete(routineId) {
+    let res;
+    try {
+      res = await Routine.update(routineId, { isDeleted: true });
+    } catch (err) {
+      throw err;
+    }
+    return res;
   }
 }
 
