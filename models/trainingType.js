@@ -1,11 +1,10 @@
 const db = require('../db');
 
 class TrainingType {
-  constructor({
-    id, name,
-  }) {
+  constructor({ id, name, isDeleted }) {
     this.id = id;
     this.name = name;
+    this.isDeleted = isDeleted;
   }
 
   static async getAll() {
@@ -22,23 +21,17 @@ class TrainingType {
     return data.length !== 0 ? new TrainingType(data[0]) : [];
   }
 
-  static async create({
-    name,
-  }) {
+  static async create({ name }) {
     let response;
     try {
-      response = await db.insert('training_types', {
-        name,
-      });
+      response = await db.insert('training_types', { name });
     } catch (err) {
       throw err;
     }
 
     const id = response.insertId;
     if (id > 0) {
-      return new TrainingType({
-        id, name,
-      });
+      return new TrainingType({ id, name });
     }
     return [];
   }
@@ -53,8 +46,14 @@ class TrainingType {
     return res.affectedRows > 0;
   }
 
-  static delete(trainingTypeId) {
-
+  static async delete(trainingTypeId) {
+    let res;
+    try {
+      res = await TrainingType.update(trainingTypeId, { isDeleted: true });
+    } catch (err) {
+      throw err;
+    }
+    return res;
   }
 }
 
