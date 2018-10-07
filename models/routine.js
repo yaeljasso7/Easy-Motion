@@ -1,16 +1,20 @@
 const db = require('../db');
-const Exercise = require('./exercise');
 
 class Routine {
   constructor({
-    id, name,
+    id, name, difficulty, executionTime, trainingType, bodyPart, url,
   }) {
     this.id = id;
     this.name = name;
+    this.difficulty = difficulty;
+    this.executionTime = executionTime;
+    this.trainingType = trainingType;
+    this.bodyPart = bodyPart;
+    this.url = url;
   }
 
   static async getAll() {
-    const data = await db.getAll('routines');
+    const data = await db.getAll('v_routines');
     const response = [];
     data.forEach((row) => {
       response.push(new Routine(row));
@@ -19,17 +23,17 @@ class Routine {
   }
 
   static async get(routineId) {
-    const data = await db.get('routines', routineId);
+    const data = await db.get('v_routines', routineId);
     return data.length !== 0 ? new Routine(data[0]) : [];
   }
 
   static async create({
-    name,
+    name, difficulty, executionTime, trainingType, bodyPart, url,
   }) {
     let response;
     try {
       response = await db.insert('routines', {
-        name,
+        name, difficulty, executionTime, trainingType, bodyPart, url,
       });
     } catch (err) {
       throw err;
@@ -38,7 +42,7 @@ class Routine {
     const id = response.insertId;
     if (id > 0) {
       return new Routine({
-        id, name,
+        id, difficulty, executionTime, trainingType, bodyPart, url,
       });
     }
     return [];
@@ -56,37 +60,6 @@ class Routine {
 
   static delete(routineId) {
 
-  }
-
-  static async addExercise(id, { exerciseId }) {
-    let response;
-    try {
-      response = await db.insert('exercises_routines', { id, exerciseId });
-    } catch (err) {
-      throw err;
-    }
-    if (response.affectedRows > 0) {
-      return {
-        routineId: id,
-        exerciseId,
-      };
-    }
-    return [];
-  }
-
-  static async getExercises(routineId) {
-    const data = await db.get('exercises_routines', routineId);
-    const response = [];
-    const myPromises = data.map(async (row) => {
-      const exercise = await Exercise.get(row.exerciseId);
-      response.push(exercise);
-    });
-    await Promise.all(myPromises);
-    return response;
-  }
-
-  static removeExercise(id, exerciseId) {
-    
   }
 }
 
