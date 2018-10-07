@@ -1,11 +1,10 @@
 const db = require('../db');
 
 class BodyPart {
-  constructor({
-    id, name,
-  }) {
+  constructor({ id, name, isDeleted }) {
     this.id = id;
     this.name = name;
+    this.isDeleted = isDeleted;
   }
 
   static async getAll() {
@@ -22,14 +21,10 @@ class BodyPart {
     return data.length !== 0 ? new BodyPart(data[0]) : [];
   }
 
-  static async create({
-    name,
-  }) {
+  static async create({ name }) {
     let response;
     try {
-      response = await db.insert('body_parts', {
-        name,
-      });
+      response = await db.insert('body_parts', { name });
     } catch (err) {
       throw err;
     }
@@ -53,8 +48,14 @@ class BodyPart {
     return res.affectedRows > 0;
   }
 
-  static delete(bodyPartId) {
-
+  static async delete(bodyPartId) {
+    let res;
+    try {
+      res = await BodyPart.update(bodyPartId, { isDeleted: true });
+    } catch (err) {
+      throw err;
+    }
+    return res;
   }
 }
 
