@@ -6,14 +6,14 @@ const middlewares = require('../middlewares');
 //request  /info relativa del cliente
 //response /enviar cliente
 //regresa usuarios todos
-router.get('/', CalendarysCtrl.getAll);
+router.get('/', calendaryCtrl.getAll);
 router.get('/:idCalendary', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
   params: {
     idCalendary: 'number',
   },
 });
-}, calendarysCtrl.get);
+}, calendaryCtrl.get);
 
 router.post('/', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
@@ -21,7 +21,7 @@ router.post('/', (req,res,next) => {
       name: 'word,required',
     },
   });
-},Ctrl.create);
+},calendaryCtrl.create);
 
 router.put('/:idCalendary', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
@@ -29,7 +29,7 @@ router.put('/:idCalendary', (req,res,next) => {
     idCalendary: 'number',
   },
   body:{
-      name: 'require,word',
+      name: 'required,word',
   },
 });
 },calendaryCtrl.update);

@@ -11,7 +11,7 @@ class Calendary{
     db.new(this);//table,this
   }
 
-   static async getdiaCalendaryCalendarys(){
+   static async getCalendarys(){
      const data = await db.getAll('calendary');
      const response = [];
      data.forEach((row) => {

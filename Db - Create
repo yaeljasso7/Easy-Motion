@@ -5,9 +5,56 @@ CREATE TABLE `web_easym`.`blog` (
   `autor` VARCHAR(45) NULL,
   `data` VARCHAR(850) NOT NULL,
   PRIMARY KEY (`id`));
-  
+
 //categoryBlog
   CREATE TABLE `web_easym`.`categoryBlog` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(45) NOT NULL,
     PRIMARY KEY (`id`));
+
+//calendary
+CREATE TABLE `web_easym`.`calendary` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`));
+
+//dayCalendary
+CREATE TABLE `web_easym`.`dayCalendary` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`));
+
+//exercise
+CREATE TABLE `web_easym`.`exercise` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  `description` INT NULL,
+  `difficulty` INT NOT NULL,
+  PRIMARY KEY (`id`));
+
+//calendaryDayExercise
+CREATE TABLE `web_easym`.`calendaryDayExercise` (
+  `idCalendary` INT NOT NULL,
+  `idDay` INT NOT NULL,
+  `idExercise` INT NOT NULL,
+  PRIMARY KEY (`idCalendary`, `idDay`, `idExercise`),
+  INDEX `fk_day_idx` (`idDay` ASC),
+  INDEX `fk_exercise_idx` (`idExercise` ASC),
+  CONSTRAINT `fk_calendary`
+    FOREIGN KEY (`idCalendary`)
+    REFERENCES `web_easym`.`calendary` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_day`
+    FOREIGN KEY (`idDay`)
+    REFERENCES `web_easym`.`dayCalendary` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_exercise`
+    FOREIGN KEY (`idExercise`)
+    REFERENCES `web_easym`.`exercise` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);
+
+    ALTER TABLE `web_easym`.`calendaryDayExercise`
+ADD COLUMN `id` INT NULL AUTO_INCREMENT AFTER `idExercise`,
+ADD UNIQUE INDEX `id_UNIQUE` (`id` ASC);

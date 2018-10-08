@@ -97,6 +97,14 @@ class DB{
           sql: err.sql,
         };
         break;
+        case 'ER_NO_REFERENCED_ROW_2':
+          let dataa = this.getDataFromErrorMsg(err.sqlMessage);
+          error['duplicated'] = {
+            message: `The ${dataa.field} ${dataa.data} already exists on the system`,
+            field: dataa.field,
+            sql: err.sql,
+          };
+        break;
       default:
 
     }
@@ -105,7 +113,7 @@ class DB{
   }
 
   getDataFromErrorMsg(message) {
-    let data = unescape(message).match(/'([^']+)'/g)
+    let data = unescape(message).match(/'([^']+)'/g);
     return {
       field: data[1].slice(1,-1),
       data: data[0].slice(1,-1),
