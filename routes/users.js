@@ -27,8 +27,26 @@ router.post('/', (req,res,next) => {
   });
 },usersCtrl.create);
 
-router.put('/:idUser', usersCtrl.update);
-router.delete('/:idUser', usersCtrl.delete);
+router.put('/:idUser', (req,res,next) => {
+  middlewares.validator.validate(req, res, next, {
+  params: {
+    idUser: 'number',
+  },
+  body:{
+      mobile: 'iscellphone',
+      height: 'isHeight',
+      weight: 'isWeight',
+  },
+});
+},usersCtrl.update);
+
+router.delete('/:idUser', (req,res,next) => {
+  middlewares.validator.validate(req, res, next, {
+  params: {
+    idUser: 'number',
+  },
+});
+},usersCtrl.delete);
 
 
 module.exports = router;

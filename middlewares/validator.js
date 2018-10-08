@@ -16,17 +16,17 @@ class Validator {
   }
 
   static iscellphone(data){
-    return data.length == 10;
+    return data.length == 10 || data.length == 0; // ==0 por si el usuario no envia el mobile
   }
 
   static isWeight(data){
     data = parseInt(data);
-    return data > 0 && data < 400;
+    return (data > 0 && data < 400) || isNaN(data); //isNaN por si no envia el usuario el Weight
   }
 
   static isHeight(data){
     data = parseInt(data);
-    return data > 0 && data < 250;
+    return (data > 0 && data < 250) || isNaN(data); //isNaN por si no envia el usuario el Height
   }
 
   static required(data) {
