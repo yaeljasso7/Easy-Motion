@@ -4,3 +4,7 @@ exports.categoryBlog = require('./categoryBlog');
 exports.diaCalendario = require('./diaCalendario');
 exports.Calendary = require('./calendary');
 exports.calendaryDayExercise = require('./calendaryDayExercise');
+exports.Exercise = require('./exercise');
+exports.BodyPart = require('./bodyPart');
+exports.TrainingType = require('./trainingType');
+exports.Routine = require('./routine');
