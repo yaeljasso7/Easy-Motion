@@ -24,14 +24,11 @@ class ExercisesCtrl {
   }
 
   async get(req, res) {
-    const data = await Exercise.get(req.params.exerciseId);
-    const json = {
-      data,
-    };
+    let data = await Exercise.get(req.params.exerciseId);
     if (data.length === 0) {
       res.status(204);
     }
-    res.send(json);
+    res.send(data);
   }
 
   async create(req, res, next) {
@@ -46,23 +43,40 @@ class ExercisesCtrl {
   async update(req, res, next) {
     const id = req.params.exerciseId;
     const data = await Exercise.get(id);
+    console.log("soy data",data);
     if (data.length === 0) {
       res.status(404).send(data);
     }
-    let status;
-    try {
-      const updated = await Exercise.update(id, req.body);
-      status = updated ? 200 : 409;
-    } catch (err) {
+
+    try{
+      const updated = await data.update(req.body);
+      if (updated) {
+        res.status(200); // OK
+      } else {
+        res.status(409); // Conflict
+      }
+    }catch(e){
       res.status(409);
-      next(err);
+      next(e);
     }
-    res.status(status).send(Object.assign(data, req.body));
+
+    res.send(data);
   }
 
-  delete (req, res, next) {
+  async delete(req, res, next){
+    const deleted = await Exercise.delete(req.params.exerciseId);
 
+      if (deleted) {
+        res.status(200); // OK
+      } else {
+        res.status(404); // Not Found
+      }
+
+      res.send();
   }
+
+
+
 }
 
 module.exports = new ExercisesCtrl();
