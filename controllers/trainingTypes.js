@@ -44,25 +44,40 @@ class TrainingTypesCtrl {
   }
 
   async update(req, res, next) {
-    const id = req.params.trainingTypeId;
-    const data = await TrainingType.get(id);
-    if (data.length === 0) {
-      res.status(404).send(data);
-    }
-    let status;
-    try {
-      const updated = await TrainingType.update(id, req.body);
-      status = updated ? 200 : 409;
-    } catch (err) {
-      res.status(409);
-      next(err);
-    }
-    res.status(status).send(Object.assign(data, req.body));
-  }
 
-  delete (req, res, next) {
+   const data = await TrainingType.get(req.params.trainingTypeId);
 
-  }
+   if (data.length === 0) {
+     res.status(404).send(data); // Not Found
+   }
+
+   try{
+     const updated = await data.update(req.body);
+     if (updated) {
+       res.status(200); // OK
+     } else {
+       res.status(409); // Conflict
+     }
+   }catch(e){
+     res.status(409);
+     next(e);
+   }
+
+   res.send(data);
+ }
+
+ async delete(req, res, next){
+   const deleted = await TrainingType.delete(req.params.trainingTypeId);
+
+     if (deleted) {
+       res.status(200); // OK
+     } else {
+       res.status(404); // Not Found
+     }
+
+     res.send();
+ }
+
 }
 
 module.exports = new TrainingTypesCtrl();

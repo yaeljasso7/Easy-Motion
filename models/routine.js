@@ -10,7 +10,7 @@ class Routine {
   }
 
   static async getAll() {
-    const data = await db.getAll('routines');
+    const data = await db.getAll('routine');
     const response = [];
     data.forEach((row) => {
       response.push(new Routine(row));
@@ -19,7 +19,7 @@ class Routine {
   }
 
   static async get(routineId) {
-    const data = await db.get('routines', routineId);
+    const data = await db.get('routine', routineId);
     return data.length !== 0 ? new Routine(data[0]) : [];
   }
 
@@ -28,7 +28,7 @@ class Routine {
   }) {
     let response;
     try {
-      response = await db.insert('routines', {
+      response = await db.insert('routine', {
         name,
       });
     } catch (err) {
@@ -44,18 +44,27 @@ class Routine {
     return [];
   }
 
-  static async update(routineId, fields) {
-    let res;
+  async update(keyVals) {
+    let updatedRows;
     try {
-      res = await db.update('routines', fields, routineId);
-    } catch (err) {
-      throw err;
+      const results = await db.update('routine', keyVals, this.routineId);
+      updatedRows = results.affectedRows;
+    } catch (error) {
+      throw error;
     }
-    return res.affectedRows > 0;
+    return updatedRows > 0;
   }
 
-  static delete(routineId) {
+  static async delete(routineId) {
+    let deletedRows;
+    try {
+      const results = await db.delete('routine', routineId);
+      deletedRows = results.affectedRows;
+    } catch (e) {
+      throw e;
+    }
 
+    return deletedRows > 0;
   }
 
   static async addExercise(id, { exerciseId }) {
@@ -86,7 +95,7 @@ class Routine {
   }
 
   static removeExercise(id, exerciseId) {
-    
+
   }
 }
 

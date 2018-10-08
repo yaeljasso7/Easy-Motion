@@ -47,25 +47,39 @@ class RoutinesCtrl {
   }
 
   async update(req, res, next) {
-    const id = req.params.routineId;
-    const data = await Routine.get(id);
-    if (data.length === 0) {
-      res.status(404).send(data);
-    }
-    let status;
-    try {
-      const updated = await Routine.update(id, req.body);
-      status = updated ? 200 : 409;
-    } catch (err) {
-      res.status(409);
-      next(err);
-    }
-    res.status(status).send(Object.assign(data, req.body));
-  }
 
-  delete (req, res, next) {
+   const data = await Routine.get(req.params.routineId);
 
-  }
+   if (data.length === 0) {
+     res.status(404).send(data); // Not Found
+   }
+
+   try{
+     const updated = await data.update(req.body);
+     if (updated) {
+       res.status(200); // OK
+     } else {
+       res.status(409); // Conflict
+     }
+   }catch(e){
+     res.status(409);
+     next(e);
+   }
+
+   res.send(data);
+ }
+
+ async delete(req, res, next){
+   const deleted = await Routine.delete(req.params.routineId);
+
+     if (deleted) {
+       res.status(200); // OK
+     } else {
+       res.status(404); // Not Found
+     }
+
+     res.send();
+ }
 
   async addExercise(req, res, next) {
     const id = req.params.routineId;

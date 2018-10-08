@@ -1,12 +1,13 @@
 const db = require('../db');
 
 class Blog{
-  constructor({id, date, autor, data})
+  constructor({id, date, autor, data, categoryBlog})
   {
     this.idBlog =  id;
     this.dateBlog = date;
     this.autorBlog = autor;
     this.dataBlog = data;
+    this.categoryBlog = categoryBlog;
 
   }
 
@@ -29,22 +30,10 @@ class Blog{
     return data.length !== 0 ? new Blog(data[0]) : data; //elemento 0 de rowDataPackege
   }
 
-  static async deleteBlog(idBlog) {
-    let deletedRows;
-    try {
-      const results = await db.delete('blog', idBlog);
-      deletedRows = results.affectedRows;
-    } catch (e) {
-      throw e;
-    }
-
-    return deletedRows > 0;
-  }
-
-  static async createBlog({ date, autor, data }) {
+  static async createBlog({ date, autor, data, categoryBlog}) {
     let response;
     try {
-      response = await db.insert('blog', { date, autor, data });
+      response = await db.insert('blog', { date, autor, data, categoryBlog });
     //  console.log("soy response:", response);
     } catch (e) {
       //error de la db
@@ -53,7 +42,7 @@ class Blog{
     //si no hay error
     const id = response.insertId;
     if (id > 0) {
-      return new Blog({ id, date, autor, data });
+      return new Blog({ id, date, autor, data, categoryBlog });
     }
     return [];
   }
@@ -67,6 +56,18 @@ class Blog{
       throw error;
     }
     return updatedRows > 0;
+  }
+
+  static async deleteBlog(idBlog) {
+    let deletedRows;
+    try {
+      const results = await db.delete('blog', idBlog);
+      deletedRows = results.affectedRows;
+    } catch (e) {
+      throw e;
+    }
+
+    return deletedRows > 0;
   }
 
 }

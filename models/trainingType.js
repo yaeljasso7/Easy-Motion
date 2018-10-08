@@ -2,14 +2,15 @@ const db = require('../db');
 
 class TrainingType {
   constructor({
-    id, name,
+    id, name, description,
   }) {
     this.id = id;
     this.name = name;
+    this.description = description;
   }
 
   static async getAll() {
-    const data = await db.getAll('training_types');
+    const data = await db.getAll('trainingType');
     const response = [];
     data.forEach((row) => {
       response.push(new TrainingType(row));
@@ -18,17 +19,17 @@ class TrainingType {
   }
 
   static async get(TrainingTypeId) {
-    const data = await db.get('training_types', TrainingTypeId);
+    const data = await db.get('trainingType', TrainingTypeId);
     return data.length !== 0 ? new TrainingType(data[0]) : [];
   }
 
   static async create({
-    name,
+    name, description,
   }) {
     let response;
     try {
-      response = await db.insert('training_types', {
-        name,
+      response = await db.insert('trainingType', {
+        name, description,
       });
     } catch (err) {
       throw err;
@@ -43,18 +44,27 @@ class TrainingType {
     return [];
   }
 
-  static async update(trainingTypeId, fields) {
-    let res;
+  async update(keyVals) {
+    let updatedRows;
     try {
-      res = await db.update('training_types', fields, trainingTypeId);
-    } catch (err) {
-      throw err;
+      const results = await db.update('trainingType', keyVals, this.id);
+      updatedRows = results.affectedRows;
+    } catch (error) {
+      throw error;
     }
-    return res.affectedRows > 0;
+    return updatedRows > 0;
   }
 
-  static delete(trainingTypeId) {
+  static async delete(TrainingTypeId) {
+    let deletedRows;
+    try {
+      const results = await db.delete('trainingType', TrainingTypeId);
+      deletedRows = results.affectedRows;
+    } catch (e) {
+      throw e;
+    }
 
+    return deletedRows > 0;
   }
 }
 

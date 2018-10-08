@@ -6,6 +6,16 @@ CREATE TABLE `web_easym`.`blog` (
   `data` VARCHAR(850) NOT NULL,
   PRIMARY KEY (`id`));
 
+  ALTER TABLE `web_easym`.`blog`
+  ADD COLUMN `categoryBlog` INT NOT NULL AFTER `data`,
+  ADD INDEX `fk_categoryBlog_idx` (`categoryBlog` ASC);
+  ALTER TABLE `web_easym`.`blog`
+  ADD CONSTRAINT `fk_categoryBlog`
+    FOREIGN KEY (`categoryBlog`)
+    REFERENCES `web_easym`.`categoryBlog` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+
 //categoryBlog
   CREATE TABLE `web_easym`.`categoryBlog` (
     `id` INT NOT NULL AUTO_INCREMENT,
@@ -30,6 +40,26 @@ CREATE TABLE `web_easym`.`exercise` (
   `description` INT NULL,
   `difficulty` INT NOT NULL,
   PRIMARY KEY (`id`));
+
+//routine
+CREATE TABLE `web_easym`.`routine` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`));
+
+//triningType
+CREATE TABLE `web_easym`.`trainingType` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  `description` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`));
+
+//bodyPart
+CREATE TABLE `web_easym`.`bodyPart` (
+  `id` INT NOT NULL,
+  `name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`));
+
 
 //calendaryDayExercise
 CREATE TABLE `web_easym`.`calendaryDayExercise` (
