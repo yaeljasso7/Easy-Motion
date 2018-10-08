@@ -2,6 +2,7 @@ class Validator {
   static get regex() {
     return {
       word: /[a-zA-ZñÑ ]{3,}/,
+      number: /^([0-9])*$/,
       email: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     };
   }
@@ -10,9 +11,8 @@ class Validator {
     return (Validator.regex.word.test(data));
   }
 
-  static number(data){ //valida que sea un numero mayor a 0
-    data = parseInt(data);
-    return data > 0; //solo si data > 0
+  static number(data) { //valida que sea solo numeros
+    return (Validator.regex.number.test(data));
   }
 
   static iscellphone(data){
