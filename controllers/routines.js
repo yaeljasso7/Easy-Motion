@@ -7,9 +7,6 @@ class RoutinesCtrl {
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
-    this.addExercise = this.addExercise.bind(this);
-    this.getExercises = this.getExercises.bind(this);
-    this.removeExercise = this.removeExercise.bind(this);
   }
 
   async getAll(req, res) {
@@ -46,7 +43,7 @@ class RoutinesCtrl {
   async update(req, res, next) {
 
    const data = await Routine.get(req.params.routineId);
-
+   console.log("hola soy data",data);
    if (data.length === 0) {
      res.status(404).send(data); // Not Found
    }

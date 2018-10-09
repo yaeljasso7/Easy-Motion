@@ -67,36 +67,8 @@ class Routine {
     return deletedRows > 0;
   }
 
-  static async addExercise(id, { exerciseId }) {
-    let response;
-    try {
-      response = await db.insert('exercises_routines', { id, exerciseId });
-    } catch (err) {
-      throw err;
-    }
-    if (response.affectedRows > 0) {
-      return {
-        routineId: id,
-        exerciseId,
-      };
-    }
-    return [];
-  }
+  
 
-  static async getExercises(routineId) {
-    const data = await db.get('exercises_routines', routineId);
-    const response = [];
-    const myPromises = data.map(async (row) => {
-      const exercise = await Exercise.get(row.exerciseId);
-      response.push(exercise);
-    });
-    await Promise.all(myPromises);
-    return response;
-  }
-
-  static removeExercise(id, exerciseId) {
-
-  }
 }
 
 module.exports = Routine;
