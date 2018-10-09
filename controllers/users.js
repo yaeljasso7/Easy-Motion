@@ -40,7 +40,7 @@ class UserCtrl{
   }
 
   async create(req, res, next){
-    console.log("llegue aqui");
+    console.log("llegue aqui???");
     try {
       let data = await User.createUser(req.body); //req.body {}
       console.log("ctrl-create",data);
