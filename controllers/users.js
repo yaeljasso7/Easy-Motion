@@ -50,18 +50,17 @@ class UserCtrl{
   }
 
   async delete(req, res, next){
+    let deleted;
+    try {
+      deleted = await User.deleteUser(req.params.idUser);
+    } catch (error) {
+      next(error);
+    }
 
-    try{
-    const deleted = await User.deleteUser(req.params.idUser);
-
-      if (deleted) {
-        res.status(200); // OK
-      } else {
-        res.status(404); // Not Found
-      }
-    }catch(e){
-      res.status(409);
-      next(e);
+    if (deleted) {
+      res.status(200); // OK
+    } else {
+      res.status(404); // Not Found
     }
 
     res.send();
