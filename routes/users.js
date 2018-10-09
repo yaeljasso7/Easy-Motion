@@ -15,6 +15,8 @@ router.get('/:idUser', (req,res,next) => {
 });
 }, usersCtrl.get);
 
+router.post('/', usersCtrl.create);
+/*
 router.post('/', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
@@ -26,6 +28,7 @@ router.post('/', (req,res,next) => {
     },
   });
 },usersCtrl.create);
+*/
 
 router.put('/:idUser', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
