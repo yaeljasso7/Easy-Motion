@@ -20,7 +20,7 @@ class Routine {
 
   static async get(routineId) {
     const data = await db.get('routine', routineId);
-    return data.length !== 0 ? new Routine(data[0]) : [];
+    return data.length !== 0 ? new Routine(data[0]) : data;
   }
 
   static async create({

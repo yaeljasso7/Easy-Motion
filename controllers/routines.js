@@ -27,7 +27,6 @@ class RoutinesCtrl {
   }
 
   async get(req, res) {
-    console.log("todo bien si se guardo");
     let data = await Routine.get(req.params.routineId);
     if (data.length === 0) {
       res.status(204);
