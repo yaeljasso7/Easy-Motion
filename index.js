@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 
 const router = require('./routes');
 
+const { errorHandler } = require('./middlewares');
+
 const app = express();
 
 const path = require('path');

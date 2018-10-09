@@ -1,52 +1,46 @@
 const router = require('express').Router();
-const { usersCtrl } = require('../controllers');
+const { calendaryCtrl } = require('../controllers');
 const middlewares = require('../middlewares');
 
 //rutas
 //request  /info relativa del cliente
 //response /enviar cliente
 //regresa usuarios todos
-router.get('/', usersCtrl.getAll);
-router.get('/:idUser', (req,res,next) => {
+router.get('/', calendaryCtrl.getAll);
+router.get('/:idCalendary', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
   params: {
-    idUser: 'number',
+    idCalendary: 'number',
   },
 });
-}, usersCtrl.get);
+}, calendaryCtrl.get);
 
 router.post('/', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
       name: 'word,required',
-      mail: 'email,required',
-      mobile: 'iscellphone',
-      height: 'isHeight',
-      weight: 'isWeight',
     },
   });
-},usersCtrl.create);
+},calendaryCtrl.create);
 
-router.put('/:idUser', (req,res,next) => {
+router.put('/:idCalendary', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
   params: {
-    idUser: 'number',
+    idCalendary: 'number',
   },
   body:{
-      mobile: 'iscellphone',
-      height: 'isHeight',
-      weight: 'isWeight',
+      name: 'required,word',
   },
 });
-},usersCtrl.update);
+},calendaryCtrl.update);
 
-router.delete('/:idUser', (req,res,next) => {
+router.delete('/:idCalendary', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
   params: {
-    idUser: 'number',
+    idCalendary: 'number',
   },
 });
-},usersCtrl.delete);
+},calendaryCtrl.delete);
 
 
 module.exports = router;

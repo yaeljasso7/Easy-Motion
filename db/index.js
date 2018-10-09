@@ -48,22 +48,21 @@ class DB{
           let err = this.processError(error);
           return reject(err);
         }
-      //  console.log("db-delete",results);
+
+        //console.log("db-delete",results);
         return resolve(results);
       });
     });
   }
 
   update(table, obj, id) {
-    console.log(obj);
-    console.log(id);
-    console.log(table);
     return new Promise((resolve, reject) => {
       this.con.query('UPDATE ?? SET ? WHERE id = ?', [table, obj, id], (error, results) => {
         if (error) {
           let err = this.processError(error);
           return reject(err);
         }
+        //console.log("rows--update", results);
         resolve(results);
       //  console.log(results);
       });
@@ -71,12 +70,12 @@ class DB{
   }
 
   insert(table, resource) {
-    console.log(resource); //{ name: juan, mobile: 21421, }
+    //console.log("Resourse Db Insert: ",resource); //{ name: juan, mobile: 21421, }
     return new Promise((resolve, reject) => {
       this.con.query('INSERT INTO ?? SET ?', [table, resource], (error, results) => {
         if (error) {
             //error de la base de datos como mail repetido...
-          console.log(error);
+          //console.log("Insert DB Error: ", error);
           let err = this.processError(error);
           return reject(err);
         }
@@ -86,7 +85,7 @@ class DB{
   }
 
   processError(err) {
-    console.log("soy error");
+    //console.log("soy error");
     const error = {};
 
     switch (err.code) {
@@ -98,6 +97,14 @@ class DB{
           sql: err.sql,
         };
         break;
+        case 'ER_NO_REFERENCED_ROW_2':
+          let dataa = this.getDataFromErrorMsg(err.sqlMessage);
+          error['duplicated'] = {
+            message: `The ${dataa.field} ${dataa.data} already exists on the system`,
+            field: dataa.field,
+            sql: err.sql,
+          };
+        break;
       default:
 
     }
@@ -106,7 +113,7 @@ class DB{
   }
 
   getDataFromErrorMsg(message) {
-    let data = unescape(message).match(/'([^']+)'/g)
+    let data = unescape(message).match(/'([^']+)'/g);
     return {
       field: data[1].slice(1,-1),
       data: data[0].slice(1,-1),

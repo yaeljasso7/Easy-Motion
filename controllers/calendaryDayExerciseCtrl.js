@@ -1,7 +1,7 @@
-//controladores users
-const { User } = require('../models');
+//controladores calendaryDayExercise
+const { calendaryDayExercise } = require('../models');
 
-class UserCtrl{
+class calendaryDayExerciseCtrl{
   constructor(){
     this.getAll = this.getAll.bind(this);
     this.get = this.get.bind(this);
@@ -12,7 +12,7 @@ class UserCtrl{
 
    async getAll(req, res){
 
-     let data = await User.getUsers();
+     let data = await calendaryDayExercise.getcalendaryDayExercises();
 
      const json = {
        data: data,
@@ -21,7 +21,7 @@ class UserCtrl{
        page: 0,
      };
 
-     // In case user was not found
+     // In case calendaryDayExercise was not found
      if (data.length === 0) {
        res.status(204);
      }
@@ -30,7 +30,7 @@ class UserCtrl{
   }
 
   async get(req, res){
-      let data = await User.getUser(req.params.idUser);
+      let data = await calendaryDayExercise.getcalendaryDayExercise(req.params.idcalendaryDayExercise);
       console.log("ctl-get", data);
       if (data.length === 0) {
         res.status(204);
@@ -40,9 +40,8 @@ class UserCtrl{
   }
 
   async create(req, res, next){
-    console.log("llegue aqui");
     try {
-      let data = await User.createUser(req.body); //req.body {}
+      let data = await calendaryDayExercise.createcalendaryDayExercise(req.body); //req.body {}
       console.log("ctrl-create",data);
       res.status(201).send(data);
     } catch (e) {
@@ -54,7 +53,7 @@ class UserCtrl{
   }
 
   async delete(req, res, next){
-    const deleted = await User.deleteUser(req.params.idUser);
+    const deleted = await calendaryDayExercise.deletecalendaryDayExercise(req.params.idcalendaryDayExercise);
 
       if (deleted) {
         res.status(200); // OK
@@ -67,28 +66,25 @@ class UserCtrl{
 
   async update(req, res, next) {
 
-   const data = await User.getUser(req.params.idUser);
-
+   const data = await calendaryDayExercise.getcalendaryDayExercise(req.params.idcalendaryDayExercise);
    if (data.length === 0) {
-     res.status(404).send(data); // Not Found
+     res.status(404); // Not Found
    }
 
    try{
-     const updated = await data.updateUser(req.body);
+     const updated = await data.updatecalendaryDayExercise(req.body);
      if (updated) {
-       res.status(200); // OK
+       res.status(200);// OK
      } else {
        res.status(409); // Conflict
      }
    }catch(e){
-     res.status(409);
      next(e);
    }
-
    res.send(data);
  }
 
 
 
 }
-module.exports = new UserCtrl();
+module.exports = new calendaryDayExerciseCtrl();
