@@ -15,10 +15,11 @@ router.get('/:idUser', (req,res,next) => {
 });
 }, usersCtrl.get);
 
+/*
 router.post('/', usersCtrl.create);
 router.put('/:idUser', usersCtrl.update);
 router.delete('/:idUser', usersCtrl.delete);
-/*
+*/
 router.post('/', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
