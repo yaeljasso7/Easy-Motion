@@ -50,6 +50,8 @@ class UserCtrl{
   }
 
   async delete(req, res, next){
+
+    try{
     const deleted = await User.deleteUser(req.params.idUser);
 
       if (deleted) {
@@ -57,8 +59,12 @@ class UserCtrl{
       } else {
         res.status(404); // Not Found
       }
+    }catch(e){
+      res.status(409);
+      next(e);
+    }
 
-      res.send();
+    res.send();
   }
 
   async update(req, res, next) {

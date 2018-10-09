@@ -31,18 +31,6 @@ class User{
     return data.length !== 0 ? new User(data[0]) : data; //elemento 0 de rowDataPackege
   }
 
-  static async deleteUser(idUser) {
-    let deletedRows;
-    try {
-      const results = await db.delete('user', idUser);
-      deletedRows = results.affectedRows;
-    } catch (e) {
-      throw e;
-    }
-
-    return deletedRows > 0;
-  }
-
   static async createUser({ name, mobile, weight, height, password, mail }) {
 
     let response;
@@ -71,6 +59,19 @@ class User{
     }
     return updatedRows > 0;
   }
+
+  static async deleteUser(idUser) {
+    let deletedRows;
+    try {
+      const results = await db.delete('user', idUser);
+      deletedRows = results.affectedRows;
+    } catch (e) {
+      throw e;
+    }
+
+    return deletedRows > 0;
+  }
+
 
 }
 
