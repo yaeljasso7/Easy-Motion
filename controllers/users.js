@@ -40,16 +40,11 @@ class UserCtrl{
   }
 
   async create(req, res, next){
-    console.log("llegue aqui???");
     try {
-      let data = await User.createUser(req.body); //req.body {}
-      console.log("ctrl-create",data);
+      const data = await User.create(req.body);
       res.status(201).send(data);
-    } catch (e) {
-      //db error
-      console.log("eee:" ,e);
-      res.status (409).send("Error al insertar: " + e.duplicated.message);
-      next(e);
+    } catch (err) {
+      next(err);
     }
   }
 
