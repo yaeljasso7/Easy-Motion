@@ -1,7 +1,7 @@
-//controladores users
-const { User } = require('../models');
 
-class UserCtrl{
+const { Calendary } = require('../models');
+
+class CalendaryCtrl{
   constructor(){
     this.getAll = this.getAll.bind(this);
     this.get = this.get.bind(this);
@@ -12,7 +12,7 @@ class UserCtrl{
 
    async getAll(req, res){
 
-     let data = await User.getUsers();
+     let data = await Calendary.getCalendarys();
 
      const json = {
        data: data,
@@ -21,7 +21,7 @@ class UserCtrl{
        page: 0,
      };
 
-     // In case user was not found
+     // In case Calendary was not found
      if (data.length === 0) {
        res.status(204);
      }
@@ -30,7 +30,7 @@ class UserCtrl{
   }
 
   async get(req, res){
-      let data = await User.getUser(req.params.idUser);
+      let data = await Calendary.getCalendary(req.params.idCalendary);
       console.log("ctl-get", data);
       if (data.length === 0) {
         res.status(204);
@@ -40,42 +40,41 @@ class UserCtrl{
   }
 
   async create(req, res, next){
-    console.log("si se actualizo :D");
+    console.log("llegue aqui");
     try {
-      const data = await User.createUser(req.body);
+      let data = await Calendary.createCalendary(req.body); //req.body {}
+      console.log("ctrl-create",data);
       res.status(201).send(data);
-    } catch (err) {
-      next(err);
+    } catch (e) {
+      //db error
+      console.log("eee:" ,e);
+      res.status (409).send("Error al insertar: " + e.duplicated.message);
+      next(e);
     }
   }
 
   async delete(req, res, next){
-    let deleted;
-    try {
-      deleted = await User.deleteUser(req.params.idUser);
-    } catch (error) {
-      next(error);
-    }
+    const deleted = await Calendary.deleteCalendary(req.params.idCalendary);
 
-    if (deleted) {
-      res.status(200); // OK
-    } else {
-      res.status(404); // Not Found
-    }
+      if (deleted) {
+        res.status(200); // OK
+      } else {
+        res.status(404); // Not Found
+      }
 
-    res.send();
+      res.send();
   }
 
   async update(req, res, next) {
 
-   const data = await User.getUser(req.params.idUser);
+   const data = await Calendary.getCalendary(req.params.idCalendary);
 
    if (data.length === 0) {
      res.status(404).send(data); // Not Found
    }
 
    try{
-     const updated = await data.updateUser(req.body);
+     const updated = await data.updateCalendary(req.body);
      if (updated) {
        res.status(200); // OK
      } else {
@@ -92,4 +91,4 @@ class UserCtrl{
 
 
 }
-module.exports = new UserCtrl();
+module.exports = new CalendaryCtrl();
