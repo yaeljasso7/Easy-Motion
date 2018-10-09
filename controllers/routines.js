@@ -27,14 +27,12 @@ class RoutinesCtrl {
   }
 
   async get(req, res) {
-    const data = await Routine.get(req.params.routineId);
-    const json = {
-      data,
-    };
+    console.log("todo bien si se guardo");
+    let data = await Routine.get(req.params.routineId);
     if (data.length === 0) {
       res.status(204);
     }
-    res.send(json);
+    res.send(data);
   }
 
   async create(req, res, next) {
