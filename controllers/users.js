@@ -40,8 +40,9 @@ class UserCtrl{
   }
 
   async create(req, res, next){
+    console.log("si se actualizo :D");
     try {
-      const data = await User.create(req.body);
+      const data = await User.createUser(req.body);
       res.status(201).send(data);
     } catch (err) {
       next(err);
