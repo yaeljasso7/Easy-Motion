@@ -47,7 +47,7 @@ class Routine {
   async update(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('routine', keyVals, this.routineId);
+      const results = await db.update('routine', keyVals, this.id);
       updatedRows = results.affectedRows;
     } catch (error) {
       throw error;
