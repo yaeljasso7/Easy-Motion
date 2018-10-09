@@ -55,6 +55,6 @@ router.delete('/:idUser', (req,res,next) => {
   },
 });
 },usersCtrl.delete);
-*/
+
 
 module.exports = router;
