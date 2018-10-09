@@ -1,10 +1,8 @@
 const db = require('../db');
-const Exercise = require('./exercise');
 
 class Routine {
-  constructor({
-    id, name,
-  }) {
+  constructor({id, name})
+  {
     this.id = id;
     this.name = name;
   }
@@ -67,7 +65,7 @@ class Routine {
     return deletedRows > 0;
   }
 
-  
+
 
 }
 
