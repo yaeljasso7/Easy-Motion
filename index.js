@@ -19,6 +19,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(router);
 
+app.use(errorHandler);
+
 app.use('/', express.static(path.join(__dirname, 'testheroku')));
 
 app.listen(port, () => {
