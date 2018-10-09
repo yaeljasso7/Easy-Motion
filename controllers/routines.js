@@ -10,9 +10,9 @@ class RoutinesCtrl {
   }
 
   async getAll(req, res) {
-    const data = await Routine.getAll();
+    let data = await Routine.getAll();
     const json = {
-      data,
+      data: data,
       total_count: data.length,
       per_page: data.length,
       page: 0,
@@ -43,7 +43,6 @@ class RoutinesCtrl {
   async update(req, res, next) {
 
    const data = await Routine.get(req.params.routineId);
-   console.log("hola soy data",data);
    if (data.length === 0) {
      res.status(404).send(data); // Not Found
    }
@@ -64,45 +63,23 @@ class RoutinesCtrl {
  }
 
  async delete(req, res, next){
-   const deleted = await Routine.delete(req.params.routineId);
+   let deleted;
+   try {
+     deleted = await Routine.delete(req.params.routineId);
+   } catch (error) {
+     next(error);
+   }
 
-     if (deleted) {
-       res.status(200); // OK
-     } else {
-       res.status(404); // Not Found
-     }
+   if (deleted) {
+     res.status(200); // OK
+   } else {
+     res.status(404); // Not Found
+   }
 
-     res.send();
+   res.send();
  }
 
-  async addExercise(req, res, next) {
-    const id = req.params.routineId;
-    try {
-      const data = await Routine.addExercise(id, req.body);
-      res.status(201).send(data);
-    } catch (err) {
-      next(err);
-    }
-  }
 
-  async getExercises(req, res) {
-    const id = req.params.routineId;
-    const data = await Routine.getExercises(id);
-    const json = {
-      data,
-      total_count: data.length,
-      per_page: data.length,
-      page: 0,
-    };
-    if (data.length === 0) {
-      res.status(204);
-    }
-    res.send(json);
-  }
-
-  removeExercise(req, res, next) {
-
-  }
 }
 
 module.exports = new RoutinesCtrl();
