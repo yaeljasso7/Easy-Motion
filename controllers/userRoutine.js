@@ -1,6 +1,6 @@
-const { BodyPart } = require('../models');
+const { userRoutine } = require('../models');
 
-class BodyPartsCtrl {
+class userRoutineCtrl {
   constructor() {
     this.getAll = this.getAll.bind(this);
     this.get = this.get.bind(this);
@@ -10,7 +10,7 @@ class BodyPartsCtrl {
   }
 
   async getAll(req, res) {
-    const data = await BodyPart.getAll();
+    const data = await userRoutine.getAll();
     const json = {
       data,
       total_count: data.length,
@@ -24,7 +24,7 @@ class BodyPartsCtrl {
   }
 
   async get(req, res) {
-    const data = await BodyPart.get(req.params.bodyPartId);
+    const data = await userRoutine.get(req.params.userRoutineId);
     const json = {
       data,
     };
@@ -36,7 +36,7 @@ class BodyPartsCtrl {
 
   async create(req, res, next) {
     try {
-      const data = await BodyPart.create(req.body);
+      const data = await userRoutine.create(req.body);
       res.status(201).send(data);
     } catch (err) {
       next(err);
@@ -44,7 +44,7 @@ class BodyPartsCtrl {
   }
 
   async delete(req, res, next){
-    const deleted = await BodyPart.delete(req.params.bodyPartId);
+    const deleted = await userRoutine.delete(req.params.userRoutineId);
 
       if (deleted) {
         res.status(200); // OK
@@ -57,7 +57,7 @@ class BodyPartsCtrl {
 
   async update(req, res, next) {
 
-   const data = await BodyPart.get(req.params.bodyPartId);
+   const data = await userRoutine.get(req.params.userRoutineId);
 
    if (data.length === 0) {
      res.status(404).send(data); // Not Found
@@ -79,4 +79,4 @@ class BodyPartsCtrl {
  }
 }
 
-module.exports = new BodyPartsCtrl();
+module.exports = new userRoutineCtrl();

@@ -9,6 +9,8 @@ const exercisesRouter = require('./exercises');
 const bodyPartsRouter = require('./bodyParts');
 const trainingTypesRouter = require('./trainingTypes');
 const routinesRouter = require('./routines');
+const userRoutineRouter = require('./userRoutine');
+const exerciseOnRoutineRouter = require('./exerciseOnRoutine');
 /*
 const bodyParser = require('body-parser'); //req.body
 //body-parser
@@ -27,6 +29,9 @@ router.use('/exercises', exercisesRouter);
 router.use('/bodyParts', bodyPartsRouter);
 router.use('/trainingTypes', trainingTypesRouter);
 router.use('/routines', routinesRouter);
+router.use('/userRoutine', userRoutineRouter);
+router.use('/exerciseOnRoutine', exerciseOnRoutineRouter);
+
 /*
 AGREGAR NUEVAS RUTAS
 */

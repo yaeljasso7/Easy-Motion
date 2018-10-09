@@ -9,7 +9,7 @@ class BodyPart {
   }
 
   static async getAll() {
-    const data = await db.getAll('body_parts');
+    const data = await db.getAll('bodyPart');
     const response = [];
     data.forEach((row) => {
       response.push(new BodyPart(row));
@@ -18,7 +18,7 @@ class BodyPart {
   }
 
   static async get(BodyPartId) {
-    const data = await db.get('body_parts', BodyPartId);
+    const data = await db.get('bodyPart', BodyPartId);
     return data.length !== 0 ? new BodyPart(data[0]) : [];
   }
 
@@ -27,7 +27,7 @@ class BodyPart {
   }) {
     let response;
     try {
-      response = await db.insert('body_parts', {
+      response = await db.insert('bodyPart', {
         name,
       });
     } catch (err) {
@@ -43,19 +43,30 @@ class BodyPart {
     return [];
   }
 
-  static async update(bodyPartId, fields) {
-    let res;
+  async update(keyVals) {
+    let updatedRows;
     try {
-      res = await db.update('body_parts', fields, bodyPartId);
-    } catch (err) {
-      throw err;
+      const results = await db.update('bodyPart', keyVals, this.id);
+      updatedRows = results.affectedRows;
+    } catch (error) {
+      throw error;
     }
-    return res.affectedRows > 0;
+    return updatedRows > 0;
   }
 
-  static delete(bodyPartId) {
+  static async delete(BodyPartId) {
+    let deletedRows;
+    try {
+      const results = await db.delete('bodyPart', BodyPartId);
+      deletedRows = results.affectedRows;
+    } catch (e) {
+      throw e;
+    }
 
+    return deletedRows > 0;
   }
+
+
 }
 
 module.exports = BodyPart;

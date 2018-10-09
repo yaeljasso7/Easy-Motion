@@ -19,7 +19,7 @@ router.post('/', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
       idCalendary: 'number,required',
-      idDay:  'number,required',
+      Day:  'number,required',
       idExercise: 'number,required',
     },
   });
@@ -32,7 +32,7 @@ router.put('/:idcalendaryDayExercise', (req,res,next) => {
   },
   body:{
     idCalendary: 'number,required',
-    idDay:  'number,required',
+    Day:  'number,required',
     idExercise: 'number,required',
   },
 });

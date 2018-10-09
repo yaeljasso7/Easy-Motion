@@ -47,6 +47,28 @@ CREATE TABLE `web_easym`.`routine` (
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`));
 
+//exerciseOnRoutine
+CREATE TABLE `web_easym`.`exerciseOnRoutine` (
+  `id` INT NOT NULL,
+  `idRoutine` INT NOT NULL,
+  `idExercise` INT NOT NULL,
+  PRIMARY KEY (`idRoutine`, `idExercise`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `fk_exer` (`idExercise` ASC),
+  CONSTRAINT `fk_routine_exOnRoutine`
+    FOREIGN KEY (`idRoutine`)
+    REFERENCES `web_easym`.`routine` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_exercise_exOnRoutine`
+    FOREIGN KEY (`idExercise`)
+    REFERENCES `web_easym`.`exercise` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+    ALTER TABLE `web_easym`.`exerciseOnRoutine`
+    CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT ;
+
 //triningType
 CREATE TABLE `web_easym`.`trainingType` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -54,9 +76,28 @@ CREATE TABLE `web_easym`.`trainingType` (
   `description` VARCHAR(45) NULL,
   PRIMARY KEY (`id`));
 
+//UserRoutine
+CREATE TABLE `web_easym`.`extOnRoutine` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `idUser` INT NOT NULL,
+  `idRoutine` INT NOT NULL,
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  PRIMARY KEY (`idUser`, `idRoutine`),
+  INDEX `fk_Routine_idx` (`idRoutine` ASC),
+  CONSTRAINT `fk_User`
+    FOREIGN KEY (`idUser`)
+    REFERENCES `web_easym`.`user` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Routine`
+    FOREIGN KEY (`idRoutine`)
+    REFERENCES `web_easym`.`routine` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
 //bodyPart
 CREATE TABLE `web_easym`.`bodyPart` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`));
 
@@ -88,3 +129,12 @@ CREATE TABLE `web_easym`.`calendaryDayExercise` (
     ALTER TABLE `web_easym`.`calendaryDayExercise`
 ADD COLUMN `id` INT NULL AUTO_INCREMENT AFTER `idExercise`,
 ADD UNIQUE INDEX `id_UNIQUE` (`id` ASC);
+
+ALTER TABLE `web_easym`.`calendaryDayExercise`
+DROP FOREIGN KEY `fk_day`;
+ALTER TABLE `web_easym`.`calendaryDayExercise`
+CHANGE COLUMN `idExercise` `idExercise` INT(11) NOT NULL AFTER `idCalendary`,
+CHANGE COLUMN `idDay` `Day` INT(11) NOT NULL ,
+DROP PRIMARY KEY,
+ADD PRIMARY KEY (`idCalendary`, `idExercise`, `Day`),
+DROP INDEX `fk_day_idx` ;

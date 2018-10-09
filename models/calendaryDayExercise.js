@@ -1,11 +1,11 @@
 const db = require('../db');
 
 class calendaryDayExercise{
-  constructor({id, idCalendary, idDay, idExercise})
+  constructor({id, idCalendary, Day, idExercise})
   {
     this.idcalendaryDayExercise =  id;
     this.idCalendarycalendaryDayExercise = idCalendary;
-    this.idDaycalendaryDayExercise = idDay;
+    this.DaycalendaryDayExercise = Day;
     this.idExercisecalendaryDayExercise = idExercise;
   }
 
@@ -40,11 +40,11 @@ class calendaryDayExercise{
     return deletedRows > 0;
   }
 
-  static async createcalendaryDayExercise({ idCalendary, idDay, idExercise }) {
+  static async createcalendaryDayExercise({ idCalendary, Day, idExercise }) {
 
     let response;
     try {
-      response = await db.insert('calendaryDayExercise', { idCalendary, idDay, idExercise });
+      response = await db.insert('calendaryDayExercise', { idCalendary, Day, idExercise });
       console.log("soy response:", response);
     } catch (e) {
       //error de la db
@@ -53,7 +53,7 @@ class calendaryDayExercise{
     //si no hay error
     const id = response.insertId;
     if (id > 0) {
-      return new calendaryDayExercise({ id, idCalendary, idDay, idExercise});
+      return new calendaryDayExercise({ id, idCalendary, Day, idExercise});
     }
     return [];
   }
