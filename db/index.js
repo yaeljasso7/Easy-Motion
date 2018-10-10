@@ -1,9 +1,10 @@
 const mysql = require('mysql');
 //const User = require('../models/user');
 
-class DB{
+class DB {
 
   constructor(){
+    this.keywords = ['and', 'or'];
     this.con = mysql.createConnection({
       host: "db4free.net", //testing db con heroku
       user: "ichris96",
@@ -21,13 +22,47 @@ class DB{
     });
   }
 
-  getAll(table){
+  where(qryCond) {
+    const Default = '1';
+    let sqry;
+    const keys = Object.keys(qryCond);
+    if (keys.length === 0) return Default; // si no hay keys regresa valor por defecto
+    if (keys.length > 1) { // si n_keys > 1 utiliza AND como valor por defecto
+      const tmp = {};
+      tmp[this.keywors[0]] = qryCond;
+      return this.where(tmp);
+    }
+    const key = keys[0]; // sólo 1 key? procesa cada hijo
+    const conds = [];
+    if (this.keywords.includes(key.toLowerCase())) {
+      Object.keys(qryCond[key]).forEach((cond) => { // itera sobre cada hijo
+        const tmp = {};
+        tmp[cond] = qryCond[key][cond];
+        conds.push(this.where(tmp));
+      });
+      sqry = conds.length > 0 ? conds.join(` ${key.toUpperCase()} `) : Default;
+    } else {
+      sqry = `${this.conn.escapeId(key)} = ${this.conn.escape(qryCond[key])}`;
+    }
+    return sqry;
+  }
+
+  select(table, qryCond = {}) {
+    return new Promise((resolve, reject) => {
+      this.con.query(`SELECT * FROM ?? WHERE ${this.where(qryCond)}`, [table], (error, results) => {
+        if (error) return reject(this.processError(error));
+        return resolve(results);
+      });
+    });
+  }
+
+  getAll(table) {
     return new Promise((resolve, reject) => {
       this.con.query('SELECT * FROM ??', [table], (error, results) => {
         if (error) return reject(this.processError(error));
         return resolve(results);
+      });
     });
-   });
   }
 
   get(table, id) {
