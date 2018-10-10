@@ -42,7 +42,7 @@ class DB {
       });
       sqry = conds.length > 0 ? conds.join(` ${key.toUpperCase()} `) : Default;
     } else {
-      sqry = `${this.conn.escapeId(key)} = ${this.conn.escape(qryCond[key])}`;
+      sqry = `${this.con.escapeId(key)} = ${this.con.escape(qryCond[key])}`;
     }
     return sqry;
   }
