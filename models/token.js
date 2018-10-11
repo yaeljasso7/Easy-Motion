@@ -27,6 +27,7 @@ class Token {
 
     const id = res.insertId;
     if (id > 0) {
+      console.log('insert:', id);
       return new Token({
         id, token, userId, type, createdAt, expires, active,
       });

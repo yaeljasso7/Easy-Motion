@@ -10,3 +10,4 @@ exports.TrainingType = require('./trainingType');
 exports.Routine = require('./routine');
 exports.userRoutine = require('./userRoutine');
 exports.exerciseOnRoutine = require('./exerciseOnRoutine');
+exports.Token = require('./token');
