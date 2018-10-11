@@ -29,7 +29,7 @@ class DB {
     if (keys.length === 0) return Default; // si no hay keys regresa valor por defecto
     if (keys.length > 1) { // si n_keys > 1 utiliza AND como valor por defecto
       const tmp = {};
-      tmp[this.keywors[0]] = qryCond;
+      tmp[this.keywords[0]] = qryCond;
       return this.where(tmp);
     }
     const key = keys[0]; // sólo 1 key? procesa cada hijo
@@ -50,6 +50,16 @@ class DB {
   select(table, qryCond = {}) {
     return new Promise((resolve, reject) => {
       this.con.query(`SELECT * FROM ?? WHERE ${this.where(qryCond)}`, [table], (error, results) => {
+        if (error) return reject(this.processError(error));
+        return resolve(results);
+      });
+    });
+  }
+
+  // advanced delete
+  adv_delete(table, qryCond = {}) { // sin condición borra todo
+    return new Promise((resolve, reject) => {
+      this.con.query(`DELETE FROM ?? WHERE ${this.where(qryCond)}`, [table], (error, results) => {
         if (error) return reject(this.processError(error));
         return resolve(results);
       });
