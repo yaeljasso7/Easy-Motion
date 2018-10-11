@@ -48,21 +48,15 @@ class BodyPart {
   }
 
   static async delete(id) {
-    const data = await BodyPart.get(id);
-    if (data.length === 0) {
-      return false;
-    }
     let deletedRows;
     try {
-      const results = await db.update('body_parts', { isDeleted: true }, id);
+      const results = await db.adv_update('body_parts', { isDeleted: true }, { id, isDeleted: false });
       deletedRows = results.affectedRows;
     } catch (e) {
       throw e;
     }
     return deletedRows > 0;
   }
-
-
 }
 
 module.exports = BodyPart;

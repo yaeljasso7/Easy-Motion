@@ -18,8 +18,15 @@ class Routine {
   }
 
   static async get(id) {
+    // si rutina tiene referenciado un ejercicio eliminado, aún se muestra
+    // en la rutina, a menos que se elimine de esta.
     const data = await db.select('routines', { id, isDeleted: false });
-    return data.length !== 0 ? new Routine(data[0]) : data;
+    if (data.length !== 0) {
+      const routine = new Routine(data[0]);
+      routine.exercises = await Routine.getExercises(routine.id);
+      return routine;
+    }
+    return data;
   }
 
   static async create({ name }) {
@@ -52,13 +59,9 @@ class Routine {
 
   static async delete(id) {
     console.log(id);
-    const data = await Routine.get(id);
-    if (data.length === 0) {
-      return false;
-    }
     let deletedRows;
     try {
-      const results = await db.update('routines', { isDeleted: true }, id);
+      const results = await db.adv_update('routines', { isDeleted: true }, { id, isDeleted: false });
       deletedRows = results.affectedRows;
     } catch (e) {
       throw e;
@@ -85,7 +88,7 @@ class Routine {
     const data = await db.select('exercises_routines', { routineId });
     const response = [];
     const myPromises = data.map(async (row) => {
-      const exercise = await Exercise.get(row.exerciseId);
+      const exercise = await Exercise.get(row.exerciseId, true);
       response.push(exercise);
     });
     await Promise.all(myPromises);

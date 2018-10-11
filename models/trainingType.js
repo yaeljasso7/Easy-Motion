@@ -47,13 +47,9 @@ class TrainingType {
   }
 
   static async delete(id) {
-    const data = await TrainingType.get(id);
-    if (data.length === 0) {
-      return false;
-    }
     let deletedRows;
     try {
-      const results = await db.update('training_types', { isDeleted: true }, id);
+      const results = await db.adv_update('training_types', { isDeleted: true }, { id, isDeleted: false });
       deletedRows = results.affectedRows;
     } catch (e) {
       throw e;
