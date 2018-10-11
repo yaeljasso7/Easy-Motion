@@ -13,7 +13,7 @@ class Exercise {
   }
 
   static async getAll() {
-    const data = await db.select('exercise');
+    const data = await db.select('exercises', { isDeleted: false });
     const response = [];
     data.forEach((row) => {
       response.push(new Exercise(row));
@@ -21,8 +21,8 @@ class Exercise {
     return response;
   }
 
-  static async get(exerciseId) {
-    const data = await db.select('exercise', { id: exerciseId });
+  static async get(id) {
+    const data = await db.select('exercises', { id, isDeleted: false });
     return data.length !== 0 ? new Exercise(data[0]) : [];
   }
 
@@ -31,7 +31,7 @@ class Exercise {
   }) {
     let response;
     try {
-      response = await db.insert('exercise', {
+      response = await db.insert('exercises', {
         name, difficulty, description, trainingType, bodyPart,
       });
     } catch (err) {
@@ -50,22 +50,25 @@ class Exercise {
  async update(fields) {
     let res;
     try {
-      res = await db.update('exercise', fields, this.id);
+      res = await db.update('exercises', fields, this.id);
     } catch (err) {
       throw err;
     }
     return res.affectedRows > 0;
   }
 
-  static async delete(exerciseId) {
+  static async delete(id) {
+    const data = await Exercise.get(id);
+    if (data.length === 0) {
+      return false;
+    }
     let deletedRows;
     try {
-      const results = await db.delete('exercise', exerciseId);
+      const results = await db.update('exercises', { isDeleted: true }, id);
       deletedRows = results.affectedRows;
     } catch (e) {
       throw e;
     }
-
     return deletedRows > 0;
   }
 }
