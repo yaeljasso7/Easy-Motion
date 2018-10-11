@@ -11,6 +11,7 @@ const trainingTypesRouter = require('./trainingTypes');
 const routinesRouter = require('./routines');
 const userRoutineRouter = require('./userRoutine');
 const exerciseOnRoutineRouter = require('./exerciseOnRoutine');
+const authRouter = require('./auth');
 /*
 const bodyParser = require('body-parser'); //req.body
 //body-parser
@@ -31,6 +32,7 @@ router.use('/trainingTypes', trainingTypesRouter);
 router.use('/routines', routinesRouter);
 router.use('/userRoutine', userRoutineRouter);
 router.use('/exerciseOnRoutine', exerciseOnRoutineRouter);
+router.use('/auth', authRouter);
 
 /*
 AGREGAR NUEVAS RUTAS
