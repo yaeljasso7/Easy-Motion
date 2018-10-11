@@ -6,10 +6,10 @@ class DB {
   constructor(){
     this.keywords = ['and', 'or'];
     this.con = mysql.createConnection({
-      host: "db4free.net", //testing db con heroku
-      user: "ichris96",
-      password: "12345678",
-      database: "easymotionsql"
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      database: process.env.DB_NAME
     });
 
 //    this.con.connect();
@@ -60,6 +60,15 @@ class DB {
   adv_delete(table, qryCond = {}) { // sin condición borra todo
     return new Promise((resolve, reject) => {
       this.con.query(`DELETE FROM ?? WHERE ${this.where(qryCond)}`, [table], (error, results) => {
+        if (error) return reject(this.processError(error));
+        return resolve(results);
+      });
+    });
+  }
+
+  adv_update(table, obj, qryCond = {}) {
+    return new Promise((resolve, reject) => {
+      this.con.query(`UPDATE ?? SET ? WHERE ${this.where(qryCond)}`, [table, obj], (error, results) => {
         if (error) return reject(this.processError(error));
         return resolve(results);
       });
