@@ -9,7 +9,7 @@ class Routine {
   }
 
   static async getAll() {
-    const data = await db.select('routine');
+    const data = await db.select('routines', { isDeleted: false });
     const response = [];
     data.forEach((row) => {
       response.push(new Routine(row));
@@ -17,17 +17,15 @@ class Routine {
     return response;
   }
 
-  static async get(routineId) {
-    const data = await db.select('routine', { id: routineId });
+  static async get(id) {
+    const data = await db.select('routines', { id, isDeleted: false });
     return data.length !== 0 ? new Routine(data[0]) : data;
   }
 
   static async create({ name }) {
     let response;
     try {
-      response = await db.insert('routine', {
-        name,
-      });
+      response = await db.insert('routines', { name });
     } catch (err) {
       throw err;
     }
@@ -44,7 +42,7 @@ class Routine {
   async update(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('routine', keyVals, this.id);
+      const results = await db.update('routines', keyVals, this.id);
       updatedRows = results.affectedRows;
     } catch (error) {
       throw error;
@@ -52,24 +50,26 @@ class Routine {
     return updatedRows > 0;
   }
 
-  static async delete(routineId) {
+  static async delete(id) {
+    console.log(id);
+    const data = await Routine.get(id);
+    if (data.length === 0) {
+      return false;
+    }
     let deletedRows;
     try {
-      const results = await db.delete('routine', routineId);
+      const results = await db.update('routines', { isDeleted: true }, id);
       deletedRows = results.affectedRows;
     } catch (e) {
       throw e;
     }
-
     return deletedRows > 0;
   }
 
   static async addExercise(routineId, exerciseId) {
-    const idRoutine = routineId;
-    const idExercise = exerciseId;
     let response;
     try {
-      response = await db.insert('exerciseOnRoutine', { idRoutine, idExercise });
+      response = await db.insert('exercises_routines', { routineId, exerciseId });
     } catch (err) {
       throw err;
     }
@@ -82,10 +82,10 @@ class Routine {
   }
 
   static async getExercises(routineId) {
-    const data = await db.select('exerciseOnRoutine', { idRoutine: routineId });
+    const data = await db.select('exercises_routines', { routineId });
     const response = [];
     const myPromises = data.map(async (row) => {
-      const exercise = await Exercise.get(row.idExercise);
+      const exercise = await Exercise.get(row.exerciseId);
       response.push(exercise);
     });
     await Promise.all(myPromises);
@@ -93,11 +93,9 @@ class Routine {
   }
 
   static async removeExercise(routineId, exerciseId) {
-    const idRoutine = routineId;
-    const idExercise = exerciseId;
     let deletedRows;
     try {
-      const results = await db.adv_delete('exerciseOnRoutine', { idRoutine, idExercise });
+      const results = await db.adv_delete('exercises_routines', { routineId, exerciseId });
       deletedRows = results.affectedRows;
     } catch (e) {
       throw e;
