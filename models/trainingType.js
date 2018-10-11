@@ -1,16 +1,14 @@
 const db = require('../db');
 
 class TrainingType {
-  constructor({
-    id, name, description,
-  }) {
+  constructor({ id, name, description }) {
     this.id = id;
     this.name = name;
     this.description = description;
   }
 
   static async getAll() {
-    const data = await db.getAll('trainingType');
+    const data = await db.select('training_types', { isDeleted: false });
     const response = [];
     data.forEach((row) => {
       response.push(new TrainingType(row));
@@ -18,28 +16,21 @@ class TrainingType {
     return response;
   }
 
-  static async get(TrainingTypeId) {
-    const data = await db.get('trainingType', TrainingTypeId);
+  static async get(id) {
+    const data = await db.select('training_types', { id, isDeleted: false });
     return data.length !== 0 ? new TrainingType(data[0]) : [];
   }
 
-  static async create({
-    name, description,
-  }) {
+  static async create({ name, description }) {
     let response;
     try {
-      response = await db.insert('trainingType', {
-        name, description,
-      });
+      response = await db.insert('training_types', { name, description });
     } catch (err) {
       throw err;
     }
-
     const id = response.insertId;
     if (id > 0) {
-      return new TrainingType({
-        id, name,
-      });
+      return new TrainingType({ id, name, description });
     }
     return [];
   }
@@ -47,7 +38,7 @@ class TrainingType {
   async update(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('trainingType', keyVals, this.id);
+      const results = await db.update('training_types', keyVals, this.id);
       updatedRows = results.affectedRows;
     } catch (error) {
       throw error;
@@ -55,15 +46,18 @@ class TrainingType {
     return updatedRows > 0;
   }
 
-  static async delete(TrainingTypeId) {
+  static async delete(id) {
+    const data = await TrainingType.get(id);
+    if (data.length === 0) {
+      return false;
+    }
     let deletedRows;
     try {
-      const results = await db.delete('trainingType', TrainingTypeId);
+      const results = await db.update('training_types', { isDeleted: true }, id);
       deletedRows = results.affectedRows;
     } catch (e) {
       throw e;
     }
-
     return deletedRows > 0;
   }
 }
