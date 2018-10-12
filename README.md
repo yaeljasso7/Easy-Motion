@@ -51,7 +51,8 @@ Cree sus variables de entorno
   En la carpeta de la repo crear un nuevo archivo .env y escribir lo siguiente
   DB_HOST= 'host de su maquina'
   DB_USER= 'usuario'
-  DB_PASS= 'contraseña del usuario0'
+  DB_PASS= 'contraseña del usuario'
+  PORT= 'Puerto - Default 3000'
     
 Ejecutar
   
