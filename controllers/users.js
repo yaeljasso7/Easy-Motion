@@ -85,8 +85,9 @@ class UserCtrl{
      res.status(409);
      next(e);
    }
-
-   res.send(data);
+   console.log("r-body", req.body);
+   console.log("data:",data);
+   res.send( Object.assign(data, req.body) );
  }
 
 

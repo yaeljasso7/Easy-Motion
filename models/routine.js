@@ -52,6 +52,7 @@ class Routine {
       const results = await db.update('routines', keyVals, this.id);
       updatedRows = results.affectedRows;
     } catch (error) {
+      console.log("error0",error);
       throw error;
     }
     return updatedRows > 0;

@@ -113,6 +113,7 @@ class DB {
     return new Promise((resolve, reject) => {
       this.con.query('UPDATE ?? SET ? WHERE id = ?', [table, obj, id], (error, results) => {
         if (error) {
+          console.log("el famoso:",error);
           let err = this.processError(error);
           return reject(err);
         }
