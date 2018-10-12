@@ -4,20 +4,20 @@ Easy Motion es una plataforma fitness con diferente material para ayudar al usua
 
 ## Objetivo
 
-Brindar al usuario las herramientas necesarias para conseguir sus objetivos fitness de una manera organizada, facil y rapido, todo en un mismo lugar.
+Brindar al usuario las herramientas necesarias para conseguir sus objetivos fitness de una manera organizada, fácil y rápido, todo en un mismo lugar.
 
-## Caracteristicas
+## Características
 
-* Blogs con diferentes tematicas fitness que brinden informacion relevante al usuario.
-* Calendarios con actividades diarias para difentes tipos de propositos.
-* El usuario podra asignarse las rutinas que sean relevantes para el.
-* Se podra actualizar el peso del usuario para ver sus avanzes.
-* Los ejercisios estaran organizados con el fin de que el usuario logre desarrollar la habilidad de manera responsable.
+* Blogs con diferentes temáticas fitness que brinden información relevante al usuario.
+* Calendarios con actividades diarias para diferees tipos de propósitos.
+* El usuario podrá asignarse las rutinas que sean relevantes para él.
+* Se podrá actualizar el peso del usuario para ver sus avances.
+* Los ejercicios estarán organizados con el fin de que el usuario logre desarrollar la habilidad de manera responsable.
 
 ## Roles
 
-* Admin - Administrar { Blogs, Calendarios, Ejercisios , Usuarios y Rutinas }
-* Autor - Administar { Blogs } 
+* Admin - Administrar { Blogs, Calendarios, Ejercicios , Usuarios y Rutinas }
+* Autor - Administrar { Blogs } 
 * Usuario - Administrar { Su propio perfil usuario }
 
 ## Requerimientos
@@ -71,6 +71,5 @@ Ejecutar
 * Larios Perez Christopher Alejandro
 * Ricardo Esteban Peralta Martínez
 * Aldair Yael Jasso Aburto
-* Braulio Jiménez Milanes
-
+* Braulio Jiménez Milanés
 
