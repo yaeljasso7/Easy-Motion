@@ -5,11 +5,11 @@ class User{
   constructor({id, name, mobile, weight, height, password, mail})
   {
     this.id =  id;
-    this.name = name;
-    this.mobile = mobile;
+    this.name= name;
+    this.mobile= mobile;
     this.weight = weight;
     this.height = height;
-    this.password = password;
+    this.password= password;
     this.mail = mail;
   }
 
@@ -23,7 +23,6 @@ class User{
      data.forEach((row) => {
        response.push(new User(row));
      });
-     console.log(response);
      return response;
    }
 
@@ -88,6 +87,21 @@ class User{
     }
 
     return deletedRows > 0;
+  }
+
+  static async addRoutine(idUser, idRoutine) {
+    let response;
+    try {
+      response = await db.insert('userRoutine', { idUser, idRoutine });
+    } catch (err) {
+      throw err;
+    }
+
+    const id = response.insertId;
+    if (response.affectedRows > 0) {
+      return { idUser , idRoutine };
+    }
+    return [];
   }
 
 

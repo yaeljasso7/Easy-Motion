@@ -91,6 +91,19 @@ class UserCtrl{
  }
 
 
+ async addRoutine(req, res, next) {
+   const { idUser } = req.params;
+   const { idRoutine} = req.body;
+   try {
+    const data = await User.addRoutine(idUser, idRoutine);
+    res.status(201).send(data);
+    } catch (err) {
+    next(err);
+    }
+   //res.send("jjojoj");
+ }
+
+
 
 }
 module.exports = new UserCtrl();

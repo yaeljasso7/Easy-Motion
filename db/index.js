@@ -130,7 +130,7 @@ class DB {
       this.con.query('INSERT INTO ?? SET ?', [table, resource], (error, results) => {
         if (error) {
             //error de la base de datos como mail repetido...
-          //console.log("Insert DB Error: ", error);
+        //console.log("Insert DB Error: ", error);
           let err = this.processError(error);
           return reject(err);
         }
@@ -142,7 +142,7 @@ class DB {
   processError(err) {
     //console.log("soy error");
     const error = {};
-
+    console.log("soy error", err);
     switch (err.code) {
       case 'ER_DUP_ENTRY':
         let data = this.getDataFromErrorMsg(err.sqlMessage);
@@ -153,13 +153,12 @@ class DB {
         };
         break;
         case 'ER_NO_REFERENCED_ROW_2':
-          let dataa = this.getDataFromErrorMsg(err.sqlMessage);
-          error['duplicated'] = {
-            message: `The ${dataa.field} ${dataa.data} already exists on the system`,
-            field: dataa.field,
+          error['La llave foranea no existe'] = {
+            message: `The ${err.sqlMessage} Existeee`,
             sql: err.sql,
           };
         break;
+
       default:
 
     }
