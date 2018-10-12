@@ -27,7 +27,6 @@ class Exercise {
     const cond = { id };
     if (!deleted_items) cond.isDeleted = false;
     const data = await db.select('v_exercises', cond);
-    console.log(data);
     return data.length !== 0 ? new Exercise(data[0]) : data;
   }
 

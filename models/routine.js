@@ -58,7 +58,6 @@ class Routine {
   }
 
   static async delete(id) {
-    console.log(id);
     let deletedRows;
     try {
       const results = await db.adv_update('routines', { isDeleted: true }, { id, isDeleted: false });
