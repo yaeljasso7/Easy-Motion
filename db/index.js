@@ -5,10 +5,10 @@ class DB{
 
   constructor(){
     this.con = mysql.createConnection({
-      host: "db4free.net", //testing db con heroku
-      user: "ichris96",
-      password: "12345678",
-      database: "easymotionsql"
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      database: process.env.DB_NAME
     });
 
 //    this.con.connect();
