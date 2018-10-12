@@ -63,7 +63,7 @@ class RoutinesCtrl {
      next(e);
    }
 
-   res.send(data);
+   res.send( Object.assign(data, req.body) );
  }
 
  async delete(req, res, next){

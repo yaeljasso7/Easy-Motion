@@ -3,8 +3,8 @@ const db = require('../db');
 class categoryBlog{
   constructor({id, name})
   {
-    this.idcategoryBlog =  id;
-    this.namecategoryBlog = name;
+    this.id =  id;
+    this.name= name;
   }
 
   save(){
@@ -59,7 +59,7 @@ class categoryBlog{
   async updatecategoryBlog(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('categoryBlog', keyVals, this.idcategoryBlog);
+      const results = await db.update('categoryBlog', keyVals, this.id);
       updatedRows = results.affectedRows;
     } catch (error) {
       throw error;
