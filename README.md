@@ -29,7 +29,7 @@ Instalar Git
   
 Instalar NodeJs
   
-  Siga los pasos para instalar git de acuerdo a sus sistema operativo.
+  Siga los pasos para instalar NodeJs de acuerdo a sus sistema operativo.
   https://nodejs.org/es/download/
   
 Clonar Repo
