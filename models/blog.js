@@ -1,4 +1,5 @@
 const db = require('../db');
+const categoryBlog = require('./categoryBlog');
 
 class Blog{
   constructor({id, date, autor, data, categoryBlog})
@@ -27,7 +28,18 @@ class Blog{
 
    static async getBlog(idBlog) {
     const data = await db.get('blog', idBlog);
-    return data.length !== 0 ? new Blog(data[0]) : data; //elemento 0 de rowDataPackege
+    if (data.length !== 0) {
+      const blog = new Blog(data[0]); //Row > Objeto User
+      blog.categorys = await Blog.getCategory(blog.category);
+      return blog;
+    }
+  }
+
+  static async getCategory(idCategory) {
+    const response = [];
+    const category = await categoryBlog.getcategoryBlog(idCategory);
+    response.push(category);
+    return response;
   }
 
   static async createBlog({ date, autor, data, categoryBlog}) {
