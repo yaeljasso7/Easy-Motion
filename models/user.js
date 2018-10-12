@@ -101,7 +101,22 @@ class User{
     if (response.affectedRows > 0) {
       return { idUser , idRoutine };
     }
-    return [];
+   return [];
+  }
+
+  static async removeRoutine(idUser, idRoutine) {
+    let response;
+    try {
+      response = await db.adv_delete('userRoutine', { idUser, idRoutine });
+    } catch (err) {
+      throw err;
+    }
+
+    const id = response.insertId;
+    if (response.affectedRows > 0) {
+      return { idUser , idRoutine };
+    }
+    //return [];
   }
 
 

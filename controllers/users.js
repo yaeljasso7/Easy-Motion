@@ -85,8 +85,6 @@ class UserCtrl{
      res.status(409);
      next(e);
    }
-   console.log("r-body", req.body);
-   console.log("data:",data);
    res.send( Object.assign(data, req.body) );
  }
 
@@ -102,6 +100,43 @@ class UserCtrl{
     }
    //res.send("jjojoj");
  }
+
+ async removeRoutine(req, res, next){
+  const { idUser } = req.params;
+  const { idRoutine } = req.body;
+  let deleted;
+  try {
+    deleted = await User.removeRoutine(idUser, idRoutine);
+  } catch (error) {
+    next(error);
+  }
+
+  if (deleted) {
+    res.status(200); // OK
+  } else {
+    res.status(404); // Not Found
+  }
+
+  res.send();
+}
+
+/*
+ async replaceRoutine(req, res, next) {
+   const { idUser } = req.params;
+   const { idRoutineOld} = req.body;
+   const { idRoutineNew} = req.body;
+   console.log(idRoutineNew,idRoutineOld);
+
+   try {
+    const data = await User.replaceRoutine(idUser, idRoutineNew, idRoutineOld);
+    res.status(201).send(data);
+    } catch (err) {
+    next(err);
+    }
+
+   //res.send("jjojoj");
+ }
+*/
 
 
 

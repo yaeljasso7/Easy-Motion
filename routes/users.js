@@ -50,5 +50,7 @@ router.delete('/:idUser', (req,res,next) => {
 
 
 router.post('/:idUser/routines', usersCtrl.addRoutine);
+//router.put('/:idUser/routines', usersCtrl.replaceRoutine);
+router.delete('/:idUser/routines', usersCtrl.removeRoutine);
 
 module.exports = router;
