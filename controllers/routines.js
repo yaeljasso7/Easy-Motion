@@ -7,6 +7,9 @@ class RoutinesCtrl {
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
+    this.addExercise = this.addExercise.bind(this);
+    this.getExercises = this.getExercises.bind(this);
+    this.removeExercise = this.removeExercise.bind(this);
   }
 
   async getAll(req, res) {
@@ -24,7 +27,8 @@ class RoutinesCtrl {
   }
 
   async get(req, res) {
-    let data = await Routine.get(req.params.routineId);
+    const id = req.params.routineId;
+    let data = await Routine.get(id);
     if (data.length === 0) {
       res.status(204);
     }
@@ -79,6 +83,49 @@ class RoutinesCtrl {
    res.send();
  }
 
+ async addExercise(req, res, next) {
+   const { routineId } = req.params;
+   const { exerciseId } = req.body;
+   try {
+     const data = await Routine.addExercise(routineId, exerciseId);
+     res.status(201).send(data);
+   } catch (err) {
+     next(err);
+   }
+ }
+
+ async removeExercise(req, res, next){
+   const { routineId, exerciseId } = req.params;
+   let deleted;
+   try {
+     deleted = await Routine.removeExercise(routineId, exerciseId);
+   } catch (error) {
+     next(error);
+   }
+
+   if (deleted) {
+     res.status(200); // OK
+   } else {
+     res.status(404); // Not Found
+   }
+
+   res.send();
+ }
+
+ async getExercises(req, res) {
+   const id = req.params.routineId
+   const data = await Routine.getExercises(id);
+   const json = {
+     data: data,
+     total_count: data.length,
+     per_page: data.length,
+     page: 0,
+   };
+   if (data.length === 0) {
+     res.status(204);
+   }
+   res.send(json);
+ }
 
 }
 
