@@ -147,7 +147,7 @@ class DB {
       case 'ER_DUP_ENTRY':
         let data = this.getDataFromErrorMsg(err.sqlMessage);
         error['duplicated'] = {
-          message: `The ${data.field} ${data.data} already exists on the system`,
+          message: `El ${data.field} ${data.data} ya existe en el sistema`,
           field: data.field,
           sql: err.sql,
         };
