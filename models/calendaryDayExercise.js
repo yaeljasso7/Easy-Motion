@@ -4,7 +4,7 @@ class calendaryDayExercise{
   constructor({id, idCalendary, Day, idExercise})
   {
     this.id =  id;
-    this.idCalendary idCalendary;
+    this.idCalendary = idCalendary;
     this.Day = Day;
     this.idExercise = idExercise;
   }
