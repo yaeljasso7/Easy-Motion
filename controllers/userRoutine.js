@@ -75,7 +75,7 @@ class userRoutineCtrl {
      next(e);
    }
 
-   res.send(data);
+   res.send( Object.assign(data, req.body) );
  }
 }
 

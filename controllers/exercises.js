@@ -43,7 +43,6 @@ class ExercisesCtrl {
   async update(req, res, next) {
     const id = req.params.exerciseId;
     const data = await Exercise.get(id);
-    console.log("soy data",data);
     if (data.length === 0) {
       res.status(404).send(data);
     }
@@ -60,7 +59,7 @@ class ExercisesCtrl {
       next(e);
     }
 
-    res.send(data);
+    res.send( Object.assign(data, req.body) );
   }
 
   async delete(req, res, next){
@@ -74,9 +73,6 @@ class ExercisesCtrl {
 
       res.send();
   }
-
-
-
 }
 
 module.exports = new ExercisesCtrl();

@@ -85,8 +85,22 @@ class UserCtrl{
      res.status(409);
      next(e);
    }
+   console.log("r-body", req.body);
+   console.log("data:",data);
+   res.send( Object.assign(data, req.body) );
+ }
 
-   res.send(data);
+
+ async addRoutine(req, res, next) {
+   const { idUser } = req.params;
+   const { idRoutine} = req.body;
+   try {
+    const data = await User.addRoutine(idUser, idRoutine);
+    res.status(201).send(data);
+    } catch (err) {
+    next(err);
+    }
+   //res.send("jjojoj");
  }
 
 

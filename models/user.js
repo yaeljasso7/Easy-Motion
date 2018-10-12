@@ -1,15 +1,16 @@
 const db = require('../db');
+const Routine = require('./routine');
 
 class User{
   constructor({id, name, mobile, weight, height, password, mail})
   {
-    this.idUser =  id;
-    this.nameUser = name;
-    this.mobileUser = mobile;
-    this.weightUser = weight;
-    this.heightUser = height;
-    this.passwordUser = password;
-    this.mailUser = mail;
+    this.id =  id;
+    this.name= name;
+    this.mobile= mobile;
+    this.weight = weight;
+    this.height = height;
+    this.password= password;
+    this.mail = mail;
   }
 
   save(){
@@ -22,13 +23,29 @@ class User{
      data.forEach((row) => {
        response.push(new User(row));
      });
-     console.log(response);
      return response;
    }
 
    static async getUser(idUser) {
-    const data = await db.get('user', idUser);
-    return data.length !== 0 ? new User(data[0]) : data; //elemento 0 de rowDataPackege
+    const data = await db.get('user', idUser); //Row del User
+    if (data.length !== 0) {
+      const user = new User(data[0]); //Row > Objeto User
+      user.routes = await User.getRoutines(user.id);
+      return user;
+    }
+    return data;
+  }
+  //Busca en la db user_routines donde este el usuario
+  static async getRoutines(idUser) {
+    const data = await db.select('userRoutine', { idUser }); //Rows con id idUser idRoutine
+    const response = [];
+    //buscar las rutinas asociadas al usuario en la tabla rutinas
+    const myPromises = data.map(async (row) => {
+      const routine = await Routine.get(row.idRoutine, true);
+      response.push(routine);
+    });
+    await Promise.all(myPromises); //si se cumplen todas las promesas
+    return response;
   }
 
   static async createUser({ name, mobile, weight, height, password, mail }) {
@@ -52,7 +69,7 @@ class User{
   async updateUser(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('user', keyVals, this.idUser);
+      const results = await db.update('user', keyVals, this.id);
       updatedRows = results.affectedRows;
     } catch (error) {
       throw error;
@@ -70,6 +87,21 @@ class User{
     }
 
     return deletedRows > 0;
+  }
+
+  static async addRoutine(idUser, idRoutine) {
+    let response;
+    try {
+      response = await db.insert('userRoutine', { idUser, idRoutine });
+    } catch (err) {
+      throw err;
+    }
+
+    const id = response.insertId;
+    if (response.affectedRows > 0) {
+      return { idUser , idRoutine };
+    }
+    return [];
   }
 
 

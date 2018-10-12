@@ -12,8 +12,10 @@ class Exercise {
     this.bodyPart = bodyPart;
   }
 
-  static async getAll() {
-    const data = await db.getAll('exercise');
+  static async getAll(deleted_items = false) {
+    const cond = {};
+    if (!deleted_items) cond.isDeleted = false;
+    const data = await db.select('v_exercises', cond);
     const response = [];
     data.forEach((row) => {
       response.push(new Exercise(row));
@@ -21,9 +23,11 @@ class Exercise {
     return response;
   }
 
-  static async get(exerciseId) {
-    const data = await db.get('exercise', exerciseId);
-    return data.length !== 0 ? new Exercise(data[0]) : [];
+  static async get(id, deleted_items = false) {
+    const cond = { id };
+    if (!deleted_items) cond.isDeleted = false;
+    const data = await db.select('v_exercises', cond);
+    return data.length !== 0 ? new Exercise(data[0]) : data;
   }
 
   static async create({
@@ -31,7 +35,7 @@ class Exercise {
   }) {
     let response;
     try {
-      response = await db.insert('exercise', {
+      response = await db.insert('exercises', {
         name, difficulty, description, trainingType, bodyPart,
       });
     } catch (err) {
@@ -50,22 +54,21 @@ class Exercise {
  async update(fields) {
     let res;
     try {
-      res = await db.update('exercise', fields, this.id);
+      res = await db.update('exercises', fields, this.id);
     } catch (err) {
       throw err;
     }
     return res.affectedRows > 0;
   }
 
-  static async delete(exerciseId) {
+  static async delete(id) {
     let deletedRows;
     try {
-      const results = await db.delete('exercise', exerciseId);
+      const results = await db.adv_update('exercises', { isDeleted: true }, { id, isDeleted: false });
       deletedRows = results.affectedRows;
     } catch (e) {
       throw e;
     }
-
     return deletedRows > 0;
   }
 }

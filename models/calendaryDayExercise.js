@@ -3,10 +3,10 @@ const db = require('../db');
 class calendaryDayExercise{
   constructor({id, idCalendary, Day, idExercise})
   {
-    this.idcalendaryDayExercise =  id;
-    this.idCalendarycalendaryDayExercise = idCalendary;
-    this.DaycalendaryDayExercise = Day;
-    this.idExercisecalendaryDayExercise = idExercise;
+    this.id =  id;
+    this.idCalendary = idCalendary;
+    this.Day = Day;
+    this.idExercise = idExercise;
   }
 
   save(){
@@ -61,7 +61,7 @@ class calendaryDayExercise{
   async updatecalendaryDayExercise(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('calendaryDayExercise', keyVals, this.idcalendaryDayExercise);
+      const results = await db.update('calendaryDayExercise', keyVals, this.id);
       updatedRows = results.affectedRows;
     } catch (error) {
       throw error;
