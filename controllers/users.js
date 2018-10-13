@@ -120,6 +120,30 @@ class UserCtrl{
   res.send();
 }
 
+
+async getProgress(req, res, next) {
+  const { idUser } = req.params;
+   const data = await User.getProgress(idUser);
+   console.log("ctl-get", data);
+   if (data.length === 0) {
+     res.status(204);
+   }
+   res.send(data);
+  //res.send("jjojoj");
+}
+
+async addProgress(req, res, next) {
+  const { idUser } = req.params;
+  const { weight } = req.body;
+  const { height } = req.body;
+
+  try {
+   const data = await User.addProgress(idUser, weight, height);
+   res.status(201).send(data);
+   } catch (err) {
+   next(err);
+   }
+}
 /*
  async replaceRoutine(req, res, next) {
    const { idUser } = req.params;

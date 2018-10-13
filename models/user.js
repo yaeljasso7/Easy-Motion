@@ -1,5 +1,6 @@
 const db = require('../db');
 const Routine = require('./routine');
+const progressUser = require('./progressUser');
 
 class User{
   constructor({id, name, mobile, weight, height, password, mail})
@@ -117,6 +118,30 @@ class User{
       return { idUser , idRoutine };
     }
     //return [];
+  }
+
+  static async getProgress(idUser) {
+      let data = await db.select('progressUser', { idUser: idUser });
+      const response = [];
+      data.forEach((row) => {
+        response.push(new progressUser(row));
+      });
+      return response;
+  }
+
+  static async addProgress(idUser, weight, height ) {
+    let response;
+    try {
+      response = await db.insert('progressUser', { idUser, weight, height });
+    } catch (err) {
+      throw err;
+    }
+
+    const id = response.insertId;
+    if (response.affectedRows > 0) {
+      return { idUser , weight, height };
+    }
+   return [];
   }
 
 

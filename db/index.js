@@ -142,7 +142,6 @@ class DB {
   processError(err) {
     //console.log("soy error");
     const error = {};
-    console.log("soy error", err);
     switch (err.code) {
       case 'ER_DUP_ENTRY':
         let data = this.getDataFromErrorMsg(err.sqlMessage);
@@ -153,7 +152,7 @@ class DB {
         };
         break;
         case 'ER_NO_REFERENCED_ROW_2':
-          error['La llave foranea no existe'] = {
+          error['La llave no existe'] = {
             message: `The ${err.sqlMessage} Existeee`,
             sql: err.sql,
           };

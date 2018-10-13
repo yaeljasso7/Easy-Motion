@@ -53,4 +53,7 @@ router.post('/:idUser/routines', usersCtrl.addRoutine);
 //router.put('/:idUser/routines', usersCtrl.replaceRoutine);
 router.delete('/:idUser/routines', usersCtrl.removeRoutine);
 
+router.get('/:idUser/progress', usersCtrl.getProgress);
+router.post('/:idUser/progress', usersCtrl.addProgress);
+
 module.exports = router;

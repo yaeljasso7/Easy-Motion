@@ -8,7 +8,7 @@ class Blog{
     this.date = date;
     this.autor = autor;
     this.data = data;
-    this.category= categoryBlog;
+    this.categoryBlog = categoryBlog;
 
   }
 
@@ -30,7 +30,7 @@ class Blog{
     const data = await db.get('blog', idBlog);
     if (data.length !== 0) {
       const blog = new Blog(data[0]); //Row > Objeto User
-      blog.categorys = await Blog.getCategory(blog.category);
+      blog.categorys = await Blog.getCategory(blog.categoryBlog);
       return blog;
     }
   }
