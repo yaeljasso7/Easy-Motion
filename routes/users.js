@@ -21,8 +21,8 @@ router.post('/', (req,res,next) => {
       name: 'word,required',
       mail: 'email,required',
       mobile: 'iscellphone',
-      height: 'isHeight',
-      weight: 'isWeight',
+      height: 'isHeight,required',
+      weight: 'isWeight,required',
     },
   });
 },usersCtrl.create);

@@ -40,10 +40,11 @@ class UserCtrl{
   }
 
   async create(req, res, next){
-    console.log("si se actualizo :D");
+    //console.log("si se actualizo :D");
     try {
       const data = await User.createUser(req.body);
       res.status(201).send(data);
+      const data2 = await User.addProgress(data.id, data.weight, data.height); //insertar primer progreso
     } catch (err) {
       next(err);
     }
@@ -150,14 +151,12 @@ async addProgress(req, res, next) {
    const { idRoutineOld} = req.body;
    const { idRoutineNew} = req.body;
    console.log(idRoutineNew,idRoutineOld);
-
    try {
     const data = await User.replaceRoutine(idUser, idRoutineNew, idRoutineOld);
     res.status(201).send(data);
     } catch (err) {
     next(err);
     }
-
    //res.send("jjojoj");
  }
 */
