@@ -90,11 +90,11 @@ class UserCtrl{
  }
 
 
- async addRoutine(req, res, next) {
+ async addCalendary(req, res, next) {
    const { idUser } = req.params;
-   const { idRoutine} = req.body;
+   const { idCalendary} = req.body;
    try {
-    const data = await User.addRoutine(idUser, idRoutine);
+    const data = await User.addCalendary(idUser, idCalendary);
     res.status(201).send(data);
     } catch (err) {
     next(err);
@@ -102,12 +102,12 @@ class UserCtrl{
    //res.send("jjojoj");
  }
 
- async removeRoutine(req, res, next){
+ async removeCalendary(req, res, next){
   const { idUser } = req.params;
-  const { idRoutine } = req.body;
+  const { idCalendary } = req.body;
   let deleted;
   try {
-    deleted = await User.removeRoutine(idUser, idRoutine);
+    deleted = await User.removeCalendary(idUser, idCalendary);
   } catch (error) {
     next(error);
   }
@@ -146,13 +146,13 @@ async addProgress(req, res, next) {
    }
 }
 /*
- async replaceRoutine(req, res, next) {
+ async replaceCalendary(req, res, next) {
    const { idUser } = req.params;
-   const { idRoutineOld} = req.body;
-   const { idRoutineNew} = req.body;
-   console.log(idRoutineNew,idRoutineOld);
+   const { idCalendaryOld} = req.body;
+   const { idCalendaryNew} = req.body;
+   console.log(idCalendaryNew,idCalendaryOld);
    try {
-    const data = await User.replaceRoutine(idUser, idRoutineNew, idRoutineOld);
+    const data = await User.replaceCalendary(idUser, idCalendaryNew, idCalendaryOld);
     res.status(201).send(data);
     } catch (err) {
     next(err);

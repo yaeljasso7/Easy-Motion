@@ -1,5 +1,5 @@
 const db = require('../db');
-const Routine = require('./routine');
+const Calendary = require('./calendary');
 const progressUser = require('./progressUser');
 
 class User{
@@ -31,19 +31,19 @@ class User{
     const data = await db.get('user', idUser); //Row del User
     if (data.length !== 0) {
       const user = new User(data[0]); //Row > Objeto User
-      user.routes = await User.getRoutines(user.id);
+      user.calendarys = await User.getCalendarys(user.id);
       return user;
     }
     return data;
   }
-  //Busca en la db user_routines donde este el usuario
-  static async getRoutines(idUser) {
-    const data = await db.select('userRoutine', { idUser }); //Rows con id idUser idRoutine
+  //Busca en la db userCalendary donde este el usuario
+  static async getCalendarys(idUser) {
+    const data = await db.select('userCalendary', { idUser }); //Rows con id idUser idCalendary
     const response = [];
     //buscar las rutinas asociadas al usuario en la tabla rutinas
     const myPromises = data.map(async (row) => {
-      const routine = await Routine.get(row.idRoutine, true);
-      response.push(routine);
+      const calendary = await Calendary.getCalendary(row.idCalendary, true);
+      response.push(calendary);
     });
     await Promise.all(myPromises); //si se cumplen todas las promesas
     return response;
@@ -90,32 +90,32 @@ class User{
     return deletedRows > 0;
   }
 
-  static async addRoutine(idUser, idRoutine) {
+  static async addCalendary(idUser, idCalendary) {
     let response;
     try {
-      response = await db.insert('userRoutine', { idUser, idRoutine });
+      response = await db.insert('userCalendary', { idUser, idCalendary });
     } catch (err) {
       throw err;
     }
 
     const id = response.insertId;
     if (response.affectedRows > 0) {
-      return { idUser , idRoutine };
+      return { idUser , idCalendary };
     }
    return [];
   }
 
-  static async removeRoutine(idUser, idRoutine) {
+  static async removeCalendary(idUser, idCalendary) {
     let response;
     try {
-      response = await db.adv_delete('userRoutine', { idUser, idRoutine });
+      response = await db.adv_delete('userCalendary', { idUser, idCalendary });
     } catch (err) {
       throw err;
     }
 
     const id = response.insertId;
     if (response.affectedRows > 0) {
-      return { idUser , idRoutine };
+      return { idUser , idCalendary };
     }
     //return [];
   }

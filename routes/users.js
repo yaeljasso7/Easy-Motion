@@ -49,9 +49,9 @@ router.delete('/:idUser', (req,res,next) => {
 },usersCtrl.delete);
 
 
-router.post('/:idUser/routines', usersCtrl.addRoutine);
+router.post('/:idUser/calendarys', usersCtrl.addCalendary);
 //router.put('/:idUser/routines', usersCtrl.replaceRoutine);
-router.delete('/:idUser/routines', usersCtrl.removeRoutine);
+router.delete('/:idUser/calendarys', usersCtrl.removeCalendary);
 
 router.get('/:idUser/progress', usersCtrl.getProgress);
 router.post('/:idUser/progress', usersCtrl.addProgress);
