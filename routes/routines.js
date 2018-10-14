@@ -16,6 +16,7 @@ router.post('/', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
       name: 'word,required',
+      executionTime: 'number',
     },
   });
 }, routinesCtrl.create);
@@ -24,6 +25,7 @@ router.put('/:routineId', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
       name: 'word,required',
+      executionTime: 'number',
     },
     params: {
       routineId: 'number',

@@ -2,10 +2,12 @@ const db = require('../db');
 const Exercise = require('./exercise');
 
 class Routine {
-  constructor({id, name})
+  constructor({ id, name, description, executionTime })
   {
     this.id = id;
     this.name = name;
+    this.description = description;
+    this.executionTime = executionTime;
   }
 
   static async getAll() {
@@ -29,10 +31,10 @@ class Routine {
     return data;
   }
 
-  static async create({ name }) {
+  static async create({ name, description, executionTime }) {
     let response;
     try {
-      response = await db.insert('routines', { name });
+      response = await db.insert('routines', { name, description, executionTime });
     } catch (err) {
       throw err;
     }
@@ -40,7 +42,7 @@ class Routine {
     const id = response.insertId;
     if (id > 0) {
       return new Routine({
-        id, name,
+        id, name, description, executionTime,
       });
     }
     return [];
