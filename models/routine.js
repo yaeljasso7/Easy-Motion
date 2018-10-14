@@ -10,8 +10,10 @@ class Routine {
     this.executionTime = executionTime;
   }
 
-  static async getAll() {
-    const data = await db.select('routines', { isDeleted: false });
+  static async getAll(deleted_items = false) {
+    const cond = {};
+    if (!deleted_items) cond.isDeleted = false;
+    const data = await db.select('routines', cond);
     const response = [];
     data.forEach((row) => {
       response.push(new Routine(row));
@@ -19,10 +21,12 @@ class Routine {
     return response;
   }
 
-  static async get(id) {
+  static async get(id, deleted_items = false) {
     // si rutina tiene referenciado un ejercicio eliminado, aún se muestra
     // en la rutina, a menos que se elimine de esta.
-    const data = await db.select('routines', { id, isDeleted: false });
+    const cond = { id };
+    if (!deleted_items) cond.isDeleted = false;
+    const data = await db.select('routines', cond);
     if (data.length !== 0) {
       const routine = new Routine(data[0]);
       routine.exercises = await Routine.getExercises(routine.id);
