@@ -10,6 +10,7 @@ class RoutinesCtrl {
     this.addExercise = this.addExercise.bind(this);
     this.getExercises = this.getExercises.bind(this);
     this.removeExercise = this.removeExercise.bind(this);
+    this.updateExerciseReps = this.updateExerciseReps.bind(this);
   }
 
   async getAll(req, res) {
@@ -30,7 +31,7 @@ class RoutinesCtrl {
     const id = req.params.routineId;
     let data = await Routine.get(id);
     if (data.length === 0) {
-      res.status(204);
+      res.status(404);
     }
     res.send(data);
   }
@@ -85,9 +86,8 @@ class RoutinesCtrl {
 
  async addExercise(req, res, next) {
    const { routineId } = req.params;
-   const { exerciseId } = req.body;
    try {
-     const data = await Routine.addExercise(routineId, exerciseId);
+     const data = await Routine.addExercise(routineId, req.body);
      res.status(201).send(data);
    } catch (err) {
      next(err);
@@ -95,15 +95,33 @@ class RoutinesCtrl {
  }
 
  async removeExercise(req, res, next){
-   const { routineId, exerciseId } = req.params;
+   const { routineId } = req.params;
    let deleted;
    try {
-     deleted = await Routine.removeExercise(routineId, exerciseId);
+     deleted = await Routine.removeExercise(routineId, req.body);
    } catch (error) {
      next(error);
    }
 
    if (deleted) {
+     res.status(200); // OK
+   } else {
+     res.status(404); // Not Found
+   }
+
+   res.send();
+ }
+
+ async updateExerciseReps(req, res, next) {
+   const { routineId } = req.params;
+   let updated;
+   try {
+     updated = await Routine.updateExerciseReps(routineId, req.body);
+   } catch (error) {
+     next(error);
+   }
+
+   if (updated) {
      res.status(200); // OK
    } else {
      res.status(404); // Not Found

@@ -46,13 +46,12 @@ class Routine {
     return [];
   }
 
-  async update(keyVals) {
+  async update(fields) {
     let updatedRows;
     try {
-      const results = await db.update('routines', keyVals, this.id);
+      const results = await db.update('routines', fields, this.id);
       updatedRows = results.affectedRows;
     } catch (error) {
-      console.log("error0",error);
       throw error;
     }
     return updatedRows > 0;
@@ -69,10 +68,10 @@ class Routine {
     return deletedRows > 0;
   }
 
-  static async addExercise(routineId, exerciseId) {
+  static async addExercise(routineId, { exerciseId, repetitions }) {
     let response;
     try {
-      response = await db.insert('exercises_routines', { routineId, exerciseId });
+      response = await db.insert('exercises_routines', { routineId, exerciseId, repetitions });
     } catch (err) {
       throw err;
     }
@@ -89,13 +88,14 @@ class Routine {
     const response = [];
     const myPromises = data.map(async (row) => {
       const exercise = await Exercise.get(row.exerciseId, true);
+      exercise.repetitions = row.repetitions;
       response.push(exercise);
     });
     await Promise.all(myPromises);
     return response;
   }
 
-  static async removeExercise(routineId, exerciseId) {
+  static async removeExercise(routineId, { exerciseId }) {
     let deletedRows;
     try {
       const results = await db.adv_delete('exercises_routines', { routineId, exerciseId });
@@ -105,6 +105,18 @@ class Routine {
     }
 
     return deletedRows > 0;
+  }
+
+  static async updateExerciseReps(routineId, { exerciseId, repetitions }) {
+    let updatedRows;
+    try {
+      const results = await db.adv_update('exercises_routines', { repetitions }, { routineId, exerciseId });
+      updatedRows = results.affectedRows;
+    } catch (e) {
+      throw e;
+    }
+
+    return updatedRows > 0;
   }
 
 }
