@@ -15,7 +15,7 @@ class Exercise {
   static async getAll(deleted_items = false) {
     const cond = {};
     if (!deleted_items) cond.isDeleted = false;
-    const data = await db.select('exercises', cond);
+    const data = await db.select('v_exercises', cond);
     const response = [];
     data.forEach((row) => {
       response.push(new Exercise(row));
@@ -26,7 +26,7 @@ class Exercise {
   static async get(id, deleted_items = false) {
     const cond = { id };
     if (!deleted_items) cond.isDeleted = false;
-    const data = await db.select('exercises', cond);
+    const data = await db.select('v_exercises', cond);
     return data.length !== 0 ? new Exercise(data[0]) : data;
   }
 
