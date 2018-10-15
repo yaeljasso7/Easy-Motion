@@ -106,9 +106,10 @@ class CalendaryCtrl{
  async removeRoutine(req, res, next){
   const { idCalendary } = req.params;
   const { idRoutine} = req.body;
+  const { day } = req.body;
   let deleted;
   try {
-    deleted = await Calendary.removeRoutine(idCalendary, idRoutine);
+    deleted = await Calendary.removeRoutine(idCalendary, idRoutine, day);
   } catch (error) {
     next(error);
   }

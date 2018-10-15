@@ -33,14 +33,18 @@ class Calendary{
   }
 
   static async getRoutines(idCalendary) {
-    const data = await db.select('calendaryDayRoutine', { idCalendary }); //Rows con id idUser idCalendary
+    const data = await db.select('calendaryDayRoutine', { idCalendary}); //Rows con id idUser idCalendary
+    data.sort((a,b)=>a.day-b.day);
     const response = [];
     //buscar las rutinas asociadas al usuario en la tabla rutinas
     const myPromises = data.map(async (row) => {
       const routine = await Routine.get(row.idRoutine, true);
+      routine.day = row.day;
       response.push(routine);
     });
     await Promise.all(myPromises); //si se cumplen todas las promesas
+    console.log(response, "response");
+    console.log(typeof(response));
     return response;
   }
 
@@ -100,17 +104,17 @@ class Calendary{
    return [];
   }
 
-  static async removeRoutine(idCalendary, idRoutine) {
+  static async removeRoutine(idCalendary, idRoutine, day) {
     let response;
     try {
-      response = await db.adv_delete('calendaryDayRoutine', { idCalendary, idRoutine});
+      response = await db.adv_delete('calendaryDayRoutine', { idCalendary, idRoutine, day});
     } catch (err) {
       throw err;
     }
 
     const id = response.insertId;
     if (response.affectedRows > 0) {
-      return { idCalendary , idRoutine };
+      return { idCalendary , idRoutine, day };
     }
     //return [];
   }
