@@ -92,8 +92,7 @@ class CalendaryCtrl{
 
  async addRoutine(req, res, next) {
    const { idCalendary } = req.params;
-   const { idRoutine } = req.body;
-   const { day } = req.body;
+   const { idRoutine, day } = req.body;
    try {
     const data = await Calendary.addRoutine(idCalendary, idRoutine, day);
     res.status(201).send(data);
@@ -105,8 +104,7 @@ class CalendaryCtrl{
 
  async removeRoutine(req, res, next){
   const { idCalendary } = req.params;
-  const { idRoutine} = req.body;
-  const { day } = req.body;
+  const { idRoutine, day } = req.body;
   let deleted;
   try {
     deleted = await Calendary.removeRoutine(idCalendary, idRoutine, day);

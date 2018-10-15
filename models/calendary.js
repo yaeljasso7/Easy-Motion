@@ -26,21 +26,22 @@ class Calendary{
     const data = await db.get('calendary', idCalendary);
     if (data.length !== 0) {
       const calendary = new Calendary(data[0]); //Row > Objeto Calendary
-      calendary.routines = await Calendary.getRoutines(calendary.id);
+      calendary.routinesPerDay = await Calendary.getRoutines(calendary.id);
       return calendary;
     }
     return data;
   }
 
   static async getRoutines(idCalendary) {
-    const data = await db.select('calendaryDayRoutine', { idCalendary}); //Rows con id idUser idCalendary
-    data.sort((a,b)=>a.day-b.day);
+    const data = await db.select('calendaryDayRoutine', { idCalendary }); //Rows con id idUser idCalendary
     const response = [];
     //buscar las rutinas asociadas al usuario en la tabla rutinas
     const myPromises = data.map(async (row) => {
       const routine = await Routine.get(row.idRoutine, true);
-      routine.day = row.day;
-      response.push(routine);
+      if (!response[row.day]) {
+        response[row.day] = [];
+      }
+      response[row.day].push(routine);
     });
     await Promise.all(myPromises); //si se cumplen todas las promesas
     console.log(response, "response");
@@ -92,14 +93,14 @@ class Calendary{
   static async addRoutine(idCalendary, idRoutine , day) {
     let response;
     try {
-      response = await db.insert('calendaryDayRoutine', { idCalendary, idRoutine, day});
+      response = await db.insert('calendaryDayRoutine', { idCalendary, idRoutine, day });
     } catch (err) {
       throw err;
     }
 
     const id = response.insertId;
     if (response.affectedRows > 0) {
-      return { idCalendary, idRoutine , day};
+      return { idCalendary, idRoutine , day };
     }
    return [];
   }
@@ -107,16 +108,12 @@ class Calendary{
   static async removeRoutine(idCalendary, idRoutine, day) {
     let response;
     try {
-      response = await db.adv_delete('calendaryDayRoutine', { idCalendary, idRoutine, day});
+      response = await db.adv_delete('calendaryDayRoutine', { idCalendary, idRoutine, day });
     } catch (err) {
       throw err;
     }
 
-    const id = response.insertId;
-    if (response.affectedRows > 0) {
-      return { idCalendary , idRoutine, day };
-    }
-    //return [];
+    return response.affectedRows > 0;
   }
 
 
