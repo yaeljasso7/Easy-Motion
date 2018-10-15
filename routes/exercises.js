@@ -26,6 +26,7 @@ router.post('/', (req, res, next) => {
 router.put('/:exerciseId', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
+      name: 'word',
       difficulty: 'number',
       trainingType: 'number',
       bodyPart: 'number',
