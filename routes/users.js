@@ -48,27 +48,27 @@ router.delete('/:idUser', (req, res, next) => {
     });
 }, usersCtrl.delete);
 
-router.post('/:idUser/calendarys', (req, res, next) => {
+router.post('/:idUser/calendars', (req, res, next) => {
     middlewares.validator.validate(req, res, next, {
         params: {
             idUser: 'number',
         },
         body: {
-            idCalendary: 'number',
+            idCalendar: 'number',
         },
     });
-}, usersCtrl.addCalendary);
+}, usersCtrl.addCalendar);
 
-router.delete('/:idUser/calendarys', (req, res, next) => {
+router.delete('/:idUser/calendars', (req, res, next) => {
     middlewares.validator.validate(req, res, next, {
         params: {
             idUser: 'number',
         },
         body: {
-            idCalendary: 'number',
+            idCalendar: 'number',
         },
     });
-}, usersCtrl.removeCalendary);
+}, usersCtrl.removeCalendar);
 
 router.get('/:idUser/progress', (req, res, next) => {
     middlewares.validator.validate(req, res, next, {

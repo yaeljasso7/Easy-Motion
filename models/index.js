@@ -1,8 +1,8 @@
 exports.User = require('./user');
 exports.Blog = require('./blog');
 exports.categoryBlog = require('./categoryBlog');
-exports.Calendary = require('./calendary');
-exports.calendaryDayExercise = require('./calendaryDayExercise');
+exports.Calendar = require('./calendar');
+exports.calendarDayExercise = require('./calendarDayExercise');
 exports.Exercise = require('./exercise');
 exports.BodyPart = require('./bodyPart');
 exports.TrainingType = require('./trainingType');

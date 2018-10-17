@@ -1,9 +1,9 @@
-const { Calendary } = require('../models');
+const { Calendar } = require('../models');
 
 // FIXME Falta documentacion en todos los metodos
 // FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
 
-class CalendaryCtrl{
+class CalendarCtrl{
   constructor(){
     this.getAll = this.getAll.bind(this);
     this.get = this.get.bind(this);
@@ -16,7 +16,7 @@ class CalendaryCtrl{
 
    async getAll(req, res){
 
-     let data = await Calendary.getCalendarys();
+     let data = await Calendar.getCalendars();
 
      // FIXME El objeto tiene formato de paginado, pero no es real
      const json = {
@@ -34,7 +34,7 @@ class CalendaryCtrl{
   }
 
   async get(req, res){
-      let data = await Calendary.getCalendary(req.params.idCalendary);
+      let data = await Calendar.getCalendar(req.params.idCalendar);
       console.log("ctl-get", data);
       if (data.length === 0) {
         res.status(204);
@@ -45,7 +45,7 @@ class CalendaryCtrl{
 
   async create(req, res, next){
     try {
-      let data = await Calendary.createCalendary(req.body); //req.body {}
+      let data = await Calendar.createCalendar(req.body); //req.body {}
       console.log("ctrl-create",data);
       res.status(201).send(data);
     } catch (e) {
@@ -55,7 +55,7 @@ class CalendaryCtrl{
   }
 
   async delete(req, res, next){
-    const deleted = await Calendary.deleteCalendary(req.params.idCalendary);
+    const deleted = await Calendar.deleteCalendar(req.params.idCalendar);
 
       if (deleted) {
         res.status(200); // OK
@@ -68,14 +68,14 @@ class CalendaryCtrl{
 
   async update(req, res, next) {
 
-   const data = await Calendary.getCalendary(req.params.idCalendary);
+   const data = await Calendar.getCalendar(req.params.idCalendar);
 
    if (data.length === 0) {
      res.status(404).send(data); // Not Found
    }
 
    try{
-     const updated = await data.updateCalendary(req.body);
+     const updated = await data.updateCalendar(req.body);
      if (updated) {
        res.status(200); // OK
      } else {
@@ -90,10 +90,10 @@ class CalendaryCtrl{
  }
 
  async addRoutine(req, res, next) {
-   const { idCalendary } = req.params;
+   const { idCalendar } = req.params;
    const { idRoutine, day } = req.body;
    try {
-    const data = await Calendary.addRoutine(idCalendary, idRoutine, day);
+    const data = await Calendar.addRoutine(idCalendar, idRoutine, day);
     res.status(201).send(data);
     } catch (err) {
     next(err);
@@ -101,11 +101,11 @@ class CalendaryCtrl{
  }
 
  async removeRoutine(req, res, next){
-  const { idCalendary } = req.params;
+  const { idCalendar } = req.params;
   const { idRoutine, day } = req.body;
   let deleted;
   try {
-    deleted = await Calendary.removeRoutine(idCalendary, idRoutine, day);
+    deleted = await Calendar.removeRoutine(idCalendar, idRoutine, day);
   } catch (error) {
     next(error);
   }
@@ -121,4 +121,4 @@ class CalendaryCtrl{
 
 
 }
-module.exports = new CalendaryCtrl();
+module.exports = new CalendarCtrl();

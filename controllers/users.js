@@ -93,11 +93,11 @@ class UserCtrl{
  }
 
 
- async addCalendary(req, res, next) {
+ async addCalendar(req, res, next) {
    const { idUser } = req.params;
-   const { idCalendary} = req.body;
+   const { idCalendar} = req.body;
    try {
-    const data = await User.addCalendary(idUser, idCalendary);
+    const data = await User.addCalendar(idUser, idCalendar);
     res.status(201).send(data);
     } catch (err) {
     next(err);
@@ -105,12 +105,12 @@ class UserCtrl{
    //res.send("jjojoj");
  }
 
- async removeCalendary(req, res, next){
+ async removeCalendar(req, res, next){
   const { idUser } = req.params;
-  const { idCalendary } = req.body;
+  const { idCalendar } = req.body;
   let deleted;
   try {
-    deleted = await User.removeCalendary(idUser, idCalendary);
+    deleted = await User.removeCalendar(idUser, idCalendar);
   } catch (error) {
     next(error);
   }

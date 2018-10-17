@@ -4,7 +4,7 @@ const categoryBlog = require('./categoryBlog');
 // FIXME Falta documentacion en todos los metodos
 // FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
 
-class Blog{
+class Blog {
   constructor({id, date, autor, data, categoryBlog})
   {
     this.id =  id;

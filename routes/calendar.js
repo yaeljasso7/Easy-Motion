@@ -1,19 +1,19 @@
 const router = require('express').Router();
-const { calendaryCtrl } = require('../controllers');
+const { calendarCtrl } = require('../controllers');
 const middlewares = require('../middlewares');
 
 //rutas
 //request  /info relativa del cliente
 //response /enviar cliente
 //regresa usuarios todos
-router.get('/', calendaryCtrl.getAll);
-router.get('/:idCalendary', (req,res,next) => {
+router.get('/', calendarCtrl.getAll);
+router.get('/:idCalendar', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
   params: {
-    idCalendary: 'number',
+    idCalendar: 'number',
   },
 });
-}, calendaryCtrl.get);
+}, calendarCtrl.get);
 
 router.post('/', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
@@ -21,49 +21,49 @@ router.post('/', (req,res,next) => {
       name: 'word,required',
     },
   });
-},calendaryCtrl.create);
+},calendarCtrl.create);
 
-router.put('/:idCalendary', (req,res,next) => {
+router.put('/:idCalendar', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
   params: {
-    idCalendary: 'number',
+    idCalendar: 'number',
   },
   body:{
       name: 'required,word',
   },
 });
-},calendaryCtrl.update);
+},calendarCtrl.update);
 
-router.delete('/:idCalendary', (req,res,next) => {
+router.delete('/:idCalendar', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
   params: {
-    idCalendary: 'number',
+    idCalendar: 'number',
   },
 });
-},calendaryCtrl.delete);
+},calendarCtrl.delete);
 
-router.post('/:idCalendary/routines', (req,res,next) => {
+router.post('/:idCalendar/routines', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
   params: {
-    idCalendary: 'number',
+    idCalendar: 'number',
   },
   body:{
       idRoutine: 'required,number',
       day: 'required,number'
   },
 });
-},calendaryCtrl.addRoutine);
+},calendarCtrl.addRoutine);
 
-router.delete('/:idCalendary/routines', (req,res,next) => {
+router.delete('/:idCalendar/routines', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
   params: {
-    idCalendary: 'number',
+    idCalendar: 'number',
   },
   body:{
       idRoutine: 'required,number',
       day: 'required,number'
   },
 });
-},calendaryCtrl.removeRoutine);
+},calendarCtrl.removeRoutine);
 
 module.exports = router;

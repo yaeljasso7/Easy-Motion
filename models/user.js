@@ -1,5 +1,5 @@
 const db = require('../db');
-const Calendary = require('./calendary');
+const Calendar = require('./calendar');
 const progressUser = require('./progressUser');
 
 // FIXME Falta documentacion en todos los metodos
@@ -34,19 +34,19 @@ class User{
     const data = await db.get('user', idUser); //Row del User
     if (data.length !== 0) {
       const user = new User(data[0]); //Row > Objeto User
-      user.calendarys = await User.getCalendarys(user.id);
+      user.calendars = await User.getCalendars(user.id);
       return user;
     }
     return data;
   }
-  //Busca en la db userCalendary donde este el usuario
-  static async getCalendarys(idUser) {
-    const data = await db.select('userCalendary', { idUser }); //Rows con id idUser idCalendary
+  //Busca en la db userCalendar donde este el usuario
+  static async getCalendars(idUser) {
+    const data = await db.select('userCalendar', { idUser }); //Rows con id idUser idCalendar
     const response = [];
     //buscar las rutinas asociadas al usuario en la tabla rutinas
     const myPromises = data.map(async (row) => {
-      const calendary = await Calendary.getCalendary(row.idCalendary, true);
-      response.push(calendary);
+      const calendar = await Calendar.getCalendar(row.idCalendar, true);
+      response.push(calendar);
     });
     await Promise.all(myPromises); //si se cumplen todas las promesas
     return response;
@@ -93,32 +93,32 @@ class User{
     return deletedRows > 0;
   }
 
-  static async addCalendary(idUser, idCalendary) {
+  static async addCalendar(idUser, idCalendar) {
     let response;
     try {
-      response = await db.insert('userCalendary', { idUser, idCalendary });
+      response = await db.insert('userCalendar', { idUser, idCalendar });
     } catch (err) {
       throw err;
     }
 
     const id = response.insertId;
     if (response.affectedRows > 0) {
-      return { idUser , idCalendary };
+      return { idUser , idCalendar };
     }
    return [];
   }
 
-  static async removeCalendary(idUser, idCalendary) {
+  static async removeCalendar(idUser, idCalendar) {
     let response;
     try {
-      response = await db.adv_delete('userCalendary', { idUser, idCalendary });
+      response = await db.adv_delete('userCalendar', { idUser, idCalendar });
     } catch (err) {
       throw err;
     }
 
     const id = response.insertId;
     if (response.affectedRows > 0) {
-      return { idUser , idCalendary };
+      return { idUser , idCalendar };
     }
     //return [];
   }

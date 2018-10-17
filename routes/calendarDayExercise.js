@@ -1,49 +1,49 @@
 const router = require('express').Router();
-const { calendaryDayExerciseCtrl } = require('../controllers');
+const { calendarDayExerciseCtrl } = require('../controllers');
 const middlewares = require('../middlewares');
 
 //rutas
 //request  /info relativa del cliente
 //response /enviar cliente
 //regresa usuarios todos
-router.get('/', calendaryDayExerciseCtrl.getAll);
-router.get('/:idcalendaryDayExercise', (req,res,next) => {
+router.get('/', calendarDayExerciseCtrl.getAll);
+router.get('/:idcalendarDayExercise', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
   params: {
-    idcalendaryDayExercise: 'number',
+    idcalendarDayExercise: 'number',
   },
 });
-}, calendaryDayExerciseCtrl.get);
+}, calendarDayExerciseCtrl.get);
 
 router.post('/', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
-      idCalendary: 'number,required',
+      idCalendar: 'number,required',
       Day:  'number,required',
       idExercise: 'number,required',
     },
   });
-},calendaryDayExerciseCtrl.create);
+},calendarDayExerciseCtrl.create);
 
-router.put('/:idcalendaryDayExercise', (req,res,next) => {
+router.put('/:idcalendarDayExercise', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
   params: {
-    idcalendaryDayExercise: 'number',
+    idcalendarDayExercise: 'number',
   },
   body:{
-    idCalendary: 'number,required',
+    idCalendar: 'number,required',
     Day:  'number,required',
     idExercise: 'number,required',
   },
 });
-},calendaryDayExerciseCtrl.update);
+},calendarDayExerciseCtrl.update);
 
-router.delete('/:idcalendaryDayExercise', (req,res,next) => {
+router.delete('/:idcalendarDayExercise', (req,res,next) => {
   middlewares.validator.validate(req, res, next, {
   params: {
-    idcalendaryDayExercise: 'number',
+    idcalendarDayExercise: 'number',
   },
 });
-},calendaryDayExerciseCtrl.delete);
+},calendarDayExerciseCtrl.delete);
 
 module.exports = router;

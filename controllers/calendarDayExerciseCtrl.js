@@ -1,10 +1,10 @@
-//controladores calendaryDayExercise
-const { calendaryDayExercise } = require('../models');
+//controladores calendarDayExercise
+const { calendarDayExercise } = require('../models');
 
 // FIXME Falta documentacion en todos los metodos
 // FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
 
-class calendaryDayExerciseCtrl{
+class calendarDayExerciseCtrl{
   constructor(){
     this.getAll = this.getAll.bind(this);
     this.get = this.get.bind(this);
@@ -15,7 +15,7 @@ class calendaryDayExerciseCtrl{
 
    async getAll(req, res){
 
-     let data = await calendaryDayExercise.getcalendaryDayExercises();
+     let data = await calendarDayExercise.getcalendarDayExercises();
 
       // FIXME El objeto tiene formato de paginado, pero no es real
      const json = {
@@ -25,7 +25,7 @@ class calendaryDayExerciseCtrl{
        page: 0,
      };
 
-     // In case calendaryDayExercise was not found
+     // In case calendarDayExercise was not found
      if (data.length === 0) {
        res.status(204);
      }
@@ -34,7 +34,7 @@ class calendaryDayExerciseCtrl{
   }
 
   async get(req, res){
-      let data = await calendaryDayExercise.getcalendaryDayExercise(req.params.idcalendaryDayExercise);
+      let data = await calendarDayExercise.getcalendarDayExercise(req.params.idcalendarDayExercise);
       if (data.length === 0) {
         res.status(204);
       }
@@ -44,7 +44,7 @@ class calendaryDayExerciseCtrl{
 
   async create(req, res, next){
     try {
-      let data = await calendaryDayExercise.createcalendaryDayExercise(req.body); //req.body {}
+      let data = await calendarDayExercise.createcalendarDayExercise(req.body); //req.body {}
       res.status(201).send(data);
     } catch (e) {
       res.status (409).send("Insert error: " + e.duplicated.message);
@@ -53,7 +53,7 @@ class calendaryDayExerciseCtrl{
   }
 
   async delete(req, res, next){
-    const deleted = await calendaryDayExercise.deletecalendaryDayExercise(req.params.idcalendaryDayExercise);
+    const deleted = await calendarDayExercise.deletecalendarDayExercise(req.params.idcalendarDayExercise);
 
       if (deleted) {
         res.status(200); // OK
@@ -66,13 +66,13 @@ class calendaryDayExerciseCtrl{
 
   async update(req, res, next) {
 
-   const data = await calendaryDayExercise.getcalendaryDayExercise(req.params.idcalendaryDayExercise);
+   const data = await calendarDayExercise.getcalendarDayExercise(req.params.idcalendarDayExercise);
    if (data.length === 0) {
      res.status(404); // Not Found
    }
 
    try{
-     const updated = await data.updatecalendaryDayExercise(req.body);
+     const updated = await data.updatecalendarDayExercise(req.body);
      if (updated) {
        res.status(200);// OK
      } else {
@@ -88,4 +88,4 @@ class calendaryDayExerciseCtrl{
 
 
 }
-module.exports = new calendaryDayExerciseCtrl();
+module.exports = new calendarDayExerciseCtrl();

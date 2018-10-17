@@ -4,7 +4,7 @@ const Routine = require('./routine');
 // FIXME Falta documentacion en todos los metodos
 // FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
 
-class Calendary{
+class Calendar{
   constructor({id, name,})
   {
     this.id=  id;
@@ -15,27 +15,27 @@ class Calendary{
     db.new(this);
   }
 
-   static async getCalendarys(){
-     const data = await db.getAll('calendary');
+   static async getCalendars(){
+     const data = await db.getAll('calendar');
      const response = [];
      data.forEach((row) => {
-       response.push(new Calendary(row));
+       response.push(new Calendar(row));
      });
      return response;
    }
 
-   static async getCalendary(idCalendary) {
-    const data = await db.get('calendary', idCalendary);
+   static async getCalendar(idCalendar) {
+    const data = await db.get('calendar', idCalendar);
     if (data.length !== 0) {
-      const calendary = new Calendary(data[0]); //Row > Objeto Calendary
-      calendary.routinesPerDay = await Calendary.getRoutines(calendary.id);
-      return calendary;
+      const calendar = new Calendar(data[0]); //Row > Objeto Calendar
+      calendar.routinesPerDay = await Calendar.getRoutines(calendar.id);
+      return calendar;
     }
     return data;
   }
 
-  static async getRoutines(idCalendary) {
-    const data = await db.select('calendaryDayRoutine', { idCalendary }); //Rows con id idUser idCalendary
+  static async getRoutines(idCalendar) {
+    const data = await db.select('calendarDayRoutine', { idCalendar }); //Rows con id idUser idCalendar
     const response = [];
     //buscar las rutinas asociadas al usuario en la tabla rutinas
     const myPromises = data.map(async (row) => {
@@ -49,10 +49,10 @@ class Calendary{
     return response;
   }
 
-  static async deleteCalendary(idCalendary) {
+  static async deleteCalendar(idCalendar) {
     let deletedRows;
     try {
-      const results = await db.delete('calendary', idCalendary);
+      const results = await db.delete('calendar', idCalendar);
       deletedRows = results.affectedRows;
     } catch (e) {
       throw e;
@@ -61,25 +61,25 @@ class Calendary{
     return deletedRows > 0;
   }
 
-  static async createCalendary({ name }) {
+  static async createCalendar({ name }) {
 
     let response;
     try {
-      response = await db.insert('calendary', { name });
+      response = await db.insert('calendar', { name });
     } catch (e) {
       throw e;
     }
     const id = response.insertId;
     if (id > 0) {
-      return new Calendary({ id, name });
+      return new Calendar({ id, name });
     }
     return [];
   }
 
-  async updateCalendary(keyVals) {
+  async updateCalendar(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('calendary', keyVals, this.id);
+      const results = await db.update('calendar', keyVals, this.id);
       updatedRows = results.affectedRows;
     } catch (error) {
       throw error;
@@ -87,25 +87,25 @@ class Calendary{
     return updatedRows > 0;
   }
 
-  static async addRoutine(idCalendary, idRoutine , day) {
+  static async addRoutine(idCalendar, idRoutine , day) {
     let response;
     try {
-      response = await db.insert('calendaryDayRoutine', { idCalendary, idRoutine, day });
+      response = await db.insert('calendarDayRoutine', { idCalendar, idRoutine, day });
     } catch (err) {
       throw err;
     }
 
     const id = response.insertId;
     if (response.affectedRows > 0) {
-      return { idCalendary, idRoutine , day };
+      return { idCalendar, idRoutine , day };
     }
    return [];
   }
 
-  static async removeRoutine(idCalendary, idRoutine, day) {
+  static async removeRoutine(idCalendar, idRoutine, day) {
     let response;
     try {
-      response = await db.adv_delete('calendaryDayRoutine', { idCalendary, idRoutine, day });
+      response = await db.adv_delete('calendarDayRoutine', { idCalendar, idRoutine, day });
     } catch (err) {
       throw err;
     }
@@ -116,4 +116,4 @@ class Calendary{
 
 }
 
-module.exports = Calendary;
+module.exports = Calendar;
