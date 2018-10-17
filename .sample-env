@@ -3,3 +3,5 @@ DB_USER=user
 DB_PASS=password
 DB_NAME=sampledb
 DB_HOST=localhost
+
+PER_PAGE=10
