@@ -65,8 +65,8 @@ class BodyPartsCtrl {
           res.status(404)
           .send(ResponseMaker.notFound());
         }
-    } catch (e) {
-      return next(e);
+    } catch (err) {
+      return next(err);
     }
   }
 
@@ -90,8 +90,8 @@ class BodyPartsCtrl {
         res.status(409)
         .send(ResponseMaker.confict(this._type, req.body));
       }
-    } catch(e) {
-      return next(e);
+    } catch(err) {
+      return next(err);
     }
  }
 }
