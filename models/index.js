@@ -10,3 +10,4 @@ exports.TrainingType = require('./trainingType');
 exports.Routine = require('./routine');
 exports.userRoutine = require('./userRoutine');
 exports.progressUser = require('./progressUser');
+exports.ResponseMaker = require('./responseMaker');
