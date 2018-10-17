@@ -2,6 +2,9 @@ const db = require('../db');
 const Calendary = require('./calendary');
 const progressUser = require('./progressUser');
 
+// FIXME Falta documentacion en todos los metodos
+// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+
 class User{
   constructor({id, name, mobile, weight, height, password, mail})
   {
