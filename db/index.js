@@ -1,6 +1,8 @@
 const mysql = require('mysql');
 //const User = require('../models/user');
 
+// FIXME Falta documentacion en todos los metodos
+
 class DB {
 
   constructor(){

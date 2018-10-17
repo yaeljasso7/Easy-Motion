@@ -1,6 +1,9 @@
 const db = require('../db');
 const Exercise = require('./exercise');
 
+// FIXME Falta documentacion en todos los metodos
+// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+
 class Routine {
   constructor({ id, name, description, executionTime })
   {
