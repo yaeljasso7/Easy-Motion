@@ -35,7 +35,6 @@ class UserCtrl{
 
   async get(req, res){
       let data = await User.getUser(req.params.idUser);
-      console.log("ctl-get", data);
       if (data.length === 0) {
         res.status(204);
       }
@@ -44,7 +43,6 @@ class UserCtrl{
   }
 
   async create(req, res, next){
-    //console.log("si se actualizo :D");
     try {
       const data = await User.createUser(req.body);
       res.status(201).send(data);
@@ -130,7 +128,6 @@ class UserCtrl{
 async getProgress(req, res, next) {
   const { idUser } = req.params;
    const data = await User.getProgress(idUser);
-   console.log("ctl-get", data);
    if (data.length === 0) {
      res.status(204);
    }
@@ -150,21 +147,6 @@ async addProgress(req, res, next) {
    next(err);
    }
 }
-/*
- async replaceCalendary(req, res, next) {
-   const { idUser } = req.params;
-   const { idCalendaryOld} = req.body;
-   const { idCalendaryNew} = req.body;
-   console.log(idCalendaryNew,idCalendaryOld);
-   try {
-    const data = await User.replaceCalendary(idUser, idCalendaryNew, idCalendaryOld);
-    res.status(201).send(data);
-    } catch (err) {
-    next(err);
-    }
-   //res.send("jjojoj");
- }
-*/
 
 
 

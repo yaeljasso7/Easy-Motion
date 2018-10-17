@@ -26,7 +26,6 @@ class BlogCtrl{
        page: 0,
      };
 
-     // In case Blog was not found
      if (data.length === 0) {
        res.status(204);
      }
@@ -36,7 +35,6 @@ class BlogCtrl{
 
   async get(req, res){
       let data = await Blog.getBlog(req.params.idBlog);
-      console.log("ctl-get", data);
       if (data.length === 0) {
         res.status(204);
       }
@@ -50,9 +48,8 @@ class BlogCtrl{
       console.log("ctrl-create",data);
       res.status(201).send(data);
     } catch (e) {
-      //db error
       console.log("eee:" ,e);
-    
+
       res.status (409).send("Insert error: " + e.duplicated.message);
       next(e);
     }

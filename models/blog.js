@@ -16,7 +16,7 @@ class Blog{
   }
 
   save(){
-    db.new(this);//table,this
+    db.new(this);
   }
 
    static async getBlogs(){
@@ -25,7 +25,6 @@ class Blog{
      data.forEach((row) => {
        response.push(new Blog(row));
      });
-     console.log(response);
      return response;
    }
 
@@ -52,12 +51,9 @@ class Blog{
     let response;
     try {
       response = await db.insert('blog', { date, autor, data, categoryBlog });
-    //  console.log("soy response:", response);
     } catch (e) {
-      //error de la db
       throw e;
     }
-    //si no hay error
     const id = response.insertId;
     if (id > 0) {
       return new Blog({ id, date, autor, data, categoryBlog });

@@ -35,7 +35,6 @@ class calendaryDayExerciseCtrl{
 
   async get(req, res){
       let data = await calendaryDayExercise.getcalendaryDayExercise(req.params.idcalendaryDayExercise);
-      console.log("ctl-get", data);
       if (data.length === 0) {
         res.status(204);
       }

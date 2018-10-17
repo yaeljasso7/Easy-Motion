@@ -18,7 +18,7 @@ class User{
   }
 
   save(){
-    db.new(this);//table,this
+    db.new(this);
   }
 
    static async getUsers(){

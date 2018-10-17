@@ -26,7 +26,6 @@ class CalendaryCtrl{
        page: 0,
      };
 
-     // In case Calendary was not found
      if (data.length === 0) {
        res.status(204);
      }
@@ -99,7 +98,6 @@ class CalendaryCtrl{
     } catch (err) {
     next(err);
     }
-   //res.send("jjojoj");
  }
 
  async removeRoutine(req, res, next){

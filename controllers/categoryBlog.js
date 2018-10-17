@@ -35,7 +35,6 @@ class categoryBlogCtrl{
 
   async get(req, res){
       let data = await categoryBlog.getcategoryBlog(req.params.idcategoryBlog);
-      console.log("ctl-get", data);
       if (data.length === 0) {
         res.status(204);
       }
@@ -54,7 +53,6 @@ class categoryBlogCtrl{
   }
 
   async delete(req, res, next){
-    //console.log(req.params.idcategoryBlog); asignado en rutas
     const deleted = await categoryBlog.deletecategoryBlog(req.params.idcategoryBlog);
 
       if (deleted) {

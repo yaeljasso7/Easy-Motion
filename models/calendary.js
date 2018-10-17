@@ -12,7 +12,7 @@ class Calendary{
   }
 
   save(){
-    db.new(this);//table,this
+    db.new(this);
   }
 
    static async getCalendarys(){
@@ -21,7 +21,6 @@ class Calendary{
      data.forEach((row) => {
        response.push(new Calendary(row));
      });
-     console.log(response);
      return response;
    }
 
@@ -46,9 +45,7 @@ class Calendary{
       }
       response[row.day].push(routine);
     });
-    await Promise.all(myPromises); //si se cumplen todas las promesas
-    console.log(response, "response");
-    console.log(typeof(response));
+    await Promise.all(myPromises);
     return response;
   }
 
@@ -69,12 +66,9 @@ class Calendary{
     let response;
     try {
       response = await db.insert('calendary', { name });
-      console.log("soy response:", response);
     } catch (e) {
-      //error de la db
       throw e;
     }
-    //si no hay error
     const id = response.insertId;
     if (id > 0) {
       return new Calendary({ id, name });

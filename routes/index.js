@@ -16,13 +16,12 @@ const bodyParser = require('body-parser'); //req.body
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 */
-router.get('/', (req,res) => res.send('hello'));
-
+router.get('/', (req, res) => res.send('hello'));
 router.use('/users', usersRouter);
 router.use('/blog', blogRouter);
-router.use('/categoryBlog',categoryBlogRouter);
-router.use('/calendary',calendaryRouter);
-router.use('/calendaryDayExercise',calendaryDayExerciseRouter);
+router.use('/categoryBlog', categoryBlogRouter);
+router.use('/calendary', calendaryRouter);
+router.use('/calendaryDayExercise', calendaryDayExerciseRouter);
 
 router.use('/exercises', exercisesRouter);
 router.use('/bodyParts', bodyPartsRouter);

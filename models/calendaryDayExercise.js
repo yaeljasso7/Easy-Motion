@@ -13,7 +13,7 @@ class calendaryDayExercise{
   }
 
   save(){
-    db.new(this);//table,this
+    db.new(this);
   }
 
    static async getcalendaryDayExercises(){
@@ -22,7 +22,6 @@ class calendaryDayExercise{
      data.forEach((row) => {
        response.push(new calendaryDayExercise(row));
      });
-     console.log(response);
      return response;
    }
 
@@ -49,12 +48,9 @@ class calendaryDayExercise{
     let response;
     try {
       response = await db.insert('calendaryDayExercise', { idCalendary, Day, idExercise });
-      console.log("soy response:", response);
     } catch (e) {
-      //error de la db
       throw e;
     }
-    //si no hay error
     const id = response.insertId;
     if (id > 0) {
       return new calendaryDayExercise({ id, idCalendary, Day, idExercise});
