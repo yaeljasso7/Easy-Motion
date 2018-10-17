@@ -17,7 +17,9 @@ class Exercise {
 
   static async getAll(deleted_items = false) {
     const cond = {};
-    if (!deleted_items) cond.isDeleted = false;
+    if (!deleted_items) {
+       cond.isDeleted = false;
+    }
     const data = await db.select('v_exercises', cond);
     const response = [];
     data.forEach((row) => {
@@ -28,8 +30,9 @@ class Exercise {
 
   static async get(id, deleted_items = false) {
     const cond = { id };
-    // FIXME Me duelen los ojos de ver condicionales de una sola linea :S
-    if (!deleted_items) cond.isDeleted = false;
+    if (!deleted_items) {
+      cond.isDeleted = false;
+    }
     const data = await db.select('v_exercises', cond);
     // FIXME En lugar de regresar el objeto de DB para vacio, debes construir tu propio objeto en el manejador de la base de datos
     return data.length !== 0 ? new Exercise(data[0]) : data;
