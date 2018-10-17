@@ -51,7 +51,7 @@ class BodyPart {
   async update(keyVals) {
     let updatedRows;
     try {
-      const results = await db.adv_update('body_parts', keyVals, { id: this.id });
+      const results = await db.advUpdate('body_parts', keyVals, { id: this.id });
       updatedRows = results.affectedRows;
     } catch (err) {
       throw err;
@@ -62,7 +62,7 @@ class BodyPart {
   static async delete(id) {
     let deletedRows;
     try {
-      const results = await db.adv_update('body_parts', { isDeleted: true }, { id, isDeleted: false });
+      const results = await db.advUpdate('body_parts', { isDeleted: true }, { id, isDeleted: false });
       deletedRows = results.affectedRows;
     } catch (err) {
       throw err;
