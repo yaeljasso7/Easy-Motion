@@ -45,15 +45,11 @@ class CalendaryCtrl{
   }
 
   async create(req, res, next){
-    console.log("llegue aqui");
     try {
       let data = await Calendary.createCalendary(req.body); //req.body {}
       console.log("ctrl-create",data);
       res.status(201).send(data);
     } catch (e) {
-      //db error
-      console.log("eee:" ,e);
-      
       res.status (409).send("Insert error: " + e.duplicated.message);
       next(e);
     }

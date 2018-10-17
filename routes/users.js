@@ -48,16 +48,46 @@ router.delete('/:idUser', (req,res,next) => {
 });
 },usersCtrl.delete);
 
+router.post('/:idUser/calendarys', (req,res,next) => {
+  middlewares.validator.validate(req, res, next, {
+  params: {
+    idUser: 'number',
+  },
+  body:{
+    idCalendary: 'number',
+  },
+});
+},usersCtrl.addCalendary);
 
-// FIXME Falta validar los params :idUser para confirmar que es un identificador valido
-// FIXME Falta validar el cuerpo del request
-//router.post('/:idUser/routines', usersCtrl.addRoutine);
+router.delete('/:idUser/calendarys', (req,res,next) => {
+  middlewares.validator.validate(req, res, next, {
+    params: {
+      idUser: 'number',
+    },
+    body:{
+      idCalendary: 'number',
+    },
+});
+},usersCtrl.removeCalendary);
 
-router.post('/:idUser/calendarys', usersCtrl.addCalendary);
-//router.put('/:idUser/routines', usersCtrl.replaceRoutine);
-router.delete('/:idUser/calendarys', usersCtrl.removeCalendary);
+router.get('/:idUser/progress', (req,res,next) => {
+  middlewares.validator.validate(req, res, next, {
+  params: {
+    idUser: 'number',
+  },
+});
+},usersCtrl.getProgress);
 
-router.get('/:idUser/progress', usersCtrl.getProgress);
-router.post('/:idUser/progress', usersCtrl.addProgress);
+router.post('/:idUser/progress', (req,res,next) => {
+  middlewares.validator.validate(req, res, next, {
+  params: {
+    idUser: 'number',
+  },
+  body:{
+    weight: 'number,isWeight',
+    height: 'number,isHeight',
+  },
+});
+},usersCtrl.addProgress);
 
 module.exports = router;
