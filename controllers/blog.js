@@ -52,8 +52,8 @@ class BlogCtrl{
     } catch (e) {
       //db error
       console.log("eee:" ,e);
-      // FIXME El manejo de errores se recomienda mantenerlos en ingles
-      res.status (409).send("Error al insertar: " + e.duplicated.message);
+    
+      res.status (409).send("Insert error: " + e.duplicated.message);
       next(e);
     }
   }

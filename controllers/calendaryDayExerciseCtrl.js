@@ -46,13 +46,9 @@ class calendaryDayExerciseCtrl{
   async create(req, res, next){
     try {
       let data = await calendaryDayExercise.createcalendaryDayExercise(req.body); //req.body {}
-      console.log("ctrl-create",data);
       res.status(201).send(data);
     } catch (e) {
-      //db error
-      console.log("eee:" ,e);
-      // FIXME El manejo de errores se recomienda mantenerlos en ingles
-      res.status (409).send("Error al insertar: " + e.duplicated.message);
+      res.status (409).send("Insert error: " + e.duplicated.message);
       next(e);
     }
   }
