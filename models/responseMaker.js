@@ -5,16 +5,16 @@ function ResponseMaker() {
     msg: 'Not Found',
     data: {
       type,
-      content
-    }
+      content,
+    },
   });
 
-  this.noContent = (type) => ({
+  this.noContent = type => ({
     code: 204,
     msg: 'No content',
     data: {
-      type
-    }
+      type,
+    },
   });
 
   this.confict = (type, content) => ({
@@ -22,8 +22,8 @@ function ResponseMaker() {
     msg: 'Conflict',
     data: {
       type,
-      content
-    }
+      content,
+    },
   });
 
   this.created = (type, content) => ({
@@ -31,8 +31,8 @@ function ResponseMaker() {
     msg: 'Created',
     data: {
       type,
-      content
-    }
+      content,
+    },
   });
 
   this.ok = (msg, type, content) => ({
@@ -40,21 +40,20 @@ function ResponseMaker() {
     msg,
     data: {
       type,
-      content
-    }
+      content,
+    },
   });
 
   this.paginated = (page, type, content) => ({
     code: 200,
     data: {
       type,
-      content
+      content,
     },
     total_count: content.length,
-    per_page: process.env.PER_PAGE,
-    page
+    per_page: parseInt(process.env.PAGE_SIZE, 10),
+    page,
   });
-
 }
 
 module.exports = new ResponseMaker();

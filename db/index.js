@@ -8,14 +8,14 @@ const One = 1;
 class DB {
   constructor() {
     this.keywords = ['and', 'or'];
-    this.con = mysql.createConnection({
+    this.conn = mysql.createConnection({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
     });
 
-    this.con.connect((err) => {
+    this.conn.connect((err) => {
       if (err) {
         console.log(err);
       } else {
@@ -46,14 +46,30 @@ class DB {
       });
       sqry = conds.length > Zero ? conds.join(` ${key.toUpperCase()} `) : Default;
     } else {
-      sqry = `${this.con.escapeId(key)} = ${this.con.escape(qryCond[key])}`;
+      sqry = `${this.conn.escapeId(key)} = ${this.conn.escape(qryCond[key])}`;
     }
     return sqry;
   }
 
-  select(table, qryCond = {}) {
+  limit(qryLimit) {
+    if (qryLimit.length === 0) {
+      return '';
+    }
+    return `LIMIT ${this.conn.escape(qryLimit)}`;
+  }
+
+  orderBy(qryOrder) {
+    if (qryOrder.length === 0) {
+      return '';
+    }
+    return `ORDER BY ${this.conn.escapeId(qryOrder)}`;
+  }
+
+  select(table, qryCond = {}, qryLimit = []) {
     return new Promise((resolve, reject) => {
-      this.con.query(`SELECT * FROM ?? WHERE ${this.where(qryCond)}`, [table], (error, results) => {
+      this.conn.query(`SELECT * FROM ??
+        WHERE ${this.where(qryCond)} ${this.limit(qryLimit)}`,
+      [table], (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -65,7 +81,7 @@ class DB {
   // advanced delete
   advDelete(table, qryCond = {}) {
     return new Promise((resolve, reject) => {
-      this.con.query(`DELETE FROM ?? WHERE ${this.where(qryCond)}`, [table], (error, results) => {
+      this.conn.query(`DELETE FROM ?? WHERE ${this.where(qryCond)}`, [table], (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -77,7 +93,7 @@ class DB {
   // advanced update
   advUpdate(table, obj, qryCond = {}) {
     return new Promise((resolve, reject) => {
-      this.con.query(`UPDATE ?? SET ? WHERE ${this.where(qryCond)}`, [table, obj], (error, results) => {
+      this.conn.query(`UPDATE ?? SET ? WHERE ${this.where(qryCond)}`, [table, obj], (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -88,7 +104,7 @@ class DB {
 
   getAll(table) {
     return new Promise((resolve, reject) => {
-      this.con.query('SELECT * FROM ??', [table], (error, results) => {
+      this.conn.query('SELECT * FROM ??', [table], (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -99,7 +115,7 @@ class DB {
 
   get(table, id) {
     return new Promise((resolve, reject) => {
-      this.con.query('SELECT * FROM ?? WHERE id = ?', [table, id], (error, results) => {
+      this.conn.query('SELECT * FROM ?? WHERE id = ?', [table, id], (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -110,7 +126,7 @@ class DB {
 
   delete(table, id) {
     return new Promise((resolve, reject) => {
-      this.con.query('DELETE FROM ?? WHERE id = ?', [table, id], (error, results) => {
+      this.conn.query('DELETE FROM ?? WHERE id = ?', [table, id], (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -121,7 +137,7 @@ class DB {
 
   update(table, obj, id) {
     return new Promise((resolve, reject) => {
-      this.con.query('UPDATE ?? SET ? WHERE id = ?', [table, obj, id], (error, results) => {
+      this.conn.query('UPDATE ?? SET ? WHERE id = ?', [table, obj, id], (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -132,7 +148,7 @@ class DB {
 
   insert(table, resource) {
     return new Promise((resolve, reject) => {
-      this.con.query('INSERT INTO ?? SET ?', [table, resource], (error, results) => {
+      this.conn.query('INSERT INTO ?? SET ?', [table, resource], (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }

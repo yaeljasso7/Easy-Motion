@@ -4,4 +4,4 @@ DB_PASS=password
 DB_NAME=sampledb
 DB_HOST=localhost
 
-PER_PAGE=10
+PAGE_SIZE=10

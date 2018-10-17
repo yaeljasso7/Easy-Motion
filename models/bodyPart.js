@@ -10,10 +10,11 @@ class BodyPart {
     this.name = name;
   }
 
-  static async getAll() {
+  static async getAll(page = 0) {
+    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
     try {
-      const data = await db.select('body_parts', { isDeleted: false });
+      const data = await db.select('body_parts', { isDeleted: false }, [page * pageSize, pageSize]);
 
       data.forEach((row) => {
         response.push(new BodyPart(row));
@@ -27,7 +28,7 @@ class BodyPart {
   static async get(id) {
     let data;
     try {
-      data = await db.select('body_parts', { id, isDeleted: false });
+      data = await db.select('body_parts', { id, isDeleted: false }, [1]);
     } catch (err) {
       throw err;
     }
