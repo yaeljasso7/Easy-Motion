@@ -1,0 +1,42 @@
+ALTER TABLE `easy-Test`.`calendary`
+RENAME TO  `easy-Test`.`calendar` ;
+
+ALTER TABLE `easy-Test`.`calendaryDayRoutine`
+RENAME TO  `easy-Test`.`calendarDayRoutine` ;
+
+ALTER TABLE `easy-Test`.`calendarDayRoutine`
+DROP FOREIGN KEY `fk_calendaryDayRoutine_calendary`,
+DROP FOREIGN KEY `fk_calendaryDayRoutine_routine`;
+ALTER TABLE `easy-Test`.`calendarDayRoutine`
+CHANGE COLUMN `idCalendary` `idCalendar` INT(11) NOT NULL ;
+ALTER TABLE `easy-Test`.`calendarDayRoutine`
+ADD CONSTRAINT `fk_calendarDayRoutine_calendar`
+  FOREIGN KEY (`idCalendar`)
+  REFERENCES `easy-Test`.`calendar` (`id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
+ADD CONSTRAINT `fk_calendarDayRoutine_routine`
+  FOREIGN KEY (`idRoutine`)
+  REFERENCES `easy-Test`.`routines` (`id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE;
+
+  ALTER TABLE `easy-Test`.`userCalendary`
+  RENAME TO  `easy-Test`.`userCalendar` ;
+
+  ALTER TABLE `easy-Test`.`userCalendar`
+DROP FOREIGN KEY `fk_userCalendary_idCalendary`,
+DROP FOREIGN KEY `fk_userCalendary_idUser`;
+ALTER TABLE `easy-Test`.`userCalendar`
+CHANGE COLUMN `idCalendary` `idCalendar` INT(11) NOT NULL ;
+ALTER TABLE `easy-Test`.`userCalendar`
+ADD CONSTRAINT `fk_userCalendar_idCalendar`
+  FOREIGN KEY (`idCalendar`)
+  REFERENCES `easy-Test`.`calendar` (`id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
+ADD CONSTRAINT `fk_userCalendar_idUser`
+  FOREIGN KEY (`idUser`)
+  REFERENCES `easy-Test`.`user` (`id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE;
