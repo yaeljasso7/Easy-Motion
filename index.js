@@ -21,7 +21,7 @@ app.use(router);
 
 app.use(errorHandler);
 
-app.use('/', express.static(path.join(__dirname, 'testheroku'))); // FIXME el folder no existe, esto no es necesario
+
 
 app.listen(port, () => {
   console.log(`Listening on http://localhost:${port}/`);
