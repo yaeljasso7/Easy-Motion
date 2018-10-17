@@ -10,8 +10,8 @@ const { errorHandler } = require('./middlewares');
 
 const app = express();
 
-const path = require('path');
-const http = require('http');
+/* const path = require('path');
+const http = require('http'); */
 const port = process.env.PORT || 8080;
 
 app.use(bodyParser.json());
@@ -21,10 +21,8 @@ app.use(router);
 
 app.use(errorHandler);
 
-
-
 app.listen(port, () => {
-  console.log(`Listening on http://localhost:${port}/`);
+    console.log(`Listening on http://localhost:${port}/`);
 });
 
 /*
