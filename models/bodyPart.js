@@ -1,7 +1,6 @@
 const db = require('../db');
 
 // FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
 
 class BodyPart {
   constructor({
@@ -12,16 +11,26 @@ class BodyPart {
   }
 
   static async getAll() {
-    const data = await db.select('body_parts', { isDeleted: false });
     const response = [];
-    data.forEach((row) => {
-      response.push(new BodyPart(row));
-    });
+    try {
+      const data = await db.select('body_parts', { isDeleted: false });
+
+      data.forEach((row) => {
+        response.push(new BodyPart(row));
+      });
+    } catch (err) {
+      throw err;
+    }
     return response;
   }
 
   static async get(id) {
-    const data = await db.select('body_parts', { id, isDeleted: false });
+    let data;
+    try {
+      data = await db.select('body_parts', { id, isDeleted: false });
+    } catch (err) {
+      throw err;
+    }
     return data.length !== 0 ? new BodyPart(data[0]) : [];
   }
 
@@ -42,10 +51,10 @@ class BodyPart {
   async update(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('body_parts', keyVals, this.id);
+      const results = await db.adv_update('body_parts', keyVals, { id: this.id });
       updatedRows = results.affectedRows;
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      throw err;
     }
     return updatedRows > 0;
   }
@@ -55,8 +64,8 @@ class BodyPart {
     try {
       const results = await db.adv_update('body_parts', { isDeleted: true }, { id, isDeleted: false });
       deletedRows = results.affectedRows;
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      throw err;
     }
     return deletedRows > 0;
   }
