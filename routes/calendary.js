@@ -42,7 +42,28 @@ router.delete('/:idCalendary', (req,res,next) => {
 });
 },calendaryCtrl.delete);
 
-router.post('/:idCalendary/routines', calendaryCtrl.addRoutine);
-router.delete('/:idCalendary/routines', calendaryCtrl.removeRoutine);
+router.post('/:idCalendary/routines', (req,res,next) => {
+  middlewares.validator.validate(req, res, next, {
+  params: {
+    idCalendary: 'number',
+  },
+  body:{
+      idRoutine: 'required,number',
+      day: 'required,number'
+  },
+});
+},calendaryCtrl.addRoutine);
+
+router.delete('/:idCalendary/routines', (req,res,next) => {
+  middlewares.validator.validate(req, res, next, {
+  params: {
+    idCalendary: 'number',
+  },
+  body:{
+      idRoutine: 'required,number',
+      day: 'required,number'
+  },
+});
+},calendaryCtrl.removeRoutine);
 
 module.exports = router;

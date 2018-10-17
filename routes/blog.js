@@ -28,8 +28,6 @@ router.post('/', (req, res, next) => {
 router.put('/:idBlog',  (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
   body: {
-      autor: 'required',
-      data: 'required',
     },
   params: {
         idBlog: 'number',
