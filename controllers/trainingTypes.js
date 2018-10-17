@@ -68,7 +68,7 @@ class TrainingTypesCtrl {
      next(e);
    }
    // FIXME ESto deberia regresar un objeto de tipo del recurso idealmente o un objeto con un formato definido para respuestas
-   res.send( Object.assign(data, req.body) ); // FIXME en lugar de usar assign puede hacer spread { ...data, ...req.body }
+   res.send({ ...data, ...req.body }); // FIXME en lugar de usar assign puede hacer spread { ...data, ...req.body }
  }
 
  async delete(req, res, next){
