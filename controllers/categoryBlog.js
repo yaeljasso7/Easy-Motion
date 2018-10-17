@@ -1,6 +1,9 @@
 //controladores categoryBlog
 const { categoryBlog } = require('../models');
 
+// FIXME Falta documentacion en todos los metodos
+// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+
 class categoryBlogCtrl{
   constructor(){
     this.getAll = this.getAll.bind(this);
@@ -14,6 +17,7 @@ class categoryBlogCtrl{
 
      let data = await categoryBlog.getcategoryBlogs();
 
+     // FIXME El objeto tiene formato de paginado, pero no es real
      const json = {
        data: data,
        total_count: data.length,
@@ -47,6 +51,7 @@ class categoryBlogCtrl{
     } catch (e) {
       //db error
       console.log("eee:" ,e);
+      // FIXME El manejo de errores se recomienda mantenerlos en ingles
       res.status (409).send("Error al insertar: " + e.duplicated.message);
       next(e);
     }
@@ -85,7 +90,8 @@ class categoryBlogCtrl{
      next(e);
    }
 
-   res.send( Object.assign(data, req.body) );
+  // FIXME ESto deberia regresar un objeto de tipo del recurso idealmente o un objeto con un formato definido para respuestas
+   res.send( Object.assign(data, req.body) ); // FIXME en lugar de usar assign puede hacer spread { ...data, ...req.body }
  }
 
 

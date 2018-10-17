@@ -48,7 +48,8 @@ router.delete('/:idUser', (req,res,next) => {
 });
 },usersCtrl.delete);
 
-
+// FIXME Falta validar los params :idUser para confirmar que es un identificador valido
+// FIXME Falta validar el cuerpo del request
 router.post('/:idUser/routines', usersCtrl.addRoutine);
 
 module.exports = router;

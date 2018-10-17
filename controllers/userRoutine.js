@@ -1,5 +1,8 @@
 const { userRoutine } = require('../models');
 
+// FIXME Falta documentacion en todos los metodos
+// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+
 class userRoutineCtrl {
   constructor() {
     this.getAll = this.getAll.bind(this);
@@ -11,6 +14,8 @@ class userRoutineCtrl {
 
   async getAll(req, res) {
     const data = await userRoutine.getAll();
+
+    // FIXME El objeto tiene formato de paginado, pero no es real
     const json = {
       data,
       total_count: data.length,
@@ -74,8 +79,8 @@ class userRoutineCtrl {
      res.status(409);
      next(e);
    }
-
-   res.send( Object.assign(data, req.body) );
+    // FIXME ESto deberia regresar un objeto de tipo del recurso idealmente o un objeto con un formato definido para respuestas
+   res.send( Object.assign(data, req.body) ); // FIXME en lugar de usar assign puede hacer spread { ...data, ...req.body }
  }
 }
 

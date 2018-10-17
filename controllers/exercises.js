@@ -1,5 +1,8 @@
 const { Exercise } = require('../models');
 
+// FIXME Falta documentacion en todos los metodos
+// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+
 class ExercisesCtrl {
   constructor() {
     this.getAll = this.getAll.bind(this);
@@ -11,6 +14,8 @@ class ExercisesCtrl {
 
   async getAll(req, res) {
     const data = await Exercise.getAll();
+
+    // FIXME El objeto tiene formato de paginado, pero no es real
     const json = {
       data,
       total_count: data.length,

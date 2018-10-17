@@ -1,5 +1,8 @@
 const { Routine } = require('../models');
 
+// FIXME Falta documentacion en todos los metodos
+// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+
 class RoutinesCtrl {
   constructor() {
     this.getAll = this.getAll.bind(this);
@@ -14,6 +17,8 @@ class RoutinesCtrl {
 
   async getAll(req, res) {
     let data = await Routine.getAll();
+
+    // FIXME El objeto tiene formato de paginado, pero no es real
     const json = {
       data: data,
       total_count: data.length,
@@ -115,6 +120,8 @@ class RoutinesCtrl {
  async getExercises(req, res) {
    const id = req.params.routineId
    const data = await Routine.getExercises(id);
+
+   // FIXME El objeto tiene formato de paginado, pero no es real
    const json = {
      data: data,
      total_count: data.length,

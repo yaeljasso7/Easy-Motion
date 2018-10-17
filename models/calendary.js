@@ -1,5 +1,8 @@
 const db = require('../db');
 
+// FIXME Falta documentacion en todos los metodos
+// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+
 class Calendary{
   constructor({id, name,})
   {

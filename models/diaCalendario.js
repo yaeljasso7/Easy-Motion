@@ -1,5 +1,9 @@
 const db = require('../db');
 
+// FIXME Falta documentacion en todos los metodos
+// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+// FIXME La clase y los metodos deben ser en ingles
+
 class diaCalendario{
   constructor({id})
   {
@@ -22,6 +26,7 @@ class diaCalendario{
 
    static async getdiaCalendario(iddiaCalendario) {
     const data = await db.get('diaCalendario', iddiaCalendario);
+    // FIXME En lugar de regresar el objeto de DB para vacio, debes construir tu propio objeto en el manejador de la base de datos
     return data.length !== 0 ? new diaCalendario(data[0]) : data; //elemento 0 de rowDataPackege
   }
 
