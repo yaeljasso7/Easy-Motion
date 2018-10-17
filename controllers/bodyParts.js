@@ -34,7 +34,7 @@ class BodyPartsCtrl {
       data,
     };
     if (data.length === 0) {
-      res.status(204);
+      res.status(404);
     }
     res.send(json);
   }

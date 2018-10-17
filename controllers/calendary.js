@@ -10,6 +10,8 @@ class CalendaryCtrl{
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
+    this.addRoutine = this.addRoutine.bind(this);
+    this.removeRoutine = this.removeRoutine.bind(this);
   }
 
    async getAll(req, res){
@@ -92,6 +94,36 @@ class CalendaryCtrl{
    res.send( Object.assign(data, req.body) ); // FIXME en lugar de usar assign puede hacer spread { ...data, ...req.body }
  }
 
+ async addRoutine(req, res, next) {
+   const { idCalendary } = req.params;
+   const { idRoutine, day } = req.body;
+   try {
+    const data = await Calendary.addRoutine(idCalendary, idRoutine, day);
+    res.status(201).send(data);
+    } catch (err) {
+    next(err);
+    }
+   //res.send("jjojoj");
+ }
+
+ async removeRoutine(req, res, next){
+  const { idCalendary } = req.params;
+  const { idRoutine, day } = req.body;
+  let deleted;
+  try {
+    deleted = await Calendary.removeRoutine(idCalendary, idRoutine, day);
+  } catch (error) {
+    next(error);
+  }
+
+  if (deleted) {
+    res.status(200); // OK
+  } else {
+    res.status(404); // Not Found
+  }
+
+  res.send();
+}
 
 
 }

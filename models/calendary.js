@@ -1,4 +1,5 @@
 const db = require('../db');
+const Routine = require('./routine');
 
 // FIXME Falta documentacion en todos los metodos
 // FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
@@ -26,7 +27,29 @@ class Calendary{
 
    static async getCalendary(idCalendary) {
     const data = await db.get('calendary', idCalendary);
-    return data.length !== 0 ? new Calendary(data[0]) : data; //elemento 0 de rowDataPackege
+    if (data.length !== 0) {
+      const calendary = new Calendary(data[0]); //Row > Objeto Calendary
+      calendary.routinesPerDay = await Calendary.getRoutines(calendary.id);
+      return calendary;
+    }
+    return data;
+  }
+
+  static async getRoutines(idCalendary) {
+    const data = await db.select('calendaryDayRoutine', { idCalendary }); //Rows con id idUser idCalendary
+    const response = [];
+    //buscar las rutinas asociadas al usuario en la tabla rutinas
+    const myPromises = data.map(async (row) => {
+      const routine = await Routine.get(row.idRoutine, true);
+      if (!response[row.day]) {
+        response[row.day] = [];
+      }
+      response[row.day].push(routine);
+    });
+    await Promise.all(myPromises); //si se cumplen todas las promesas
+    console.log(response, "response");
+    console.log(typeof(response));
+    return response;
   }
 
   static async deleteCalendary(idCalendary) {
@@ -69,6 +92,33 @@ class Calendary{
     }
     return updatedRows > 0;
   }
+
+  static async addRoutine(idCalendary, idRoutine , day) {
+    let response;
+    try {
+      response = await db.insert('calendaryDayRoutine', { idCalendary, idRoutine, day });
+    } catch (err) {
+      throw err;
+    }
+
+    const id = response.insertId;
+    if (response.affectedRows > 0) {
+      return { idCalendary, idRoutine , day };
+    }
+   return [];
+  }
+
+  static async removeRoutine(idCalendary, idRoutine, day) {
+    let response;
+    try {
+      response = await db.adv_delete('calendaryDayRoutine', { idCalendary, idRoutine, day });
+    } catch (err) {
+      throw err;
+    }
+
+    return response.affectedRows > 0;
+  }
+
 
 }
 

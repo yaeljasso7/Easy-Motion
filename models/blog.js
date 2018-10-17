@@ -1,4 +1,5 @@
 const db = require('../db');
+const categoryBlog = require('./categoryBlog');
 
 // FIXME Falta documentacion en todos los metodos
 // FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
@@ -10,7 +11,7 @@ class Blog{
     this.date = date;
     this.autor = autor;
     this.data = data;
-    this.category= categoryBlog;
+    this.categoryBlog = categoryBlog;
 
   }
 
@@ -30,8 +31,21 @@ class Blog{
 
    static async getBlog(idBlog) {
     const data = await db.get('blog', idBlog);
+
     // FIXME En lugar de regresar el objeto de DB para vacio, debes construir tu propio objeto en el manejador de la base de datos
-    return data.length !== 0 ? new Blog(data[0]) : data; //elemento 0 de rowDataPackege
+    //return data.length !== 0 ? new Blog(data[0]) : data; //elemento 0 de rowDataPackege
+    if (data.length !== 0) {
+      const blog = new Blog(data[0]); //Row > Objeto User
+      blog.categorys = await Blog.getCategory(blog.categoryBlog);
+      return blog;
+    }
+  }
+
+  static async getCategory(idCategory) {
+    const response = [];
+    const category = await categoryBlog.getcategoryBlog(idCategory);
+    response.push(category);
+    return response;
   }
 
   static async createBlog({ date, autor, data, categoryBlog}) {

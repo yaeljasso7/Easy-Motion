@@ -16,6 +16,7 @@ router.post('/', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
       name: 'word,required',
+      executionTime: 'number',
     },
   });
 }, routinesCtrl.create);
@@ -24,6 +25,7 @@ router.put('/:routineId', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
       name: 'word,required',
+      executionTime: 'number',
     },
     params: {
       routineId: 'number',
@@ -39,7 +41,19 @@ router.delete('/:routineId', (req, res, next) => {
   });
 }, routinesCtrl.delete);
 
-router.post('/:routineId/exercises', (req, res, next) => {
+router.post('/:routineId/exercise', (req, res, next) => {
+  middlewares.validator.validate(req, res, next, {
+    body: {
+      exerciseId: 'number,required',
+      repetitions: 'number,required',
+    },
+    params: {
+      routineId: 'number',
+    },
+  });
+}, routinesCtrl.addExercise);
+
+router.delete('/:routineId/exercise', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
       exerciseId: 'number,required',
@@ -48,23 +62,18 @@ router.post('/:routineId/exercises', (req, res, next) => {
       routineId: 'number',
     },
   });
-}, routinesCtrl.addExercise);
-
-router.get('/:routineId/exercises', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
-    params: {
-      routineId: 'number',
-    },
-  });
-}, routinesCtrl.getExercises);
-
-router.delete('/:routineId/exercises/:exerciseId', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
-    params: {
-      routineId: 'number',
-      exerciseId: 'number',
-    },
-  });
 }, routinesCtrl.removeExercise);
+
+router.patch('/:routineId/exercise', (req, res, next) => {
+  middlewares.validator.validate(req, res, next, {
+    body: {
+      exerciseId: 'number,required',
+      repetitions: 'number,required',
+    },
+    params: {
+      routineId: 'number',
+    },
+  });
+}, routinesCtrl.updateExerciseReps);
 
 module.exports = router;

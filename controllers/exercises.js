@@ -31,7 +31,7 @@ class ExercisesCtrl {
   async get(req, res) {
     let data = await Exercise.get(req.params.exerciseId);
     if (data.length === 0) {
-      res.status(204);
+      res.status(404);
     }
     res.send(data);
   }

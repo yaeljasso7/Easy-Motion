@@ -44,10 +44,11 @@ class UserCtrl{
   }
 
   async create(req, res, next){
-    console.log("si se actualizo :D");
+    //console.log("si se actualizo :D");
     try {
       const data = await User.createUser(req.body);
       res.status(201).send(data);
+      const data2 = await User.addProgress(data.id, data.weight, data.height); //insertar primer progreso
     } catch (err) {
       next(err);
     }
@@ -89,24 +90,81 @@ class UserCtrl{
      res.status(409);
      next(e);
    }
-   console.log("r-body", req.body);
-   console.log("data:",data);
    // FIXME ESto deberia regresar un objeto de tipo user idealmente o un objeto con un formato definido para respuestas
    res.send( Object.assign(data, req.body) ); // FIXME en lugar de usar assign puede hacer spread { ...data, ...req.body }
  }
 
 
- async addRoutine(req, res, next) {
+ async addCalendary(req, res, next) {
    const { idUser } = req.params;
-   const { idRoutine} = req.body;
+   const { idCalendary} = req.body;
    try {
-    const data = await User.addRoutine(idUser, idRoutine);
+    const data = await User.addCalendary(idUser, idCalendary);
     res.status(201).send(data);
     } catch (err) {
     next(err);
     }
    //res.send("jjojoj");
  }
+
+ async removeCalendary(req, res, next){
+  const { idUser } = req.params;
+  const { idCalendary } = req.body;
+  let deleted;
+  try {
+    deleted = await User.removeCalendary(idUser, idCalendary);
+  } catch (error) {
+    next(error);
+  }
+
+  if (deleted) {
+    res.status(200); // OK
+  } else {
+    res.status(404); // Not Found
+  }
+
+  res.send();
+}
+
+
+async getProgress(req, res, next) {
+  const { idUser } = req.params;
+   const data = await User.getProgress(idUser);
+   console.log("ctl-get", data);
+   if (data.length === 0) {
+     res.status(204);
+   }
+   res.send(data);
+  //res.send("jjojoj");
+}
+
+async addProgress(req, res, next) {
+  const { idUser } = req.params;
+  const { weight } = req.body;
+  const { height } = req.body;
+
+  try {
+   const data = await User.addProgress(idUser, weight, height);
+   res.status(201).send(data);
+   } catch (err) {
+   next(err);
+   }
+}
+/*
+ async replaceCalendary(req, res, next) {
+   const { idUser } = req.params;
+   const { idCalendaryOld} = req.body;
+   const { idCalendaryNew} = req.body;
+   console.log(idCalendaryNew,idCalendaryOld);
+   try {
+    const data = await User.replaceCalendary(idUser, idCalendaryNew, idCalendaryOld);
+    res.status(201).send(data);
+    } catch (err) {
+    next(err);
+    }
+   //res.send("jjojoj");
+ }
+*/
 
 
 

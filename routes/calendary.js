@@ -42,5 +42,7 @@ router.delete('/:idCalendary', (req,res,next) => {
 });
 },calendaryCtrl.delete);
 
+router.post('/:idCalendary/routines', calendaryCtrl.addRoutine);
+router.delete('/:idCalendary/routines', calendaryCtrl.removeRoutine);
 
 module.exports = router;
