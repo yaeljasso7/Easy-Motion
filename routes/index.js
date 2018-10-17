@@ -9,7 +9,7 @@ const exercisesRouter = require('./exercises');
 const bodyPartsRouter = require('./bodyParts');
 const trainingTypesRouter = require('./trainingTypes');
 const routinesRouter = require('./routines');
-const userRoutineRouter = require('./userRoutine');
+
 /*
 const bodyParser = require('body-parser'); //req.body
 //body-parser
@@ -28,6 +28,6 @@ router.use('/exercises', exercisesRouter);
 router.use('/bodyParts', bodyPartsRouter);
 router.use('/trainingTypes', trainingTypesRouter);
 router.use('/routines', routinesRouter);
-router.use('/userRoutine', userRoutineRouter);
+
 
 module.exports = router;
