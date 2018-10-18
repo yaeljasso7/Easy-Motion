@@ -86,7 +86,7 @@ class CalendarCtrl{
      next(e);
    }
    // FIXME ESto deberia regresar un objeto de tipo user idealmente o un objeto con un formato definido para respuestas
-   res.send( Object.assign(data, req.body) ); // FIXME en lugar de usar assign puede hacer spread { ...data, ...req.body }
+   res.send({...data, ...req.body});
  }
 
  async addRoutine(req, res, next) {
