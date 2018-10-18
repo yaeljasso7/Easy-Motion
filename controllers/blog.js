@@ -87,9 +87,9 @@ class BlogCtrl{
      next(e);
    }
    // FIXME ESto deberia regresar un objeto de tipo user idealmente o un objeto con un formato definido para respuestas
-   res.send( {...data, ...req.body} ); 
+   res.send( {...data, ...req.body} );
 
-
+ }
 
 }
 module.exports = new BlogCtrl();

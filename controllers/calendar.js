@@ -1,10 +1,11 @@
-const { Calendar } = require('../models');
+const { Calendar, ResponseMaker } = require('../models');
 
 // FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+// FIXME Todos los metodos asincronos a base de datos deberian manejar
+// los errores a traves de un try-catch
 
-class CalendarCtrl{
-  constructor(){
+class CalendarCtrl {
+  constructor() {
     this.getAll = this.getAll.bind(this);
     this.get = this.get.bind(this);
     this.create = this.create.bind(this);
@@ -12,113 +13,113 @@ class CalendarCtrl{
     this.update = this.update.bind(this);
     this.addRoutine = this.addRoutine.bind(this);
     this.removeRoutine = this.removeRoutine.bind(this);
+    this.type = 'calendar';
   }
 
-   async getAll(req, res){
+  async getAll(req, res, next) {
+    const page = req.query.page ? parseInt(req.query.page, 10) : 0;
+    try {
+      const data = await Calendar.getCalendars(page);
 
-     let data = await Calendar.getCalendars();
-
-     // FIXME El objeto tiene formato de paginado, pero no es real
-     const json = {
-       data: data,
-       total_count: data.length,
-       per_page: data.length,
-       page: 0,
-     };
-
-     if (data.length === 0) {
-       res.status(204);
-     }
-
-     res.send(json);
-  }
-
-  async get(req, res){
-      let data = await Calendar.getCalendar(req.params.idCalendar);
-      console.log("ctl-get", data);
       if (data.length === 0) {
         res.status(204);
+        return res.send(ResponseMaker.noContent(this.type));
       }
-
-      res.send(data);
+      return res.send(ResponseMaker.paginated(page, this.type, data));
+    } catch (err) {
+      return next(err);
+    }
   }
 
-  async create(req, res, next){
+  async get(req, res, next) {
+    const id = req.params.idCalendar;
     try {
-      let data = await Calendar.createCalendar(req.body); //req.body {}
-      console.log("ctrl-create",data);
-      res.status(201).send(data);
+      const data = await Calendar.getCalendar(id);
+      if (data.length === 0) {
+        res.status(404);
+        return res.send(ResponseMaker.notFound(this.type, { id }));
+      }
+      return res.send(ResponseMaker.ok('Found', this.type, data));
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  async create(req, res, next) {
+    try {
+      const data = await Calendar.createCalendar(req.body); // req.body {}
+      res.status(201).send(ResponseMaker.created(this.type, data));
     } catch (e) {
-      res.status (409).send("Insert error: " + e.duplicated.message);
+      res.status(409).send(`Insert error: ${e.duplicated.message}`);
       next(e);
     }
   }
 
-  async delete(req, res, next){
-    const deleted = await Calendar.deleteCalendar(req.params.idCalendar);
+  async delete(req, res, next) {
+    const id = req.params.idCalendar;
+    try {
+      const deleted = await Calendar.deleteCalendar(id);
 
       if (deleted) {
-        res.status(200); // OK
-      } else {
-        res.status(404); // Not Found
+        return res.status(200)
+          .send(ResponseMaker.ok('Deleted', this.type, { id }));
       }
-
-      res.send();
+      return res.status(404)
+        .send(ResponseMaker.notFound());
+    } catch (err) {
+      return next(err);
+    }
   }
 
   async update(req, res, next) {
+    const id = req.params.idCalendar;
+    try {
+      const data = await Calendar.getCalendar(id);
 
-   const data = await Calendar.getCalendar(req.params.idCalendar);
+      if (data.length === 0) {
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
+      }
 
-   if (data.length === 0) {
-     res.status(404).send(data); // Not Found
-   }
-
-   try{
-     const updated = await data.updateCalendar(req.body);
-     if (updated) {
-       res.status(200); // OK
-     } else {
-       res.status(409); // Conflict
-     }
-   }catch(e){
-     res.status(409);
-     next(e);
-   }
-   // FIXME ESto deberia regresar un objeto de tipo user idealmente o un objeto con un formato definido para respuestas
-   res.send({...data, ...req.body});
- }
-
- async addRoutine(req, res, next) {
-   const { idCalendar } = req.params;
-   const { idRoutine, day } = req.body;
-   try {
-    const data = await Calendar.addRoutine(idCalendar, idRoutine, day);
-    res.status(201).send(data);
-    } catch (err) {
-    next(err);
+      const updated = await data.updateCalendar(req.body);
+      if (updated) {
+        return res.status(200)
+          .send(ResponseMaker.ok('Updated', this.type, { ...data, ...req.body }));
+      }
+      return res.status(409)
+        .send(ResponseMaker.confict(this.type, req.body));
+    } catch (e) {
+      return next(e);
     }
- }
-
- async removeRoutine(req, res, next){
-  const { idCalendar } = req.params;
-  const { idRoutine, day } = req.body;
-  let deleted;
-  try {
-    deleted = await Calendar.removeRoutine(idCalendar, idRoutine, day);
-  } catch (error) {
-    next(error);
   }
 
-  if (deleted) {
-    res.status(200); // OK
-  } else {
-    res.status(404); // Not Found
+  async addRoutine(req, res, next) {
+    const { idCalendar } = req.params;
+    const { idRoutine, day } = req.body;
+    try {
+      const data = await Calendar.addRoutine(idCalendar, idRoutine, day);
+      return res.status(201)
+        .send(ResponseMaker.created(this.type, data));
+    } catch (err) {
+      return next(err);
+    }
   }
 
-  res.send();
-}
-
-
+  async removeRoutine(req, res, next) {
+    const { idCalendar } = req.params;
+    const { idRoutine, day } = req.body;
+    let deleted;
+    try {
+      deleted = await Calendar.removeRoutine(idCalendar, idRoutine, day);
+      if (deleted) {
+        return res.status(200)
+          .send(ResponseMaker.ok('Deleted', this.type, { idCalendar }));
+      }
+      return res.status(404)
+        .send(ResponseMaker.notFound());
+    } catch (error) {
+      return next(error);
+    }
+  }
 }
 module.exports = new CalendarCtrl();

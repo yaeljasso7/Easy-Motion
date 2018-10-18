@@ -2,42 +2,53 @@ const db = require('../db');
 const Routine = require('./routine');
 
 // FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+// FIXME Todos los metodos asincronos a base de datos deberian manejar
+// los errores a traves de un try-catch
 
-class Calendar{
-  constructor({id, name,})
-  {
-    this.id=  id;
+class Calendar {
+  constructor({ id, name }) {
+    this.id = id;
     this.name = name;
   }
 
-  save(){
+  save() {
     db.new(this);
   }
 
-   static async getCalendars(){
-     const data = await db.getAll('calendar');
-     const response = [];
-     data.forEach((row) => {
-       response.push(new Calendar(row));
-     });
-     return response;
-   }
-
-   static async getCalendar(idCalendar) {
-    const data = await db.get('calendar', idCalendar);
-    if (data.length !== 0) {
-      const calendar = new Calendar(data[0]); //Row > Objeto Calendar
-      calendar.routinesPerDay = await Calendar.getRoutines(calendar.id);
-      return calendar;
+  static async getCalendars(page = 0) {
+    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
+    const response = [];
+    try {
+      const data = await db.select('calendar', { isDeleted: false }, [page * pageSize, pageSize]);
+      data.forEach((row) => {
+        response.push(new Calendar(row));
+      });
+    } catch (err) {
+      throw err;
     }
-    return data;
+    return response;
+  }
+
+  static async getCalendar(id) {
+    let data;
+    try {
+      data = await db.select('calendar', { id, isDeleted: false }, [1]);
+      console.log(data);
+      if (data.length !== 0) {
+        const calendar = new Calendar(data[0]);
+        calendar.routinesPerDay = await Calendar.getRoutines(calendar.id);
+        return calendar;
+      }
+    } catch (err) {
+      throw err;
+    }
+    return data.length !== 0 ? new Calendar(data[0]) : [];
   }
 
   static async getRoutines(idCalendar) {
-    const data = await db.select('calendarDayRoutine', { idCalendar }); //Rows con id idUser idCalendar
+    const data = await db.select('calendarDayRoutine', { idCalendar, isDeleted: false }); // Rows con id idUser idCalendar
     const response = [];
-    //buscar las rutinas asociadas al usuario en la tabla rutinas
+    // buscar las rutinas asociadas al usuario en la tabla rutinas
     const myPromises = data.map(async (row) => {
       const routine = await Routine.get(row.idRoutine, true);
       if (!response[row.day]) {
@@ -49,20 +60,7 @@ class Calendar{
     return response;
   }
 
-  static async deleteCalendar(idCalendar) {
-    let deletedRows;
-    try {
-      const results = await db.delete('calendar', idCalendar);
-      deletedRows = results.affectedRows;
-    } catch (e) {
-      throw e;
-    }
-
-    return deletedRows > 0;
-  }
-
   static async createCalendar({ name }) {
-
     let response;
     try {
       response = await db.insert('calendar', { name });
@@ -76,6 +74,18 @@ class Calendar{
     return [];
   }
 
+  static async deleteCalendar(id) {
+    let deletedRows;
+    try {
+      const results = await db.advUpdate('calendar', { isDeleted: true }, { id, isDeleted: false });
+      deletedRows = results.affectedRows;
+    } catch (e) {
+      throw e;
+    }
+
+    return deletedRows > 0;
+  }
+
   async updateCalendar(keyVals) {
     let updatedRows;
     try {
@@ -87,7 +97,7 @@ class Calendar{
     return updatedRows > 0;
   }
 
-  static async addRoutine(idCalendar, idRoutine , day) {
+  static async addRoutine(idCalendar, idRoutine, day) {
     let response;
     try {
       response = await db.insert('calendarDayRoutine', { idCalendar, idRoutine, day });
@@ -95,25 +105,26 @@ class Calendar{
       throw err;
     }
 
-    const id = response.insertId;
     if (response.affectedRows > 0) {
-      return { idCalendar, idRoutine , day };
+      return { idCalendar, idRoutine, day };
     }
-   return [];
+    return [];
   }
 
   static async removeRoutine(idCalendar, idRoutine, day) {
     let response;
     try {
-      response = await db.adv_delete('calendarDayRoutine', { idCalendar, idRoutine, day });
+      response = await db.advUpdate('calendarDayRoutine', { isDeleted: true }, {
+        idCalendar,
+        idRoutine,
+        day,
+        isDeleted: false,
+      });
     } catch (err) {
       throw err;
     }
 
     return response.affectedRows > 0;
   }
-
-
 }
-
 module.exports = Calendar;
