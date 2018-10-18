@@ -31,5 +31,9 @@ class Auth {
   static login(req, res, next) {}
   static logout(req, res, next) {}
 }
+// userCtrl = register > inserta un user en la db , lo recupera y crea un token con el idUser+fechaactual
+// userCtrl = login > busca si existe el usuario con la contraseña > busca en tokens si ese usuario tiene
+//            una secion activa > si no > crea el token con el idUser+fechaactual y lo regreas idUser+token, lo copias
+// middleware auth = saber si el token si existe el token > si esta activo
 
 module.exports = Auth;
