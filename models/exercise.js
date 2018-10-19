@@ -1,7 +1,6 @@
 const db = require('../db');
 
 // FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
 
 class Exercise {
   constructor({
@@ -15,27 +14,46 @@ class Exercise {
     this.bodyPart = bodyPart;
   }
 
-  static async getAll(deleted_items = false) {
-    const cond = {};
-    if (!deleted_items) {
-       cond.isDeleted = false;
-    }
-    const data = await db.select('v_exercises', cond);
+  static async getAll(page = 0, deletedItems = false) {
+    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
-    data.forEach((row) => {
-      response.push(new Exercise(row));
-    });
+    const cond = {};
+    if (!deletedItems) {
+      cond.isDeleted = false;
+    }
+    try {
+      const data = await db.select({
+        from: 'v_exercises',
+        where: cond,
+        limit: [page * pageSize, pageSize],
+      });
+      data.forEach((row) => {
+        response.push(new Exercise(row));
+      });
+    } catch (err) {
+      throw err;
+    }
     return response;
   }
 
-  static async get(id, deleted_items = false) {
+  static async get(id, deletedItems = false) {
+    let data;
     const cond = { id };
-    if (!deleted_items) {
+    if (!deletedItems) {
       cond.isDeleted = false;
     }
-    const data = await db.select('v_exercises', cond);
-    // FIXME En lugar de regresar el objeto de DB para vacio, debes construir tu propio objeto en el manejador de la base de datos
-    return data.length !== 0 ? new Exercise(data[0]) : data;
+    try {
+      data = await db.select({
+        from: 'v_exercises',
+        where: cond,
+        limit: 1,
+      });
+    } catch (err) {
+      throw err;
+    }
+    // FIXME En lugar de regresar el objeto de DB para vacio,
+    // debes construir tu propio objeto en el manejador de la base de datos
+    return data.length !== 0 ? new Exercise(data[0]) : [];
   }
 
   static async create({
@@ -43,8 +61,11 @@ class Exercise {
   }) {
     let response;
     try {
-      response = await db.insert('exercises', {
-        name, difficulty, description, trainingType, bodyPart,
+      response = await db.insert({
+        into: 'exercises',
+        resource: {
+          name, difficulty, description, trainingType, bodyPart,
+        },
       });
     } catch (err) {
       throw err;
@@ -59,23 +80,41 @@ class Exercise {
     return [];
   }
 
- async update(fields) {
-    let res;
+  async update(keyVals) {
+    let updatedRows;
     try {
-      res = await db.update('exercises', fields, this.id);
+      const results = await db.advUpdate({
+        table: 'exercises',
+        assign: keyVals,
+        where: {
+          id: this.id,
+        },
+        limit: 1,
+      });
+      updatedRows = results.affectedRows;
     } catch (err) {
       throw err;
     }
-    return res.affectedRows > 0;
+    return updatedRows > 0;
   }
 
-  static async delete(id) {
+  async delete() {
     let deletedRows;
     try {
-      const results = await db.adv_update('exercises', { isDeleted: true }, { id, isDeleted: false });
+      const results = await db.advUpdate({
+        table: 'exercises',
+        assign: {
+          isDeleted: true,
+        },
+        where: {
+          id: this.id,
+          isDeleted: false,
+        },
+        limit: 1,
+      });
       deletedRows = results.affectedRows;
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      throw err;
     }
     return deletedRows > 0;
   }

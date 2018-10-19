@@ -1,7 +1,8 @@
 const db = require('../db');
 
 // FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+// FIXME Todos los metodos asincronos a base de datos
+// deberian manejar los errores a traves de un try-catch
 
 class TrainingType {
   constructor({ id, name, description }) {
@@ -10,24 +11,53 @@ class TrainingType {
     this.description = description;
   }
 
-  static async getAll() {
-    const data = await db.select('training_types', { isDeleted: false });
+  static async getAll(page = 0) {
+    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
-    data.forEach((row) => {
-      response.push(new TrainingType(row));
-    });
+    try {
+      const data = await db.select({
+        from: 'training_types',
+        where: { isDeleted: false },
+        limit: [page * pageSize, pageSize],
+      });
+      data.forEach((row) => {
+        response.push(new TrainingType(row));
+      });
+    } catch (err) {
+      throw err;
+    }
     return response;
   }
 
   static async get(id) {
-    const data = await db.select('training_types', { id, isDeleted: false });
+    let data;
+    try {
+      data = await db.select({
+        from: 'training_types',
+        where: {
+          id,
+          isDeleted: false,
+        },
+        limit: 1,
+      });
+    } catch (err) {
+      throw err;
+    }
+    // FIXME En lugar de regresar el objeto de DB para vacio, debes construir
+    // tu propio objeto en el manejador de la base de datos
     return data.length !== 0 ? new TrainingType(data[0]) : [];
   }
 
   static async create({ name, description }) {
     let response;
     try {
-      response = await db.insert('training_types', { name, description });
+      response = await db.insert({
+        into: 'training_types',
+        resource: {
+          name,
+          description,
+        },
+      });
     } catch (err) {
       throw err;
     }
@@ -41,21 +71,38 @@ class TrainingType {
   async update(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('training_types', keyVals, this.id);
+      const results = await db.advUpdate({
+        table: 'training_types',
+        assign: keyVals,
+        where: {
+          id: this.id,
+        },
+        limit: 1,
+      });
       updatedRows = results.affectedRows;
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      throw err;
     }
     return updatedRows > 0;
   }
 
-  static async delete(id) {
+  async delete() {
     let deletedRows;
     try {
-      const results = await db.adv_update('training_types', { isDeleted: true }, { id, isDeleted: false });
+      const results = await db.advUpdate({
+        table: 'training_types',
+        assign: {
+          isDeleted: true,
+        },
+        where: {
+          id: this.id,
+          isDeleted: false,
+        },
+        limit: 1,
+      });
       deletedRows = results.affectedRows;
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      throw err;
     }
     return deletedRows > 0;
   }

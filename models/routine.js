@@ -2,46 +2,72 @@ const db = require('../db');
 const Exercise = require('./exercise');
 
 // FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
 
 class Routine {
-  constructor({ id, name, description, executionTime })
-  {
+  constructor({
+    id, name, description, executionTime,
+  }) {
     this.id = id;
     this.name = name;
     this.description = description;
     this.executionTime = executionTime;
   }
 
-  static async getAll(deleted_items = false) {
-    const cond = {};
-    if (!deleted_items) cond.isDeleted = false;
-    const data = await db.select('routines', cond);
+  static async getAll(page = 0, deletedItems = false) {
+    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
-    data.forEach((row) => {
-      response.push(new Routine(row));
-    });
+    const cond = {};
+    if (!deletedItems) {
+      cond.isDeleted = false;
+    }
+    try {
+      const data = await db.select({
+        from: 'routines',
+        where: cond,
+        limit: [page * pageSize, pageSize],
+      });
+      data.forEach((row) => {
+        response.push(new Routine(row));
+      });
+    } catch (err) {
+      throw err;
+    }
     return response;
   }
 
-  static async get(id, deleted_items = false) {
+  static async get(id, deletedItems = false) {
     // si rutina tiene referenciado un ejercicio eliminado, aún se muestra
     // en la rutina, a menos que se elimine de esta.
     const cond = { id };
-    if (!deleted_items) cond.isDeleted = false;
-    const data = await db.select('routines', cond);
-    if (data.length !== 0) {
-      const routine = new Routine(data[0]);
-      routine.exercises = await Routine.getExercises(routine.id);
-      return routine;
+    if (!deletedItems) {
+      cond.isDeleted = false;
     }
-    return data;
+    try {
+      const data = await db.select({
+        from: 'routines',
+        where: cond,
+        limit: 1,
+      });
+      if (data.length !== 0) {
+        const routine = new Routine(data[0]);
+        routine.exercises = await routine.getExercises();
+        return routine;
+      }
+    } catch (err) {
+      throw err;
+    }
+    return [];
   }
 
   static async create({ name, description, executionTime }) {
     let response;
     try {
-      response = await db.insert('routines', { name, description, executionTime });
+      response = await db.insert({
+        into: 'routines',
+        resource: {
+          name, description, executionTime,
+        },
+      });
     } catch (err) {
       throw err;
     }
@@ -55,10 +81,17 @@ class Routine {
     return [];
   }
 
-  async update(fields) {
+  async update(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('routines', fields, this.id);
+      const results = await db.advUpdate({
+        table: 'routines',
+        assign: keyVals,
+        where: {
+          id: this.id,
+        },
+        limit: 1,
+      });
       updatedRows = results.affectedRows;
     } catch (error) {
       throw error;
@@ -66,10 +99,20 @@ class Routine {
     return updatedRows > 0;
   }
 
-  static async delete(id) {
+  async delete() {
     let deletedRows;
     try {
-      const results = await db.adv_update('routines', { isDeleted: true }, { id, isDeleted: false });
+      const results = await db.advUpdate({
+        table: 'routines',
+        assign: {
+          isDeleted: true,
+        },
+        where: {
+          id: this.id,
+          isDeleted: false,
+        },
+        limit: 1,
+      });
       deletedRows = results.affectedRows;
     } catch (e) {
       throw e;
@@ -77,57 +120,81 @@ class Routine {
     return deletedRows > 0;
   }
 
-  static async addExercise(routineId, { exerciseId, repetitions }) {
+  async addExercise({ exerciseId, repetitions }) {
     let response;
     try {
-      response = await db.insert('exercises_routines', { routineId, exerciseId, repetitions });
+      response = await db.insert({
+        into: 'exercises_routines',
+        resource: {
+          routineId: this.id,
+          exerciseId,
+          repetitions,
+        },
+      });
+    } catch (err) {
+      throw err;
+    }
+    return response.insertId > 0;
+  }
+
+  async getExercises() {
+    const response = [];
+    try {
+      const data = await db.select({
+        from: 'exercises_routines',
+        where: {
+          routineId: this.id,
+        },
+      });
+      const myPromises = data.map(async (row) => {
+        const exercise = await Exercise.get(row.exerciseId, true);
+        exercise.repetitions = row.repetitions;
+        response.push(exercise);
+      });
+      await Promise.all(myPromises);
+    } catch (err) {
+      throw err;
+    }
+    return response;
+  }
+
+  async removeExercise({ exerciseId }) {
+    let deletedRows;
+    try {
+      const results = await db.advDelete({
+        from: 'exercises_routines',
+        where: {
+          routineId: this.id,
+          exerciseId,
+        },
+        limit: 1,
+      });
+      deletedRows = results.affectedRows;
     } catch (err) {
       throw err;
     }
 
-    const id = response.insertId;
-    if (response.affectedRows > 0) {
-      return { routineId, exerciseId };
-    }
-    return [];
-  }
-
-  static async getExercises(routineId) {
-    const data = await db.select('exercises_routines', { routineId });
-    const response = [];
-    const myPromises = data.map(async (row) => {
-      const exercise = await Exercise.get(row.exerciseId, true);
-      exercise.repetitions = row.repetitions;
-      response.push(exercise);
-    });
-    await Promise.all(myPromises);
-    return response;
-  }
-
-  static async removeExercise(routineId, { exerciseId }) {
-    let deletedRows;
-    try {
-      const results = await db.adv_delete('exercises_routines', { routineId, exerciseId });
-      deletedRows = results.affectedRows;
-    } catch (e) {
-      throw e;
-    }
-
     return deletedRows > 0;
   }
 
-  static async updateExerciseReps(routineId, { exerciseId, repetitions }) {
+  async updateExerciseReps({ exerciseId, repetitions }) {
     let updatedRows;
     try {
-      const results = await db.adv_update('exercises_routines', { repetitions }, { routineId, exerciseId });
+      const results = await db.advUpdate({
+        table: 'exercises_routines',
+        assign: { repetitions },
+        where: {
+          routineId: this.id,
+          exerciseId,
+        },
+        limit: 1,
+      });
       updatedRows = results.affectedRows;
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      throw err;
     }
-
     return updatedRows > 0;
   }
-
 }
 
 module.exports = Routine;
