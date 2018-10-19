@@ -13,27 +13,64 @@ class Token {
     this.active = active;
   }
 
+  async deactive() {
+    this.active = false;
+    try {
+      const res = await db.advUpdate({
+        table: 'tokens',
+        assign: {
+          active: this.active
+        },
+        where: {
+          id: this.id,
+        },
+      });
+    } catch (err) {
+      throw err;
+    }
+  }
+
   static async create({
     token, userId, type, createdAt, expires, active,
   }) {
     let res;
     try {
-      res = await db.insert('tokens', {
-        token, userId, type, createdAt, expires, active,
+      res = await db.insert({
+        into: 'tokens',
+        resource: {
+          token, userId, type, createdAt, expires, active,
+        }
       });
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      throw err;
     }
 
     const id = res.insertId;
     if (id > 0) {
-      console.log('insert:', id);
       return new Token({
         id, token, userId, type, createdAt, expires, active,
       });
     }
     return [];
   }
+
+  static async get(token) {
+    try {
+      const data = await db.select({
+        from: 'tokens',
+        where: {
+          token: token,
+        }
+      });
+      if (data.length !== 0) {
+        return new Token(data[0]);
+      }
+      return [];
+    } catch (err) {
+      throw err;
+    }
+  }
+
 }
 
 module.exports = Token;
