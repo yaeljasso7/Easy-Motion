@@ -40,6 +40,25 @@ class User {
     }
     return data;
   }
+
+  static async getUser( mail, password ) {
+    let data;
+     try {
+       data = await db.select({
+         from: 'body_parts',
+         where: {
+           id,
+           isDeleted: false,
+         },
+         limit: 1,
+       });
+     } catch (err) {
+       throw err;
+     }
+     // FIXME En lugar de regresar el objeto de DB para vacio, debes construir
+     // tu propio objeto en el manejador de la base de datos
+     return data.length !== 0 ? new BodyPart(data[0]) : [];
+  }
   //Busca en la db userCalendar donde este el usuario
   static async getCalendars(idUser) {
     const data = await db.select('userCalendar', { idUser }); //Rows con id idUser idCalendar

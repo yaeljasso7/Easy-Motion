@@ -1,15 +1,16 @@
 const router = require('express').Router();
-const middlewares = require('../middlewares');
+const { authCtrl } = require('../controllers');
+const { auth } = require('../middlewares');
 
-router.post('/register', [middlewares.auth.register], (req, res) => {
+router.post('/register', auth.noSession , (req, res) => {
   res.send('register');
 });
 
-router.post('/login', [middlewares.auth.login], (req, res) => {
+router.post('/login', auth.noSession , (req, res) => {
 
 });
 
-router.get('/logout', [middlewares.auth.logout], (req, res) => {
+router.get('/logout', auth.haveSession , (req, res) => {
 
 });
 
