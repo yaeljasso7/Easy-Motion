@@ -1,18 +1,22 @@
 const db = require('../db');
+const categoryBlog = require('./categoryBlog');
 
-class Blog{
+// FIXME Falta documentacion en todos los metodos
+// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+
+class Blog {
   constructor({id, date, autor, data, categoryBlog})
   {
-    this.idBlog =  id;
-    this.dateBlog = date;
-    this.autorBlog = autor;
-    this.dataBlog = data;
+    this.id =  id;
+    this.date = date;
+    this.autor = autor;
+    this.data = data;
     this.categoryBlog = categoryBlog;
 
   }
 
   save(){
-    db.new(this);//table,this
+    db.new(this);
   }
 
    static async getBlogs(){
@@ -21,25 +25,35 @@ class Blog{
      data.forEach((row) => {
        response.push(new Blog(row));
      });
-     console.log(response);
      return response;
    }
 
    static async getBlog(idBlog) {
     const data = await db.get('blog', idBlog);
-    return data.length !== 0 ? new Blog(data[0]) : data; //elemento 0 de rowDataPackege
+
+    // FIXME En lugar de regresar el objeto de DB para vacio, debes construir tu propio objeto en el manejador de la base de datos
+    //return data.length !== 0 ? new Blog(data[0]) : data; //elemento 0 de rowDataPackege
+    if (data.length !== 0) {
+      const blog = new Blog(data[0]); //Row > Objeto User
+      blog.categorys = await Blog.getCategory(blog.categoryBlog);
+      return blog;
+    }
+  }
+
+  static async getCategory(idCategory) {
+    const response = [];
+    const category = await categoryBlog.getcategoryBlog(idCategory);
+    response.push(category);
+    return response;
   }
 
   static async createBlog({ date, autor, data, categoryBlog}) {
     let response;
     try {
       response = await db.insert('blog', { date, autor, data, categoryBlog });
-    //  console.log("soy response:", response);
     } catch (e) {
-      //error de la db
       throw e;
     }
-    //si no hay error
     const id = response.insertId;
     if (id > 0) {
       return new Blog({ id, date, autor, data, categoryBlog });
@@ -50,7 +64,7 @@ class Blog{
   async updateBlog(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('blog', keyVals, this.idBlog);
+      const results = await db.update('blog', keyVals, this.id);
       updatedRows = results.affectedRows;
     } catch (error) {
       throw error;

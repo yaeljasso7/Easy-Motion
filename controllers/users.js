@@ -1,6 +1,9 @@
 //controladores users
 const { User } = require('../models');
 
+// FIXME Falta documentacion en todos los metodos
+// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+
 class UserCtrl{
   constructor(){
     this.getAll = this.getAll.bind(this);
@@ -14,6 +17,7 @@ class UserCtrl{
 
      let data = await User.getUsers();
 
+     // FIXME Este paginado no esta correcto
      const json = {
        data: data,
        total_count: data.length,
@@ -31,7 +35,6 @@ class UserCtrl{
 
   async get(req, res){
       let data = await User.getUser(req.params.idUser);
-      console.log("ctl-get", data);
       if (data.length === 0) {
         res.status(204);
       }
@@ -40,10 +43,10 @@ class UserCtrl{
   }
 
   async create(req, res, next){
-    console.log("si se actualizo :D");
     try {
       const data = await User.createUser(req.body);
       res.status(201).send(data);
+      const data2 = await User.addProgress(data.id, data.weight, data.height); //insertar primer progreso
     } catch (err) {
       next(err);
     }
@@ -85,9 +88,65 @@ class UserCtrl{
      res.status(409);
      next(e);
    }
-
-   res.send(data);
+   // FIXME ESto deberia regresar un objeto de tipo user idealmente o un objeto con un formato definido para respuestas
+   res.send( {...data, ...req.body} ); 
  }
+
+
+ async addCalendar(req, res, next) {
+   const { idUser } = req.params;
+   const { idCalendar} = req.body;
+   try {
+    const data = await User.addCalendar(idUser, idCalendar);
+    res.status(201).send(data);
+    } catch (err) {
+    next(err);
+    }
+   //res.send("jjojoj");
+ }
+
+ async removeCalendar(req, res, next){
+  const { idUser } = req.params;
+  const { idCalendar } = req.body;
+  let deleted;
+  try {
+    deleted = await User.removeCalendar(idUser, idCalendar);
+  } catch (error) {
+    next(error);
+  }
+
+  if (deleted) {
+    res.status(200); // OK
+  } else {
+    res.status(404); // Not Found
+  }
+
+  res.send();
+}
+
+
+async getProgress(req, res, next) {
+  const { idUser } = req.params;
+   const data = await User.getProgress(idUser);
+   if (data.length === 0) {
+     res.status(204);
+   }
+   res.send(data);
+  //res.send("jjojoj");
+}
+
+async addProgress(req, res, next) {
+  const { idUser } = req.params;
+  const { weight } = req.body;
+  const { height } = req.body;
+
+  try {
+   const data = await User.addProgress(idUser, weight, height);
+   res.status(201).send(data);
+   } catch (err) {
+   next(err);
+   }
+}
 
 
 

@@ -1,10 +1,10 @@
-//controladores categoryBlog
-const { categoryBlog } = require('../models');
+//controladores calendarDayExercise
+const { calendarDayExercise } = require('../models');
 
 // FIXME Falta documentacion en todos los metodos
 // FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
 
-class categoryBlogCtrl{
+class calendarDayExerciseCtrl{
   constructor(){
     this.getAll = this.getAll.bind(this);
     this.get = this.get.bind(this);
@@ -15,9 +15,9 @@ class categoryBlogCtrl{
 
    async getAll(req, res){
 
-     let data = await categoryBlog.getcategoryBlogs();
+     let data = await calendarDayExercise.getcalendarDayExercises();
 
-     // FIXME El objeto tiene formato de paginado, pero no es real
+      // FIXME El objeto tiene formato de paginado, pero no es real
      const json = {
        data: data,
        total_count: data.length,
@@ -25,7 +25,7 @@ class categoryBlogCtrl{
        page: 0,
      };
 
-     // In case categoryBlog was not found
+     // In case calendarDayExercise was not found
      if (data.length === 0) {
        res.status(204);
      }
@@ -34,7 +34,7 @@ class categoryBlogCtrl{
   }
 
   async get(req, res){
-      let data = await categoryBlog.getcategoryBlog(req.params.idcategoryBlog);
+      let data = await calendarDayExercise.getcalendarDayExercise(req.params.idcalendarDayExercise);
       if (data.length === 0) {
         res.status(204);
       }
@@ -44,7 +44,7 @@ class categoryBlogCtrl{
 
   async create(req, res, next){
     try {
-      let data = await categoryBlog.createcategoryBlog(req.body); //req.body {}
+      let data = await calendarDayExercise.createcalendarDayExercise(req.body); //req.body {}
       res.status(201).send(data);
     } catch (e) {
       res.status (409).send("Insert error: " + e.duplicated.message);
@@ -53,7 +53,7 @@ class categoryBlogCtrl{
   }
 
   async delete(req, res, next){
-    const deleted = await categoryBlog.deletecategoryBlog(req.params.idcategoryBlog);
+    const deleted = await calendarDayExercise.deletecalendarDayExercise(req.params.idcalendarDayExercise);
 
       if (deleted) {
         res.status(200); // OK
@@ -66,29 +66,26 @@ class categoryBlogCtrl{
 
   async update(req, res, next) {
 
-   const data = await categoryBlog.getcategoryBlog(req.params.idcategoryBlog);
-
+   const data = await calendarDayExercise.getcalendarDayExercise(req.params.idcalendarDayExercise);
    if (data.length === 0) {
-     res.status(404).send(data); // Not Found
+     res.status(404); // Not Found
    }
 
    try{
-     const updated = await data.updatecategoryBlog(req.body);
+     const updated = await data.updatecalendarDayExercise(req.body);
      if (updated) {
-       res.status(200); // OK
+       res.status(200);// OK
      } else {
        res.status(409); // Conflict
      }
    }catch(e){
-     res.status(409);
      next(e);
    }
-
-  // FIXME ESto deberia regresar un objeto de tipo del recurso idealmente o un objeto con un formato definido para respuestas
-   res.send({...data, ...req.body}); 
+   // FIXME ESto deberia regresar un objeto de tipo user idealmente o un objeto con un formato definido para respuestas
+   res.send( {...data, ...req.body} ); 
  }
 
 
 
 }
-module.exports = new categoryBlogCtrl();
+module.exports = new calendarDayExerciseCtrl();

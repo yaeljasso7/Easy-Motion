@@ -1,6 +1,10 @@
 //controladores blog
 const { Blog } = require('../models');
 
+// FIXME Falta documentacion en todos los metodos
+// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+
+
 class BlogCtrl{
   constructor(){
     this.getAll = this.getAll.bind(this);
@@ -14,6 +18,7 @@ class BlogCtrl{
 
      let data = await Blog.getBlogs();
 
+     // FIXME El objeto tiene formato de paginado, pero no es real
      const json = {
        data: data,
        total_count: data.length,
@@ -21,7 +26,6 @@ class BlogCtrl{
        page: 0,
      };
 
-     // In case Blog was not found
      if (data.length === 0) {
        res.status(204);
      }
@@ -31,7 +35,6 @@ class BlogCtrl{
 
   async get(req, res){
       let data = await Blog.getBlog(req.params.idBlog);
-      console.log("ctl-get", data);
       if (data.length === 0) {
         res.status(204);
       }
@@ -45,9 +48,9 @@ class BlogCtrl{
       console.log("ctrl-create",data);
       res.status(201).send(data);
     } catch (e) {
-      //db error
       console.log("eee:" ,e);
-      res.status (409).send("Error al insertar: " + e.duplicated.message);
+
+      res.status (409).send("Insert error: " + e.duplicated.message);
       next(e);
     }
   }
@@ -83,11 +86,10 @@ class BlogCtrl{
      res.status(409);
      next(e);
    }
+   // FIXME ESto deberia regresar un objeto de tipo user idealmente o un objeto con un formato definido para respuestas
+   res.send( {...data, ...req.body} );
 
-   res.send(data);
  }
-
-
 
 }
 module.exports = new BlogCtrl();

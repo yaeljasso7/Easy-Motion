@@ -1,40 +1,90 @@
 const mysql = require('mysql');
-//const User = require('../models/user');
+const Qry = require('./query');
 
-class DB{
+// FIXME Falta documentacion en todos los metodos
 
-  constructor(){
-    this.con = mysql.createConnection({
-      host: "db4free.net", //testing db con heroku
-      user: "ichris96",
-      password: "12345678",
-      database: "easymotionsql"
+class DB {
+  constructor() {
+    this.conn = mysql.createConnection({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      database: process.env.DB_NAME,
     });
 
-//    this.con.connect();
-    this.con.connect((err) => {
-      if(err){
+    this.conn.connect((err) => {
+      if (err) {
         console.log(err);
-      }else{
+      } else {
         console.log('Db Conect!');
       }
     });
   }
 
-  getAll(table){
+  select({
+    cols, from, where, sorter, desc, limit,
+  }) {
     return new Promise((resolve, reject) => {
-      this.con.query('SELECT * FROM ??', [table], (error, results) => {
-        if (error) return reject(this.processError(error));
+      this.conn.query(Qry.select({
+        cols, from, where, sorter, desc, limit,
+      }), (error, results) => {
+        if (error) {
+          return reject(this.processError(error));
+        }
         return resolve(results);
+      });
     });
-   });
+  }
+
+  // advanced delete
+  advDelete({
+    from, where, sorter, desc, limit,
+  }) {
+    return new Promise((resolve, reject) => {
+      this.conn.query(Qry.delete({
+        from, where, sorter, desc, limit,
+      }), (error, results) => {
+        if (error) {
+          return reject(this.processError(error));
+        }
+        return resolve(results);
+      });
+    });
+  }
+
+  // advanced update
+  advUpdate({
+    table, assign, where, sorter, desc, limit,
+  }) {
+    return new Promise((resolve, reject) => {
+      this.conn.query(Qry.update({
+        table, assign, where, sorter, desc, limit,
+      }), (error, results) => {
+        if (error) {
+          return reject(this.processError(error));
+        }
+        return resolve(results);
+      });
+    });
+  }
+
+  getAll(table) {
+    return new Promise((resolve, reject) => {
+      this.conn.query(Qry.select({ from: table }), (error, results) => {
+        if (error) {
+          return reject(this.processError(error));
+        }
+        return resolve(results);
+      });
+    });
   }
 
   get(table, id) {
     return new Promise((resolve, reject) => {
-      this.con.query('SELECT * FROM ?? WHERE id = ?', [table, id], (error, results) => {
-        if (error) return reject(this.processError(error));
-        console.log("db-get",results);
+      this.conn.query(Qry.select({ from: table, id }), (error, results) => {
+        if (error) {
+          return reject(this.processError(error));
+        }
         return resolve(results);
       });
     });
@@ -42,14 +92,13 @@ class DB{
 
   delete(table, id) {
     return new Promise((resolve, reject) => {
-      this.con.query('DELETE FROM ?? WHERE id = ?', [table, id], (error, results) => {
+      this.conn.query(Qry.delete({
+        from: table,
+        where: { id },
+      }), (error, results) => {
         if (error) {
-            //error de la base de datos como mail repetido...
-          let err = this.processError(error);
-          return reject(err);
+          return reject(this.processError(error));
         }
-
-        //console.log("db-delete",results);
         return resolve(results);
       });
     });
@@ -57,27 +106,24 @@ class DB{
 
   update(table, obj, id) {
     return new Promise((resolve, reject) => {
-      this.con.query('UPDATE ?? SET ? WHERE id = ?', [table, obj, id], (error, results) => {
+      this.conn.query(Qry.update({
+        table,
+        assign: obj,
+        where: { id },
+      }), (error, results) => {
         if (error) {
-          let err = this.processError(error);
-          return reject(err);
+          return reject(this.processError(error));
         }
-        //console.log("rows--update", results);
-        resolve(results);
-      //  console.log(results);
+        return resolve(results);
       });
     });
   }
 
-  insert(table, resource) {
-    //console.log("Resourse Db Insert: ",resource); //{ name: juan, mobile: 21421, }
+  insert({ into, resource }) {
     return new Promise((resolve, reject) => {
-      this.con.query('INSERT INTO ?? SET ?', [table, resource], (error, results) => {
+      this.conn.query(Qry.insert({ into, resource }), (error, results) => {
         if (error) {
-            //error de la base de datos como mail repetido...
-          //console.log("Insert DB Error: ", error);
-          let err = this.processError(error);
-          return reject(err);
+          return reject(this.processError(error));
         }
         return resolve(results);
       });
@@ -85,43 +131,36 @@ class DB{
   }
 
   processError(err) {
-    //console.log("soy error");
     const error = {};
-
+    let data;
     switch (err.code) {
       case 'ER_DUP_ENTRY':
-        let data = this.getDataFromErrorMsg(err.sqlMessage);
-        error['duplicated'] = {
-          message: `The ${data.field} ${data.data} already exists on the system`,
+        data = this.getDataFromErrorMsg(err.sqlMessage);
+        error.duplicated = {
+          message: `El ${data.field} ${data.data} ya existe en el sistema`,
           field: data.field,
           sql: err.sql,
         };
         break;
-        case 'ER_NO_REFERENCED_ROW_2':
-          let dataa = this.getDataFromErrorMsg(err.sqlMessage);
-          error['duplicated'] = {
-            message: `The ${dataa.field} ${dataa.data} already exists on the system`,
-            field: dataa.field,
-            sql: err.sql,
-          };
+      case 'ER_NO_REFERENCED_ROW_2':
+        error['La llave no existe'] = {
+          message: `The ${err.sqlMessage} Existeee`,
+          sql: err.sql,
+        };
         break;
       default:
-
     }
-
     return error;
   }
 
   getDataFromErrorMsg(message) {
-    let data = unescape(message).match(/'([^']+)'/g);
+    this.void();
+    const data = unescape(message).match(/'([^']+)'/g);
     return {
-      field: data[1].slice(1,-1),
-      data: data[0].slice(1,-1),
-    }
+      field: data[1].slice(1, -1),
+      data: data[0].slice(1, -1),
+    };
   }
-
-
-
 }
 
-module.exports = new DB(); //singleton
+module.exports = new DB();

@@ -1,10 +1,13 @@
 const db = require('../db');
 
+// FIXME Falta documentacion en todos los metodos
+// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+
 class categoryBlog{
   constructor({id, name})
   {
-    this.idcategoryBlog =  id;
-    this.namecategoryBlog = name;
+    this.id =  id;
+    this.name= name;
   }
 
   save(){
@@ -23,6 +26,7 @@ class categoryBlog{
 
    static async getcategoryBlog(idcategoryBlog) {
     const data = await db.get('categoryBlog', idcategoryBlog);
+    // FIXME En lugar de regresar el objeto de DB para vacio, debes construir tu propio objeto en el manejador de la base de datos
     return data.length !== 0 ? new categoryBlog(data[0]) : data; //elemento 0 de rowDataPackege
   }
 
@@ -59,7 +63,7 @@ class categoryBlog{
   async updatecategoryBlog(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('categoryBlog', keyVals, this.idcategoryBlog);
+      const results = await db.update('categoryBlog', keyVals, this.id);
       updatedRows = results.affectedRows;
     } catch (error) {
       throw error;

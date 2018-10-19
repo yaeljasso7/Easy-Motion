@@ -1,13 +1,12 @@
 exports.User = require('./user');
 exports.Blog = require('./blog');
 exports.categoryBlog = require('./categoryBlog');
-exports.diaCalendario = require('./diaCalendario');
-exports.Calendary = require('./calendary');
-exports.calendaryDayExercise = require('./calendaryDayExercise');
+exports.Calendar = require('./calendar');
+exports.calendarDayExercise = require('./calendarDayExercise');
 exports.Exercise = require('./exercise');
 exports.BodyPart = require('./bodyPart');
 exports.TrainingType = require('./trainingType');
 exports.Routine = require('./routine');
-exports.userRoutine = require('./userRoutine');
-exports.exerciseOnRoutine = require('./exerciseOnRoutine');
 exports.Token = require('./token');
+exports.progressUser = require('./progressUser');
+exports.ResponseMaker = require('./responseMaker');
