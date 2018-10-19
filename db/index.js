@@ -137,18 +137,23 @@ class DB {
       case 'ER_DUP_ENTRY':
         data = this.getDataFromErrorMsg(err.sqlMessage);
         error.duplicated = {
-          message: `El ${data.field} ${data.data} ya existe en el sistema`,
+          message: `${data.field} with value ${data.data} already exists!`,
           field: data.field,
           sql: err.sql,
         };
         break;
       case 'ER_NO_REFERENCED_ROW_2':
-        error['La llave no existe'] = {
-          message: `The ${err.sqlMessage} Existeee`,
+        data = this.getDataFromErrorMsg(err.sqlMessage);
+        error.noReference = {
+          message: `${data.field} with value ${data.data} doesn't exist!`,
           sql: err.sql,
         };
         break;
       default:
+        error[err.code] = {
+          message: err.sqlMessage,
+          sql: err.sql,
+        };
     }
     return error;
   }

@@ -85,7 +85,7 @@ class BodyPart {
     return updatedRows > 0;
   }
 
-  static async delete(id) {
+  async delete() {
     let deletedRows;
     try {
       const results = await db.advUpdate({
@@ -94,7 +94,7 @@ class BodyPart {
           isDeleted: true,
         },
         where: {
-          id,
+          id: this.id,
           isDeleted: false,
         },
         limit: 1,

@@ -19,10 +19,11 @@ class BodyPartsCtrl {
 
       // FIXME El objeto tiene formato de paginado, pero no es real
       if (data.length === 0) {
-        res.status(204);
-        return res.send(ResponseMaker.noContent(this.type));
+        return res.status(204)
+          .send(ResponseMaker.noContent(this.type));
       }
-      return res.send(ResponseMaker.paginated(page, this.type, data));
+      return res.status(200)
+        .send(ResponseMaker.paginated(page, this.type, data));
     } catch (err) {
       return next(err);
     }
@@ -33,8 +34,8 @@ class BodyPartsCtrl {
     try {
       const data = await BodyPart.get(id);
       if (data.length === 0) {
-        res.status(404);
-        return res.send(ResponseMaker.notFound(this.type, { id }));
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
       }
       return res.send(ResponseMaker.ok('Found', this.type, data));
     } catch (err) {
@@ -45,8 +46,12 @@ class BodyPartsCtrl {
   async create(req, res, next) {
     try {
       const data = await BodyPart.create(req.body);
-      return res.status(201)
-        .send(ResponseMaker.created(this.type, data));
+      if (data.length !== 0) {
+        return res.status(201)
+          .send(ResponseMaker.created(this.type, data));
+      }
+      return res.status(409)
+        .send(ResponseMaker.conflict(this.type, data));
     } catch (err) {
       return next(err);
     }
@@ -55,14 +60,21 @@ class BodyPartsCtrl {
   async delete(req, res, next) {
     const id = req.params.bodyPartId;
     try {
-      const deleted = await BodyPart.delete(req.params.bodyPartId);
+      const data = await BodyPart.get(id);
+
+      if (data.length === 0) {
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
+      }
+
+      const deleted = await data.delete();
 
       if (deleted) {
         return res.status(200)
           .send(ResponseMaker.ok('Deleted', this.type, { id }));
       }
-      return res.status(404)
-        .send(ResponseMaker.notFound());
+      return res.status(409)
+        .send(ResponseMaker.conflict(this.type, req.body));
     } catch (err) {
       return next(err);
     }
@@ -86,7 +98,7 @@ class BodyPartsCtrl {
           .send(ResponseMaker.ok('Updated', this.type, { ...data, ...req.body }));
       }
       return res.status(409)
-        .send(ResponseMaker.confict(this.type, req.body));
+        .send(ResponseMaker.conflict(this.type, req.body));
     } catch (err) {
       return next(err);
     }

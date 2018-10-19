@@ -1,7 +1,8 @@
-const { Exercise } = require('../models');
+const { Exercise, ResponseMaker } = require('../models');
 
 // FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+// FIXME Todos los metodos asincronos a base de datos
+// deberian manejar los errores a traves de un try-catch
 
 class ExercisesCtrl {
   constructor() {
@@ -10,73 +11,96 @@ class ExercisesCtrl {
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
+    this.type = 'exercise';
   }
 
-  async getAll(req, res) {
-    const data = await Exercise.getAll();
-
-    // FIXME El objeto tiene formato de paginado, pero no es real
-    const json = {
-      data,
-      total_count: data.length,
-      per_page: data.length,
-      page: 0,
-    };
-    if (data.length === 0) {
-      res.status(204);
+  async getAll(req, res, next) {
+    const page = req.query.page ? parseInt(req.query.page, 10) : 0;
+    try {
+      const data = await Exercise.getAll(page);
+      if (data.length === 0) {
+        return res.status(204)
+          .send(ResponseMaker.noContent(this.type));
+      }
+      return res.status(200)
+        .send(ResponseMaker.paginated(page, this.type, data));
+    } catch (err) {
+      return next(err);
     }
-    res.send(json);
   }
 
-  async get(req, res) {
-    let data = await Exercise.get(req.params.exerciseId);
-    if (data.length === 0) {
-      res.status(404);
+  async get(req, res, next) {
+    const id = req.params.exerciseId;
+    try {
+      const data = await Exercise.get(id);
+      if (data.length === 0) {
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
+      }
+      return res.send(ResponseMaker.ok('Found', this.type, data));
+    } catch (err) {
+      return next(err);
     }
-    res.send(data);
   }
 
   async create(req, res, next) {
     try {
       const data = await Exercise.create(req.body);
-      res.status(201).send(data);
+      if (data.length !== 0) {
+        return res.status(201)
+          .send(ResponseMaker.created(this.type, data));
+      }
+      return res.status(409)
+        .send(ResponseMaker.conflict(this.type, data));
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
   async update(req, res, next) {
     const id = req.params.exerciseId;
-    const data = await Exercise.get(id);
-    if (data.length === 0) {
-      res.status(404).send(data);
-    }
+    try {
+      const data = await Exercise.get(id);
 
-    try{
-      const updated = await data.update(req.body);
-      if (updated) {
-        res.status(200); // OK
-      } else {
-        res.status(409); // Conflict
+      if (data.length === 0) {
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
       }
-    }catch(e){
-      res.status(409);
-      next(e);
-    }
 
-    res.send({ ...data, ...req.body });
+      const updated = await data.update(req.body);
+
+      if (updated) {
+        return res.status(200)
+          .send(ResponseMaker.ok('Updated', this.type, { ...data, ...req.body }));
+      }
+      return res.status(409)
+        .send(ResponseMaker.conflict(this.type, req.body));
+    } catch (err) {
+      return next(err);
+    }
   }
 
-  async delete(req, res, next){
-    const deleted = await Exercise.delete(req.params.exerciseId);
+  async delete(req, res, next) {
+    const id = await req.params.exerciseId;
+    try {
+      const data = await Exercise.get(id);
 
-      if (deleted) {
-        res.status(200); // OK
-      } else {
-        res.status(404); // Not Found
+      if (data.length === 0) {
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
       }
 
-      res.send();
+      const deleted = await data.delete();
+
+      if (deleted) {
+        return res.status(200)
+          .send(ResponseMaker.ok('Deleted', this.type, { id }));
+      }
+      return res.status(409)
+        .send(ResponseMaker.conflict(this.type, req.body));
+    } catch (err) {
+      return next(err);
+    }
   }
 }
 

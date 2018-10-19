@@ -1,7 +1,6 @@
-const { TrainingType } = require('../models');
+const { TrainingType, ResponseMaker } = require('../models');
 
 // FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
 
 class TrainingTypesCtrl {
   constructor() {
@@ -10,79 +9,97 @@ class TrainingTypesCtrl {
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
+    this.type = 'trainingType';
   }
 
-  async getAll(req, res) {
-    const data = await TrainingType.getAll();
+  async getAll(req, res, next) {
+    const page = req.query.page ? parseInt(req.query.page, 10) : 0;
+    try {
+      const data = await TrainingType.getAll(page);
 
-    // FIXME El objeto tiene formato de paginado, pero no es real
-    const json = {
-      data,
-      total_count: data.length,
-      per_page: data.length,
-      page: 0,
-    };
-    if (data.length === 0) {
-      res.status(204);
+      if (data.length === 0) {
+        return res.status(204)
+          .send(ResponseMaker.noContent(this.type));
+      }
+      return res.send(ResponseMaker.paginated(page, this.type, data));
+    } catch (err) {
+      return next(err);
     }
-    res.send(json);
   }
 
-  async get(req, res) {
-    const data = await TrainingType.get(req.params.trainingTypeId);
-    const json = {
-      data,
-    };
-    if (data.length === 0) {
-      res.status(404);
+  async get(req, res, next) {
+    const id = req.params.trainingTypeId;
+    try {
+      const data = await TrainingType.get(id);
+      if (data.length === 0) {
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
+      }
+      return res.send(ResponseMaker.ok('Found', this.type, data));
+    } catch (err) {
+      return next(err);
     }
-    res.send(json);
   }
 
   async create(req, res, next) {
     try {
       const data = await TrainingType.create(req.body);
-      res.status(201).send(data);
+      if (data.length !== 0) {
+        return res.status(201)
+          .send(ResponseMaker.created(this.type, data));
+      }
+      return res.status(409)
+        .send(ResponseMaker.conflict(this.type, data));
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
   async update(req, res, next) {
+    const id = req.params.trainingTypeId;
+    try {
+      const data = await TrainingType.get(id);
 
-   const data = await TrainingType.get(req.params.trainingTypeId);
+      if (data.length === 0) {
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
+      }
 
-   if (data.length === 0) {
-     res.status(404).send(data); // Not Found
-   }
+      const updated = await data.update(req.body);
 
-   try{
-     const updated = await data.update(req.body);
-     if (updated) {
-       res.status(200); // OK
-     } else {
-       res.status(409); // Conflict
-     }
-   }catch(e){
-     res.status(409);
-     next(e);
-   }
-   // FIXME ESto deberia regresar un objeto de tipo del recurso idealmente o un objeto con un formato definido para respuestas
-   res.send({ ...data, ...req.body });
- }
+      if (updated) {
+        return res.status(200)
+          .send(ResponseMaker.ok('Updated', this.type, { ...data, ...req.body }));
+      }
+      return res.status(409)
+        .send(ResponseMaker.conflict(this.type, req.body));
+    } catch (err) {
+      return next(err);
+    }
+  }
 
- async delete(req, res, next){
-   const deleted = await TrainingType.delete(req.params.trainingTypeId);
+  async delete(req, res, next) {
+    const id = req.params.trainingTypeId;
+    try {
+      const data = await TrainingType.get(id);
 
-     if (deleted) {
-       res.status(200); // OK
-     } else {
-       res.status(404); // Not Found
-     }
+      if (data.length === 0) {
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
+      }
 
-     res.send();
- }
+      const deleted = await data.delete();
 
+      if (deleted) {
+        return res.status(200)
+          .send(ResponseMaker.ok('Deleted', this.type, { id }));
+      }
+      return res.status(409)
+        .send(ResponseMaker.conflict(this.type, req.body));
+    } catch (err) {
+      return next(err);
+    }
+  }
 }
 
 module.exports = new TrainingTypesCtrl();
