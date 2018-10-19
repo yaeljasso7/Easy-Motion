@@ -5,15 +5,16 @@ const progressUser = require('./progressUser');
 // FIXME Falta documentacion en todos los metodos
 // FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
 
-class User{
-  constructor({id, name, mobile, weight, height, password, mail})
-  {
-    this.id =  id;
-    this.name= name;
-    this.mobile= mobile;
+class User {
+  constructor({
+    id, name, mobile, weight, height, password, mail,
+  }) {
+    this.id = id;
+    this.name = name;
+    this.mobile = mobile;
     this.weight = weight;
     this.height = height;
-    this.password= password;
+    this.password = password;
     this.mail = mail;
   }
 
