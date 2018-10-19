@@ -1,45 +1,39 @@
-const bcrypt = require('bcryptjs');
-const { User, Token, ResponseMaker } = require('../models');
+const bcrypt = require('bcrypt');
+const { User, Token } = require('../models');
 
 class Auth {
   constructor() {
-    this.salt = parseInt(process.env.SALT, 10);
     this.register = this.register.bind(this);
   }
 
-  async register(req, res, next) {
+  static async register(req, res, next) {
     try {
-      const hashedPassword = bcrypt.hashSync(req.body.password, this.salt);
-      const user = await User.createUser({ ...req.body, password: hashedPassword });
+      const user = await User.createUser(req.body);
+      // const user = { id: 5, name: 'user5' };
       const createdAt = new Date();
-      const expires = parseInt(process.env.SESSION_LIVES, 10);
-      this.token = bcrypt.hashSync(`${user.id}${createdAt}`, this.salt);
+      const expires = createdAt + parseInt(process.env.SESSION_LIVES);
+      const saltRounds = parseInt(process.env.SECRET);
+      const token = await bcrypt.hash( `${user.name}${createdAt}`, saltRounds);
       const data = await Token.create({
-        token: this.token,
+        token,
         type: 1,
         userId: user.id,
         createdAt,
         expires,
-        active: 1,
+        active: 1
       });
-      return res.status(201)
-        .send(ResponseMaker.created('token', data));
+      res.status(201).send({ data: token });
     } catch (err) {
       return next(err);
     }
   }
 
-  login(req, res, next) {
-
-  }
-
-  logout(req, res, next) {
-
-  }
+  static login(req, res, next) {}
+  static logout(req, res, next) {}
 }
 // userCtrl = register > inserta un user en la db , lo recupera y crea un token con el idUser+fechaactual
 // userCtrl = login > busca si existe el usuario con la contraseña > busca en tokens si ese usuario tiene
 //            una secion activa > si no > crea el token con el idUser+fechaactual y lo regreas idUser+token, lo copias
 // middleware auth = saber si el token si existe el token > si esta activo
 
-module.exports = new Auth();
+module.exports = Auth;
