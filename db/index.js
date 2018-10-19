@@ -1,13 +1,10 @@
 const mysql = require('mysql');
+const Qry = require('./query');
 
-const First = 0;
-const Zero = 0;
-const One = 1;
 // FIXME Falta documentacion en todos los metodos
 
 class DB {
   constructor() {
-    this.keywords = ['and', 'or'];
     this.conn = mysql.createConnection({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
@@ -24,52 +21,13 @@ class DB {
     });
   }
 
-  where(qryCond) {
-    const Default = '1';
-    let sqry;
-    const keys = Object.keys(qryCond);
-    if (keys.length === Zero) {
-      return Default;
-    }
-    if (keys.length > One) {
-      const tmpQry = {};
-      tmpQry[this.keywords[First]] = qryCond;
-      return this.where(tmpQry);
-    }
-    const key = keys[First];
-    const conds = [];
-    if (this.keywords.includes(key.toLowerCase())) {
-      Object.keys(qryCond[key]).forEach((cond) => {
-        const tmpQry = {};
-        tmpQry[cond] = qryCond[key][cond];
-        conds.push(this.where(tmpQry));
-      });
-      sqry = conds.length > Zero ? conds.join(` ${key.toUpperCase()} `) : Default;
-    } else {
-      sqry = `${this.conn.escapeId(key)} = ${this.conn.escape(qryCond[key])}`;
-    }
-    return sqry;
-  }
-
-  limit(qryLimit) {
-    if (qryLimit.length === 0) {
-      return '';
-    }
-    return `LIMIT ${this.conn.escape(qryLimit)}`;
-  }
-
-  orderBy(qryOrder) {
-    if (qryOrder.length === 0) {
-      return '';
-    }
-    return `ORDER BY ${this.conn.escapeId(qryOrder)}`;
-  }
-
-  select(table, qryCond = {}, qryLimit = []) {
+  select({
+    cols, from, where, sorter, desc, limit,
+  }) {
     return new Promise((resolve, reject) => {
-      this.conn.query(`SELECT * FROM ??
-        WHERE ${this.where(qryCond)} ${this.limit(qryLimit)}`,
-      [table], (error, results) => {
+      this.conn.query(Qry.select({
+        cols, from, where, sorter, desc, limit,
+      }), (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -79,9 +37,13 @@ class DB {
   }
 
   // advanced delete
-  advDelete(table, qryCond = {}) {
+  advDelete({
+    from, where, sorter, desc, limit,
+  }) {
     return new Promise((resolve, reject) => {
-      this.conn.query(`DELETE FROM ?? WHERE ${this.where(qryCond)}`, [table], (error, results) => {
+      this.conn.query(Qry.delete({
+        from, where, sorter, desc, limit,
+      }), (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -91,9 +53,13 @@ class DB {
   }
 
   // advanced update
-  advUpdate(table, obj, qryCond = {}) {
+  advUpdate({
+    table, assign, where, sorter, desc, limit,
+  }) {
     return new Promise((resolve, reject) => {
-      this.conn.query(`UPDATE ?? SET ? WHERE ${this.where(qryCond)}`, [table, obj], (error, results) => {
+      this.conn.query(Qry.update({
+        table, assign, where, sorter, desc, limit,
+      }), (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -104,7 +70,7 @@ class DB {
 
   getAll(table) {
     return new Promise((resolve, reject) => {
-      this.conn.query('SELECT * FROM ??', [table], (error, results) => {
+      this.conn.query(Qry.select({ from: table }), (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -115,7 +81,7 @@ class DB {
 
   get(table, id) {
     return new Promise((resolve, reject) => {
-      this.conn.query('SELECT * FROM ?? WHERE id = ?', [table, id], (error, results) => {
+      this.conn.query(Qry.select({ from: table, id }), (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -126,7 +92,10 @@ class DB {
 
   delete(table, id) {
     return new Promise((resolve, reject) => {
-      this.conn.query('DELETE FROM ?? WHERE id = ?', [table, id], (error, results) => {
+      this.conn.query(Qry.delete({
+        from: table,
+        where: { id },
+      }), (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -137,7 +106,11 @@ class DB {
 
   update(table, obj, id) {
     return new Promise((resolve, reject) => {
-      this.conn.query('UPDATE ?? SET ? WHERE id = ?', [table, obj, id], (error, results) => {
+      this.conn.query(Qry.update({
+        table,
+        assign: obj,
+        where: { id },
+      }), (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -146,9 +119,9 @@ class DB {
     });
   }
 
-  insert(table, resource) {
+  insert({ into, resource }) {
     return new Promise((resolve, reject) => {
-      this.conn.query('INSERT INTO ?? SET ?', [table, resource], (error, results) => {
+      this.conn.query(Qry.insert({ into, resource }), (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -175,10 +148,8 @@ class DB {
           sql: err.sql,
         };
         break;
-
       default:
     }
-
     return error;
   }
 
@@ -187,7 +158,7 @@ class DB {
     const data = unescape(message).match(/'([^']+)'/g);
     return {
       field: data[1].slice(1, -1),
-      data: data[First].slice(1, -1),
+      data: data[0].slice(1, -1),
     };
   }
 }
