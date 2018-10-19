@@ -14,6 +14,7 @@ class RoutinesCtrl {
     this.addExercise = this.addExercise.bind(this);
     this.removeExercise = this.removeExercise.bind(this);
     this.updateExerciseReps = this.updateExerciseReps.bind(this);
+    this.type = 'routine';
   }
 
   async getAll(req, res, next) {
@@ -133,8 +134,8 @@ class RoutinesCtrl {
         return res.status(404)
           .send(ResponseMaker.notFound(this.type, { id: routineId }));
       }
-      const added = await routine.removeExercise(req.body);
-      if (added) {
+      const deleted = await routine.removeExercise(req.body);
+      if (deleted) {
         return res.status(200)
           .send(ResponseMaker.ok('Deleted', 'exercises_routines', req.body));
       }

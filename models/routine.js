@@ -114,8 +114,8 @@ class Routine {
         limit: 1,
       });
       deletedRows = results.affectedRows;
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      throw err;
     }
     return deletedRows > 0;
   }
@@ -134,7 +134,7 @@ class Routine {
     } catch (err) {
       throw err;
     }
-    return response.insertId > 0;
+    return response.affectedRows > 0;
   }
 
   async getExercises() {

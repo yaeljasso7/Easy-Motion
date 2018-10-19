@@ -15,11 +15,19 @@ class Calendar {
     db.new(this);
   }
 
-  static async getCalendars(page = 0) {
+  static async getAll(page = 0, deletedItems = false) {
     const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
+    const cond = {};
+    if (!deletedItems) {
+      cond.isDeleted = false;
+    }
     try {
-      const data = await db.select('calendar', { isDeleted: false }, [page * pageSize, pageSize]);
+      const data = await db.select({
+        from: 'calendars',
+        where: cond,
+        limit: [page * pageSize, pageSize],
+      });
       data.forEach((row) => {
         response.push(new Calendar(row));
       });
@@ -29,43 +37,60 @@ class Calendar {
     return response;
   }
 
-  static async getCalendar(id) {
-    let data;
+  static async get(id, deletedItems = false) {
+    const cond = { id };
+    if (!deletedItems) {
+      cond.isDeleted = false;
+    }
     try {
-      data = await db.select('calendar', { id, isDeleted: false }, [1]);
-      console.log(data);
+      const data = await db.select({
+        from: 'calendars',
+        where: cond,
+        limit: 1,
+      });
       if (data.length !== 0) {
         const calendar = new Calendar(data[0]);
-        calendar.routinesPerDay = await Calendar.getRoutines(calendar.id);
+        calendar.routinesPerDay = await calendar.getRoutines();
         return calendar;
       }
     } catch (err) {
       throw err;
     }
-    return data.length !== 0 ? new Calendar(data[0]) : [];
+    return [];
   }
 
-  static async getRoutines(idCalendar) {
-    const data = await db.select('calendarDayRoutine', { idCalendar, isDeleted: false }); // Rows con id idUser idCalendar
+  async getRoutines() {
     const response = [];
-    // buscar las rutinas asociadas al usuario en la tabla rutinas
-    const myPromises = data.map(async (row) => {
-      const routine = await Routine.get(row.idRoutine, true);
-      if (!response[row.day]) {
-        response[row.day] = [];
-      }
-      response[row.day].push(routine);
-    });
-    await Promise.all(myPromises);
+    try {
+      const data = await db.select({
+        from: 'routines_calendars',
+        where: {
+          calendarId: this.id,
+        },
+      });
+      const myPromises = data.map(async (row) => {
+        const routine = await Routine.get(row.routineId, true);
+        if (!response[row.day]) {
+          response[row.day] = [];
+        }
+        response[row.day].push(routine);
+      });
+      await Promise.all(myPromises);
+    } catch (err) {
+      throw err;
+    }
     return response;
   }
 
-  static async createCalendar({ name }) {
+  static async create({ name }) {
     let response;
     try {
-      response = await db.insert('calendar', { name });
-    } catch (e) {
-      throw e;
+      response = await db.insert({
+        into: 'calendars',
+        resource: { name },
+      });
+    } catch (err) {
+      throw err;
     }
     const id = response.insertId;
     if (id > 0) {
@@ -74,57 +99,81 @@ class Calendar {
     return [];
   }
 
-  static async deleteCalendar(id) {
+  async delete() {
     let deletedRows;
     try {
-      const results = await db.advUpdate('calendar', { isDeleted: true }, { id, isDeleted: false });
+      const results = await db.advUpdate({
+        table: 'calendars',
+        assign: {
+          isDeleted: true,
+        },
+        where: {
+          id: this.id,
+          isDeleted: false,
+        },
+        limit: 1,
+      });
       deletedRows = results.affectedRows;
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      throw err;
     }
-
     return deletedRows > 0;
   }
 
-  async updateCalendar(keyVals) {
+  async update(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('calendar', keyVals, this.id);
+      const results = await db.advUpdate({
+        table: 'calendars',
+        assign: keyVals,
+        where: {
+          id: this.id,
+        },
+        limit: 1,
+      });
       updatedRows = results.affectedRows;
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      throw err;
     }
     return updatedRows > 0;
   }
 
-  static async addRoutine(idCalendar, idRoutine, day) {
+  async addRoutine({ routineId, day }) {
     let response;
     try {
-      response = await db.insert('calendarDayRoutine', { idCalendar, idRoutine, day });
-    } catch (err) {
-      throw err;
-    }
-
-    if (response.affectedRows > 0) {
-      return { idCalendar, idRoutine, day };
-    }
-    return [];
-  }
-
-  static async removeRoutine(idCalendar, idRoutine, day) {
-    let response;
-    try {
-      response = await db.advUpdate('calendarDayRoutine', { isDeleted: true }, {
-        idCalendar,
-        idRoutine,
-        day,
-        isDeleted: false,
+      response = await db.insert({
+        into: 'routines_calendars',
+        resource: {
+          calendarId: this.id,
+          routineId,
+          day,
+        },
       });
     } catch (err) {
       throw err;
     }
 
     return response.affectedRows > 0;
+  }
+
+  async removeRoutine({ routineId, day }) {
+    let deletedRows;
+    try {
+      const results = await db.advDelete({
+        from: 'routines_calendars',
+        where: {
+          calendarId: this.id,
+          routineId,
+          day,
+        },
+        limit: 1,
+      });
+      deletedRows = results.affectedRows;
+    } catch (err) {
+      throw err;
+    }
+
+    return deletedRows > 0;
   }
 }
 module.exports = Calendar;

@@ -1,9 +1,8 @@
-//exports
+// exports
 exports.usersCtrl = require('./users');
 exports.blogCtrl = require('./blog');
 exports.categoryBlogCtrl = require('./categoryBlog');
 exports.calendarCtrl = require('./calendar');
-exports.calendarDayExerciseCtrl = require('./calendarDayExerciseCtrl');
 
 exports.exercisesCtrl = require('./exercises');
 exports.bodyPartsCtrl = require('./bodyParts');
