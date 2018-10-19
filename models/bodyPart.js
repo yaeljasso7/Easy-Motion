@@ -14,7 +14,11 @@ class BodyPart {
     const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
     try {
-      const data = await db.select('body_parts', { isDeleted: false }, [page * pageSize, pageSize]);
+      const data = await db.select({
+        from: 'body_parts',
+        where: { isDeleted: false },
+        limit: [page * pageSize, pageSize],
+      });
 
       data.forEach((row) => {
         response.push(new BodyPart(row));
@@ -28,17 +32,31 @@ class BodyPart {
   static async get(id) {
     let data;
     try {
-      data = await db.select('body_parts', { id, isDeleted: false }, [1]);
+      data = await db.select({
+        from: 'body_parts',
+        where: {
+          id,
+          isDeleted: false,
+        },
+        limit: 1,
+      });
     } catch (err) {
       throw err;
     }
+    // FIXME En lugar de regresar el objeto de DB para vacio, debes construir
+    // tu propio objeto en el manejador de la base de datos
     return data.length !== 0 ? new BodyPart(data[0]) : [];
   }
 
   static async create({ name }) {
     let response;
     try {
-      response = await db.insert('body_parts', { name });
+      response = await db.insert({
+        into: 'body_parts',
+        resource: {
+          name,
+        },
+      });
     } catch (err) {
       throw err;
     }
@@ -52,7 +70,14 @@ class BodyPart {
   async update(keyVals) {
     let updatedRows;
     try {
-      const results = await db.advUpdate('body_parts', keyVals, { id: this.id });
+      const results = await db.advUpdate({
+        table: 'body_parts',
+        assign: keyVals,
+        where: {
+          id: this.id,
+        },
+        limit: 1,
+      });
       updatedRows = results.affectedRows;
     } catch (err) {
       throw err;
@@ -63,7 +88,17 @@ class BodyPart {
   static async delete(id) {
     let deletedRows;
     try {
-      const results = await db.advUpdate('body_parts', { isDeleted: true }, { id, isDeleted: false });
+      const results = await db.advUpdate({
+        table: 'body_parts',
+        assign: {
+          isDeleted: true,
+        },
+        where: {
+          id,
+          isDeleted: false,
+        },
+        limit: 1,
+      });
       deletedRows = results.affectedRows;
     } catch (err) {
       throw err;
