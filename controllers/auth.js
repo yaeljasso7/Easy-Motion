@@ -1,5 +1,5 @@
 const db = require('../db');
-const { User } = require('../models');
+const { User, Token } = require('../models');
 
 class AuthCtrl {
   constructor() {
@@ -19,17 +19,22 @@ class AuthCtrl {
   }
 
   // login > busca si existe el usuario con la contraseña > busca en tokens si ese usuario tiene
+  // una secion activa > si no > crea el token con el idUser+fechaactual
+  // y lo regreas idUser+token, lo copias
   async login (req, res, next) {
     const { mail, password } = req.body;
     try {
       const data = await User.loginUser( mail, pasasword );
-
       if (data.length === 0) {
         // el user no existe o la pass es incorrecta
       }
+      // creamos el token
+      const token = await Token.create( data.id, '1' );
+      res.status(201).send(token);
     } catch (err) {
       next(err);
     }
+
 
     res.status(201).send(data);
   }

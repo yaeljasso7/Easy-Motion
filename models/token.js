@@ -1,4 +1,5 @@
 const db = require('../db');
+const bcrypt = require('bcrypt');
 
 class Token {
   constructor({
@@ -14,23 +15,31 @@ class Token {
   }
 
   static async create({
-    token, userId, type, createdAt, expires, active,
+    userId, type,
   }) {
-    let res;
+    let response;
+    let tok;
+    bcrypt.hash('chicharron', 15, (err, hash) => {
+      tok = hash;
+    });
     try {
-      res = await db.insert('tokens', {
-        token, userId, type, createdAt, expires, active,
+      response = await db.insert({
+        into: 'token',
+        resource: {
+          token: tok,
+          type,
+          created_at: new Date(),
+          duration: 12,
+          active: 1,
+          userId,
+        },
       });
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      throw err;
     }
-
-    const id = res.insertId;
+    const id = response.insertId;
     if (id > 0) {
-      console.log('insert:', id);
-      return new Token({
-        id, token, userId, type, createdAt, expires, active,
-      });
+      return tok;
     }
     return [];
   }

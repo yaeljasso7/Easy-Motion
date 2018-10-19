@@ -41,14 +41,14 @@ class User {
     return data;
   }
 
-  static async getUser( mail, password ) {
+  static async loginUser( mail, password ) {
     let data;
      try {
        data = await db.select({
-         from: 'body_parts',
+         from: 'tokens',
          where: {
-           id,
-           isDeleted: false,
+           mail,
+           password,
          },
          limit: 1,
        });
@@ -57,7 +57,7 @@ class User {
      }
      // FIXME En lugar de regresar el objeto de DB para vacio, debes construir
      // tu propio objeto en el manejador de la base de datos
-     return data.length !== 0 ? new BodyPart(data[0]) : [];
+     return data.length !== 0 ? new User(data[0]) : [];
   }
   //Busca en la db userCalendar donde este el usuario
   static async getCalendars(idUser) {
