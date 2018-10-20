@@ -1,153 +1,229 @@
 const db = require('../db');
 const Calendar = require('./calendar');
-const progressUser = require('./progressUser');
+const ProgressUser = require('./progressUser');
 
 // FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
+// FIXME Todos los metodos asincronos a base de datos
+// deberian manejar los errores a traves de un try-catch
 
-class User{
-  constructor({id, name, mobile, weight, height, password, mail})
-  {
-    this.id =  id;
-    this.name= name;
-    this.mobile= mobile;
+class User {
+  constructor({
+    id, name, mobile, weight, height, password, mail,
+  }) {
+    this.id = id;
+    this.name = name;
+    this.mobile = mobile;
     this.weight = weight;
     this.height = height;
-    this.password= password;
+    this.password = password;
     this.mail = mail;
   }
 
-  save(){
+  save() {
     db.new(this);
   }
 
-   static async getUsers(){
-     const data = await db.getAll('user');
-     const response = [];
-     data.forEach((row) => {
-       response.push(new User(row));
-     });
-     return response;
-   }
-
-   static async getUser(idUser) {
-    const data = await db.get('user', idUser); //Row del User
-    if (data.length !== 0) {
-      const user = new User(data[0]); //Row > Objeto User
-      user.calendars = await User.getCalendars(user.id);
-      return user;
-    }
-    return data;
-  }
-  //Busca en la db userCalendar donde este el usuario
-  static async getCalendars(idUser) {
-    const data = await db.select('userCalendar', { idUser }); //Rows con id idUser idCalendar
+  static async getAll(page = 0, deletedItems) {
+    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
-    //buscar las rutinas asociadas al usuario en la tabla rutinas
-    const myPromises = data.map(async (row) => {
-      const calendar = await Calendar.getCalendar(row.idCalendar, true);
-      response.push(calendar);
-    });
-    await Promise.all(myPromises); //si se cumplen todas las promesas
+    const cond = {};
+    if (!deletedItems) {
+      cond.isDeleted = false;
+    }
+    try {
+      const data = await db.select({
+        from: 'users',
+        where: cond,
+        limit: [page * pageSize, pageSize],
+      });
+      data.forEach((row) => {
+        response.push(new User({ ...row, password: undefined }));
+      });
+    } catch (err) {
+      throw err;
+    }
     return response;
   }
 
-  static async createUser({ name, mobile, weight, height, password, mail }) {
-
-    let response;
-    try {
-      response = await db.insert('user', { name, mobile, weight, height, password, mail });
-      console.log("soy response:", response);
-    } catch (e) {
-      //error de la db
-      throw e;
+  static async get(id, deletedItems = false) {
+    const cond = { id };
+    if (!deletedItems) {
+      cond.isDeleted = false;
     }
-    //si no hay error
-    const id = response.insertId;
-    if (id > 0) {
-      return new User({ id, name, mobile, weight, height, password, mail });
+    try {
+      const data = await db.select({
+        from: 'users',
+        where: cond,
+        limit: 1,
+      });
+      if (data.length !== 0) {
+        const user = new User(data[0]);
+        user.calendars = await user.getCalendars();
+        return user;
+      }
+    } catch (err) {
+      throw err;
     }
     return [];
   }
 
-  async updateUser(keyVals) {
+  // Busca en la db userCalendar donde este el usuario
+  async getCalendars(page = 0) {
+    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
+    const response = [];
+    try {
+      const data = await db.select({
+        from: 'users_calendars',
+        where: {
+          userId: this.id,
+        },
+        limit: [page * pageSize, pageSize],
+      });
+      const myPromises = data.map(async (row) => {
+        const calendar = await Calendar.get(row.calendarId, true);
+        response.push(calendar);
+      });
+      await Promise.all(myPromises); // si se cumplen todas las promesas
+    } catch (err) {
+      throw err;
+    }
+    return response;
+  }
+
+  static async create({
+    name, mobile, weight, height, password, mail,
+  }) {
+    let response;
+    try {
+      response = await db.insert({
+        into: 'users',
+        resource: {
+          name, mobile, weight, height, password, mail,
+        },
+      });
+    } catch (err) {
+      throw err;
+    }
+    const id = response.insertId;
+    if (id > 0) {
+      return new User({
+        id, name, mobile, weight, height, password, mail,
+      });
+    }
+    return [];
+  }
+
+  async update(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('user', keyVals, this.id);
+      const results = await db.advUpdate({
+        table: 'users',
+        assign: keyVals,
+        where: {
+          id: this.id,
+        },
+        limit: 1,
+      });
       updatedRows = results.affectedRows;
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      throw err;
     }
     return updatedRows > 0;
   }
 
-  static async deleteUser(idUser) {
+  async delete() {
     let deletedRows;
     try {
-      const results = await db.delete('user', idUser);
+      const results = await db.advUpdate({
+        table: 'users',
+        assign: {
+          isDeleted: true,
+        },
+        where: {
+          id: this.id,
+          isDeleted: false,
+        },
+        limit: 1,
+      });
       deletedRows = results.affectedRows;
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      throw err;
     }
-
     return deletedRows > 0;
   }
 
-  static async addCalendar(idUser, idCalendar) {
+  async addCalendar({ calendarId }) {
     let response;
     try {
-      response = await db.insert('userCalendar', { idUser, idCalendar });
-    } catch (err) {
-      throw err;
-    }
-
-    const id = response.insertId;
-    if (response.affectedRows > 0) {
-      return { idUser , idCalendar };
-    }
-   return [];
-  }
-
-  static async removeCalendar(idUser, idCalendar) {
-    let response;
-    try {
-      response = await db.adv_delete('userCalendar', { idUser, idCalendar });
-    } catch (err) {
-      throw err;
-    }
-
-    const id = response.insertId;
-    if (response.affectedRows > 0) {
-      return { idUser , idCalendar };
-    }
-    //return [];
-  }
-
-  static async getProgress(idUser) {
-      let data = await db.select('progressUser', { idUser: idUser });
-      const response = [];
-      data.forEach((row) => {
-        response.push(new progressUser(row));
+      response = await db.insert({
+        into: 'users_calendars',
+        resource: {
+          userId: this.id,
+          calendarId,
+        },
       });
-      return response;
-  }
-
-  static async addProgress(idUser, weight, height ) {
-    let response;
-    try {
-      response = await db.insert('progressUser', { idUser, weight, height });
     } catch (err) {
       throw err;
     }
 
-    const id = response.insertId;
-    if (response.affectedRows > 0) {
-      return { idUser , weight, height };
-    }
-   return [];
+    return response.affectedRows > 0;
   }
 
+  async removeCalendar({ calendarId }) {
+    let response;
+    try {
+      response = await db.advDelete({
+        from: 'users_calendars',
+        where: {
+          userId: this.id,
+          calendarId,
+        },
+        limit: 1,
+      });
+    } catch (err) {
+      throw err;
+    }
 
+    return response.affectedRows > 0;
+  }
+
+  async getProgress(page = 0) {
+    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
+    const response = [];
+    try {
+      const data = await db.select({
+        from: 'users_progress',
+        where: {
+          userId: this.id,
+        },
+        limit: [page * pageSize, pageSize],
+      });
+      data.forEach((row) => {
+        response.push(new ProgressUser(row));
+      });
+    } catch (err) {
+      throw err;
+    }
+    return response;
+  }
+
+  async addProgress({ weight, height }) {
+    let response;
+    try {
+      response = await db.insert({
+        into: 'users_progress',
+        resource: {
+          userId: this.id,
+          weight,
+          height,
+        },
+      });
+    } catch (err) {
+      throw err;
+    }
+
+    return response.affectedRows > 0;
+  }
 }
 
 module.exports = User;

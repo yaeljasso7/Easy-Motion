@@ -2,92 +2,96 @@ const router = require('express').Router();
 const { usersCtrl } = require('../controllers');
 const middlewares = require('../middlewares');
 
-/* rutas
-//request  /info relativa del cliente
-//response /enviar cliente
-//regresa usuarios todos */
 router.get('/', usersCtrl.getAll);
-router.get('/:idUser', (req, res, next) => {
-    middlewares.validator.validate(req, res, next, {
-        params: {
-            idUser: 'number',
-        },
-    });
+router.get('/:userId', (req, res, next) => {
+  middlewares.validator.validate(req, res, next, {
+    params: {
+      userId: 'number',
+    },
+  });
 }, usersCtrl.get);
 
 router.post('/', (req, res, next) => {
-    middlewares.validator.validate(req, res, next, {
-        body: {
-            name: 'word,required',
-            mail: 'email,required',
-            mobile: 'iscellphone',
-            height: 'isHeight,required',
-            weight: 'isWeight,required',
-        },
-    });
+  middlewares.validator.validate(req, res, next, {
+    body: {
+      name: 'word,required',
+      mail: 'email,required',
+      mobile: 'iscellphone',
+      height: 'isHeight,required',
+      weight: 'isWeight,required',
+    },
+  });
 }, usersCtrl.create);
 
-router.put('/:idUser', (req, res, next) => {
-    middlewares.validator.validate(req, res, next, {
-        params: {
-            idUser: 'number',
-        },
-        body: {
-            mobile: 'iscellphone',
-            height: 'isHeight',
-            weight: 'isWeight',
-        },
-    });
+router.put('/:userId', (req, res, next) => {
+  middlewares.validator.validate(req, res, next, {
+    params: {
+      userId: 'number',
+    },
+    body: {
+      mobile: 'iscellphone',
+      height: 'isHeight',
+      weight: 'isWeight',
+    },
+  });
 }, usersCtrl.update);
 
-router.delete('/:idUser', (req, res, next) => {
-    middlewares.validator.validate(req, res, next, {
-        params: {
-            idUser: 'number',
-        },
-    });
+router.delete('/:userId', (req, res, next) => {
+  middlewares.validator.validate(req, res, next, {
+    params: {
+      userId: 'number',
+    },
+  });
 }, usersCtrl.delete);
 
-router.post('/:idUser/calendars', (req, res, next) => {
-    middlewares.validator.validate(req, res, next, {
-        params: {
-            idUser: 'number',
-        },
-        body: {
-            idCalendar: 'number',
-        },
-    });
+router.post('/:userId/calendars', (req, res, next) => {
+  middlewares.validator.validate(req, res, next, {
+    params: {
+      userId: 'number',
+    },
+    body: {
+      calendarId: 'number',
+    },
+  });
 }, usersCtrl.addCalendar);
 
-router.delete('/:idUser/calendars', (req, res, next) => {
-    middlewares.validator.validate(req, res, next, {
-        params: {
-            idUser: 'number',
-        },
-        body: {
-            idCalendar: 'number',
-        },
-    });
+router.delete('/:userId/calendars', (req, res, next) => {
+  middlewares.validator.validate(req, res, next, {
+    params: {
+      userId: 'number',
+    },
+    body: {
+      calendarId: 'number',
+    },
+  });
 }, usersCtrl.removeCalendar);
 
-router.get('/:idUser/progress', (req, res, next) => {
-    middlewares.validator.validate(req, res, next, {
-        params: {
-            idUser: 'number',
-        },
-    });
+router.get('/:userId/calendars', (req, res, next) => {
+  middlewares.validator.validate(req, res, next, {
+    params: {
+      userId: 'number',
+    },
+  });
+}, usersCtrl.getCalendars);
+
+router.get('/:userId/progress', (req, res, next) => {
+  middlewares.validator.validate(req, res, next, {
+    params: {
+      userId: 'number',
+    },
+  });
 }, usersCtrl.getProgress);
 
-router.post('/:idUser/progress', (req, res, next) => {
-    middlewares.validator.validate(req, res, next, {
-        params: {
-            idUser: 'number',
-        },
-        body: {
-            weight: 'number,isWeight',
-            height: 'number,isHeight',
-        },
-    });
+router.post('/:userId/progress', (req, res, next) => {
+  middlewares.validator.validate(req, res, next, {
+    params: {
+      userId: 'number',
+    },
+    body: {
+      weight: 'number,isWeight',
+      height: 'number,isHeight',
+    },
+  });
 }, usersCtrl.addProgress);
 
 module.exports = router;
