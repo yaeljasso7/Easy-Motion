@@ -21,12 +21,85 @@ class DB {
     });
   }
 
+  /**
+   * @method select - Retrieve rows selected from one or more tables.
+   * @param  {(string|string[])} columns - The column or columns that you want
+   *         to retrieve.
+   *         ----------
+   *         Usage:
+   *           columns: [ 'col_name1', ... , 'col_nameN' ]
+   *           columns: 'col_name'
+   *
+   *         If no columns specified, all columns are retrieved.
+   *
+   * @param  {(string|string[])} from - The table or tables from which to
+   *         retrieve rows.
+   *         ----------
+   *         Usage:
+   *           from: [ 'tbl_name1', ... , 'tbl_nameN' ]
+   *           from: 'tbl_name'
+   *
+   * @param  {Object} where - The condition or conditions that rows must to
+   *         satisfy to be selected.
+   *         ----------
+   *         Usage:
+   *           where: {
+   *             <conditional>
+   *             ...
+   *             <conditional>
+   *           }
+   *
+   *           <conditional>
+   *           logic: { <- [Optional] Logic Operator
+   *             <expression>
+   *             ...
+   *             <expression>
+   *             }
+   *           }
+   *
+   *          <expression>
+   *          operator: { <- [Optional] Comparison Operator
+   *            col_name: value
+   *          }
+   *
+   *         Available logic operators
+   *           and, or
+   *         Available comparison operators
+   *           =, <>, <, <=, >, >=, like, in
+   *
+   *         If there's no logic operator specified, uses AND by default
+   *         If there's no comparison operator specified, uses = by default
+   *
+   *         If there no WHERE condition, all records are selected.
+   *
+   * @param  {(string|string[])} sorter - Sort the records in a result set.
+   *         ----------
+   *         Usage:
+   *           sorter: ['key_part1', 'key_part2']
+   *           sorter: 'key_part'
+   *
+   *         If no sorter specified, the results aren't sorted.
+   *
+   * @param  {boolean} desc - Sorts the result set in descending order.
+   *         ----------
+   *         Usage:
+   *           desc: true
+   *           desc: false  <-  Optional
+   *
+   * @param  {(number|number[])} limit - Limit the number of records returned.
+   *         ----------
+   *         Usage:
+   *           limit: [start_from, row_count]
+   *           limit: row_count
+   *
+   * @return {Promise} - Promise object represents the query results.
+   */
   select({
-    cols, from, where, sorter, desc, limit,
+    columns, from, where, sorter, desc, limit,
   }) {
     return new Promise((resolve, reject) => {
       this.conn.query(Qry.select({
-        cols, from, where, sorter, desc, limit,
+        columns, from, where, sorter, desc, limit,
       }), (error, results) => {
         if (error) {
           return reject(this.processError(error));
@@ -36,7 +109,17 @@ class DB {
     });
   }
 
-  // advanced delete
+  /**
+   * @method advDelete - Remove rows from a table
+   * @param  {(string|string[])} from - The table or tables from which to
+   *         delete rows.
+   * @param  {Object} where - Identify which rows to delete, with no WHERE,
+   *         all rows are deleted.
+   * @param  {(string|string[])} sorter - Delete rows in the specified order.
+   * @param  {boolean} desc - Delete the rows in descending order.
+   * @param  {(number|number[])} limit - Limit the number of rows deleted.
+   * @return {Promise} - Promise object represents the query results.
+   */
   advDelete({
     from, where, sorter, desc, limit,
   }) {
@@ -52,7 +135,19 @@ class DB {
     });
   }
 
-  // advanced update
+  /**
+   * @method advUpdate - Modifies rows in a table
+   * @param  {(string|string[])} table - The table or tables from which to
+   *         modify rows.
+   * @param  {Object} assign - Indicates which columns to modify and the values
+   *         they should be given.
+   * @param  {Object} where - Identify which rows to modify, with no WHERE,
+   *         all rows are modified.
+   * @param  {(string|string[])} sorter - Modify rows in the specified order.
+   * @param  {boolean} desc - Modify rows in descending order.
+   * @param  {(number|number[])} limit - Limit the number of rows modified.
+   * @return {Promise} - Promise object represents the query results.
+   */
   advUpdate({
     table, assign, where, sorter, desc, limit,
   }) {
@@ -68,6 +163,11 @@ class DB {
     });
   }
 
+  /**
+   * @param getAll - Retrieve all elements from a table.
+   * @param  {string} table The table from which to retrieve the records.
+   * @return {Promise} - Promise object represents the query results.
+   */
   getAll(table) {
     return new Promise((resolve, reject) => {
       this.conn.query(Qry.select({ from: table }), (error, results) => {
@@ -79,6 +179,12 @@ class DB {
     });
   }
 
+  /**
+   * @param get - Retrieve elements from a table, based on their id.
+   * @param  {string} table The table from which to retrieve records.
+   * @param  {number} id - Object id to select.
+   * @return {Promise} - Promise object represents the query results.
+   */
   get(table, id) {
     return new Promise((resolve, reject) => {
       this.conn.query(Qry.select({ from: table, id }), (error, results) => {
@@ -90,6 +196,12 @@ class DB {
     });
   }
 
+  /**
+   * @method delete - Delete elements from a table, based on their id.
+   * @param  {string} table The table from which to delete rows.
+   * @param  {number} id - Object id to delete.
+   * @return {Promise} - Promise object represents the query results.
+   */
   delete(table, id) {
     return new Promise((resolve, reject) => {
       this.conn.query(Qry.delete({
@@ -104,6 +216,14 @@ class DB {
     });
   }
 
+  /**
+   * @method update - Modifies elements in a table, based on their id
+   * @param  {string} table The table from which to modify rows.
+   * @param  {Object} obj - Indicates which columns to modify and the values
+   *         they should be given.
+   * @param  {number} id - Object id to modify.
+   * @return {Promise} - Promise object represents the query results.
+   */
   update(table, obj, id) {
     return new Promise((resolve, reject) => {
       this.conn.query(Qry.update({
@@ -119,6 +239,12 @@ class DB {
     });
   }
 
+  /**
+   * @method insert - Inserts new rows into an existing table.
+   * @param  {string} into - Table to which insert the Object.
+   * @param  {Object} resource - The object to insert into the table.
+   * @return {Promise} - Promise object represents the query results.
+   */
   insert({ into, resource }) {
     return new Promise((resolve, reject) => {
       this.conn.query(Qry.insert({ into, resource }), (error, results) => {
