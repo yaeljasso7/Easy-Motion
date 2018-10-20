@@ -13,21 +13,21 @@ class Query {
     this.allColumns = '*';
   }
 
-  columns(cols) {
+  formatColumns(cols) {
     if (!cols || !cols.length) {
       return this.allColumns;
     }
     return mysql.format('??', [cols]);
   }
 
-  from(tables) {
+  formatTables(tables) {
     if (!tables || !tables.length) {
       return this.empty;
     }
     return mysql.format('??', [tables]);
   }
 
-  where(qryCond = {}, op = this.oprel[First]) {
+  formatCondition(qryCond = {}, op = this.oprel[First]) {
     const keys = Object.keys(qryCond);
     if (keys.length === Zero) {
       return this.defaultCondition;
@@ -36,7 +36,7 @@ class Query {
     if (keys.length > One) {
       const tmpQry = {};
       tmpQry[this.oplog[First]] = qryCond;
-      return this.where(tmpQry, op);
+      return this.formatCondition(tmpQry, op);
     }
     const key = keys[First];
     const conds = [];
@@ -44,26 +44,26 @@ class Query {
       Object.keys(qryCond[key]).forEach((cond) => {
         const tmpQry = {};
         tmpQry[cond] = qryCond[key][cond];
-        conds.push(this.where(tmpQry, op));
+        conds.push(this.formatCondition(tmpQry, op));
       });
       return conds.length > Zero
         ? conds.join(` ${key.toUpperCase()} `)
         : this.defaultCondition;
     }
     if (this.oprel.includes(key.toLowerCase())) {
-      return this.where(qryCond[key], key);
+      return this.formatCondition(qryCond[key], key);
     }
     return mysql.format(`?? ${op.toUpperCase()} ?`, [key, qryCond[key]]);
   }
 
-  orderBy(sorter, desc) {
+  formatOrderBy(sorter, desc) {
     if (!sorter) {
       return this.emptyQuery;
     }
     return mysql.format(` ORDER BY ?? ${desc ? 'DESC' : 'ASC'}`, [sorter]);
   }
 
-  limit(lim) {
+  formatLimit(lim) {
     if (!lim) {
       return this.emptyQuery;
     }
@@ -73,36 +73,36 @@ class Query {
   select({
     cols, from, where, sorter, desc, limit,
   }) {
-    const qryColumns = this.columns(cols);
-    const qryTables = this.from(from);
-    const qryCond = this.where(where);
-    const qryOrder = this.orderBy(sorter, desc);
-    const qryLimit = this.limit(limit);
+    const qryColumns = this.formatColumns(cols);
+    const qryTables = this.formatTables(from);
+    const qryCond = this.formatCondition(where);
+    const qryOrder = this.formatOrderBy(sorter, desc);
+    const qryLimit = this.formatLimit(limit);
     return `SELECT ${qryColumns} FROM ${qryTables} WHERE ${qryCond}${qryOrder}${qryLimit}`;
   }
 
   insert({ into, resource }) {
-    const qryTable = this.from(into);
+    const qryTable = this.formatTables(into);
     return mysql.format(`INSERT INTO ${qryTable} SET ?`, [resource]);
   }
 
   update({
     table, assign, where, sorter, desc, limit,
   }) {
-    const qryTable = this.from(table);
-    const qryCond = this.where(where);
-    const qryOrder = this.orderBy(sorter, desc);
-    const qryLimit = this.limit(limit);
+    const qryTable = this.formatTables(table);
+    const qryCond = this.formatCondition(where);
+    const qryOrder = this.formatOrderBy(sorter, desc);
+    const qryLimit = this.formatLimit(limit);
     return mysql.format(`UPDATE ${qryTable} SET ? WHERE ${qryCond}${qryOrder}${qryLimit}`, [assign]);
   }
 
   delete({
     from, where, sorter, desc, limit,
   }) {
-    const qryTable = this.from(from);
-    const qryCond = this.where(where);
-    const qryOrder = this.orderBy(sorter, desc);
-    const qryLimit = this.limit(limit);
+    const qryTable = this.formatTables(from);
+    const qryCond = this.formatCondition(where);
+    const qryOrder = this.formatOrderBy(sorter, desc);
+    const qryLimit = this.formatLimit(limit);
     return `DELETE FROM ${qryTable} WHERE ${qryCond}${qryOrder}${qryLimit}`;
   }
 }
