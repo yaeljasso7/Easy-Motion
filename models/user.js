@@ -101,14 +101,16 @@ class User {
           name, mobile, weight, height, password, mail,
         },
       });
+      const id = response.insertId;
+      if (id > 0) {
+        const user = new User({
+          id, name, mobile, weight, height, password, mail,
+        });
+        await user.addProgress({ weight, height });
+        return user;
+      }
     } catch (err) {
       throw err;
-    }
-    const id = response.insertId;
-    if (id > 0) {
-      return new User({
-        id, name, mobile, weight, height, password, mail,
-      });
     }
     return [];
   }

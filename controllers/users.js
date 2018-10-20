@@ -53,7 +53,6 @@ class UserCtrl {
     try {
       const user = await User.create(req.body);
       if (user.length !== 0) {
-        await user.addProgress(req.body);
         return res.status(201)
           .send(ResponseMaker.created(this.type, user));
       }
