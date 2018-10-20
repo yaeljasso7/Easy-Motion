@@ -67,10 +67,10 @@ class DB {
    *         Available comparison operators
    *           =, <>, <, <=, >, >=, like, in
    *
-   *         If there's no logic operator specified, uses AND by default
-   *         If there's no comparison operator specified, uses = by default
+   *         If no logical operator specified, uses AND by default
+   *         If no comparison operator specified, uses = by default
    *
-   *         If there no WHERE condition, all records are selected.
+   *         If no condition specified, all records are selected.
    *
    * @param  {(string|string[])} sorter - Sort the records in a result set.
    *         ----------
