@@ -1,0 +1,1509 @@
+{
+	"info": {
+		"_postman_id": "a4e96b7a-cd82-4b72-b49c-a9288b51d863",
+		"name": "easy-motion",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "exercises",
+			"item": [
+				{
+					"name": "getAllExercises",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/exercises?page=1",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"exercises"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteExercise",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/exercises/:exerciseId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"exercises",
+								":exerciseId"
+							],
+							"variable": [
+								{
+									"key": "exerciseId",
+									"value": "9"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getExerciseById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/exercises/:exerciseId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"exercises",
+								":exerciseId"
+							],
+							"variable": [
+								{
+									"key": "exerciseId",
+									"value": "12"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createExercise",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "difficulty",
+									"value": "6",
+									"type": "text"
+								},
+								{
+									"key": "executionTime",
+									"value": "6",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "trainingType",
+									"value": "8",
+									"type": "text"
+								},
+								{
+									"key": "bodyPart",
+									"value": "88",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Ejercicio de prueba",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/exercises",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"exercises"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateExercise",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "difficulty",
+									"value": "55",
+									"type": "text"
+								},
+								{
+									"key": "executionTime",
+									"value": "7",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "trainingType",
+									"value": "7",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "bodyPart",
+									"value": "77",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "nuevo",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/exercises/:exerciseId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"exercises",
+								":exerciseId"
+							],
+							"variable": [
+								{
+									"key": "exerciseId",
+									"value": "15"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "bodyParts",
+			"item": [
+				{
+					"name": "getAllBodyParts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/bodyParts?page=0",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"bodyParts"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getBodyPartById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/bodyParts/:bodyPartId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"bodyParts",
+								":bodyPartId"
+							],
+							"variable": [
+								{
+									"key": "bodyPartId",
+									"value": "11"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteBodyPart",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/bodyParts/:bodyPartId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"bodyParts",
+								":bodyPartId"
+							],
+							"variable": [
+								{
+									"key": "bodyPartId",
+									"value": "11"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createBodyPart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "otra bodyPart",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/bodyParts",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"bodyParts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateBodyPart",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "custom",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/bodyParts/:bodyPartId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"bodyParts",
+								":bodyPartId"
+							],
+							"variable": [
+								{
+									"key": "bodyPartId",
+									"value": "11"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "trainingTypes",
+			"item": [
+				{
+					"name": "getAllTrainingTypes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/trainingTypes?page=1",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"trainingTypes"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getTrainingTypeById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/trainingTypes/:trainingTypeId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"trainingTypes",
+								":trainingTypeId"
+							],
+							"variable": [
+								{
+									"key": "trainingTypeId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteTrainingType",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/trainingTypes/:trainingTypeId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"trainingTypes",
+								":trainingTypeId"
+							],
+							"variable": [
+								{
+									"key": "trainingTypeId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createTrainingType",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Calentamiento",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/trainingTypes",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"trainingTypes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateTrainingType",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Equilibrio",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/trainingTypes/:trainingTypeId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"trainingTypes",
+								":trainingTypeId"
+							],
+							"variable": [
+								{
+									"key": "trainingTypeId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "routines",
+			"item": [
+				{
+					"name": "getAllRoutines",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/routines?page=1",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"routines"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getRoutineById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/routines/:routineId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"routines",
+								":routineId"
+							],
+							"variable": [
+								{
+									"key": "routineId",
+									"value": "12"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteRoutine",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/routines/:routineId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"routines",
+								":routineId"
+							],
+							"variable": [
+								{
+									"key": "routineId",
+									"value": "11"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createRoutine",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Rutina 101",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "executionTime",
+									"value": "10",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/routines",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"routines"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateRoutine",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Mi rutina 101",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/routines/:routineId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"routines",
+								":routineId"
+							],
+							"variable": [
+								{
+									"key": "routineId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addExercise",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "exerciseId",
+									"value": "4",
+									"type": "text"
+								},
+								{
+									"key": "repetitions",
+									"value": "11",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/routines/:routineId/exercise",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"routines",
+								":routineId",
+								"exercise"
+							],
+							"variable": [
+								{
+									"key": "routineId",
+									"value": "12"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateExerciseReps",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "exerciseId",
+									"value": "4",
+									"type": "text"
+								},
+								{
+									"key": "repetitions",
+									"value": "15",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/routines/:routineId/exercise",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"routines",
+								":routineId",
+								"exercise"
+							],
+							"variable": [
+								{
+									"key": "routineId",
+									"value": "12"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "removeExercise",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "exerciseId",
+									"value": "4",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/routines/:routineId/exercise",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"routines",
+								":routineId",
+								"exercise"
+							],
+							"variable": [
+								{
+									"key": "routineId",
+									"value": "12"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "getAllUsers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/users?page=1",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getUserById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/users/:userId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "8"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteRoutine",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/routines/:routineId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"routines",
+								":routineId"
+							],
+							"variable": [
+								{
+									"key": "routineId",
+									"value": "11"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createUser",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "user007",
+									"type": "text"
+								},
+								{
+									"key": "mobile",
+									"value": "7777777777",
+									"type": "text"
+								},
+								{
+									"key": "weight",
+									"value": "77",
+									"type": "text"
+								},
+								{
+									"key": "height",
+									"value": "177",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "hola1234",
+									"type": "text"
+								},
+								{
+									"key": "mail",
+									"value": "user007@email.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/users",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateUser",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "user007",
+									"type": "text"
+								},
+								{
+									"key": "mobile",
+									"value": "3377337733",
+									"type": "text"
+								},
+								{
+									"key": "weight",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "height",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "mail",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/users/:userId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "19"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addCalendar",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "calendarId",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "repetitions",
+									"value": "11",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/users/:userId/calendars",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users",
+								":userId",
+								"calendars"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "19"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addProgress",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "weight",
+									"value": "93",
+									"type": "text"
+								},
+								{
+									"key": "height",
+									"value": "178",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/users/:userId/progress",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users",
+								":userId",
+								"progress"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "19"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getCalendars",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "calendarId",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "repetitions",
+									"value": "11",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/users/:userId/calendars",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users",
+								":userId",
+								"calendars"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "19"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getProgress",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "calendarId",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "repetitions",
+									"value": "11",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/users/:userId/progress",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users",
+								":userId",
+								"progress"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "19"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "removeCalendar",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "calendarId",
+									"value": "4",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/users/:userId/calendars",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users",
+								":userId",
+								"calendars"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "19"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "calendars",
+			"item": [
+				{
+					"name": "getAllCalendars",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/calendars?page=1",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"calendars"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getCalendarById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/calendars/:calendarId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"calendars",
+								":calendarId"
+							],
+							"variable": [
+								{
+									"key": "calendarId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteCalendar",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{host}}:{{port}}/calendars/:calendarId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"calendars",
+								":calendarId"
+							],
+							"variable": [
+								{
+									"key": "calendarId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createCalendar",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Calendario 101",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/calendars",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"calendars"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateCalendar",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Calendario Custom",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/calendars/:calendarId",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"calendars",
+								":calendarId"
+							],
+							"variable": [
+								{
+									"key": "calendarId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addRoutine",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "routineId",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "day",
+									"value": "3",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/calendars/:calendarId/routine",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"calendars",
+								":calendarId",
+								"routine"
+							],
+							"variable": [
+								{
+									"key": "calendarId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "removeRoutine",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "routineId",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "day",
+									"value": "3",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/calendars/:calendarId/routine",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"calendars",
+								":calendarId",
+								"routine"
+							],
+							"variable": [
+								{
+									"key": "calendarId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
