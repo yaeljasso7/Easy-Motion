@@ -7,39 +7,39 @@ class Token {
   }) {
     this.id = id;
     this.token = token;
-    this.user_id = userId;
+    this.userId = userId;
     this.type = type;
-    this.created_at = createdAt;
+    this.createdAt = createdAt;
     this.expires = expires;
     this.active = active;
   }
 
-  static async create({
-    userId, type,
-  }) {
+  static async createToken({ userId, type }) {
     let response;
-    let tok;
-    bcrypt.hash('chicharron', 15, (err, hash) => {
-      tok = hash;
-    });
+    // creando hash
+    const hash = await bcrypt.hash('chicharron', 15);
+
+    // insertando hash en la db...
     try {
-      response = await db.insert({
-        into: 'token',
-        resource: {
-          token: tok,
-          type,
-          created_at: new Date(),
-          duration: 12,
-          active: 1,
-          userId,
-        },
-      });
-    } catch (err) {
-      throw err;
-    }
-    const id = response.insertId;
-    if (id > 0) {
-      return { userId, tok };
+      if (hash) {
+        response = await db.insert({
+          into: 'tokens',
+          resource: {
+            token: hash,
+            type,
+            createdAt: new Date(),
+            expires: 12,
+            active: 0,
+            userId,
+          },
+        });
+        const id = response.insertId;
+        if (id > 0) {
+          return { userId, hash };
+        }
+      }
+    } catch (e) {
+      throw e;
     }
     return [];
   }

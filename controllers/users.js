@@ -217,17 +217,27 @@ class UserCtrl {
     }
   }
 
-  async addToken(req, res, next) {
+  async addToken(req, res) {
+    this.addToken = 'addToken';
     // 1- revisar que exista el user
     const { mail, password } = req.body;
-    const data = await User.loginUser( mail, password );
+    const data = await User.loginUser(mail, password);
     // no se encontro user o contraseña erronea
     if (data.length === 0) {
       return res.send('redirigiendo a vuelve a intentarlo');
     }
-    const token = await Token.create( data.id, '1' );
-
-    return res.send(token);
+    console.log(data);
+    try {
+      const userId = data.id;
+      const type = '1';
+      req.body = { userId, type };
+      console.log(req.body);
+      const token = await Token.createToken(req.body);
+      return res.send(token);
+    } catch (e) {
+      console.log(e);
+    }
+    return res.send('token');
   }
 }
 

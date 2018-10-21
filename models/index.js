@@ -8,3 +8,4 @@ exports.TrainingType = require('./trainingType');
 exports.Routine = require('./routine');
 exports.progressUser = require('./progressUser');
 exports.ResponseMaker = require('./responseMaker');
+exports.Token = require('./token');
