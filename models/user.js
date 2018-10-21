@@ -67,6 +67,18 @@ class User {
     return [];
   }
 
+  static async loginUser(mail, password) {
+    const data = await db.select({
+      from: 'users',
+      where: {
+        mail,
+        password,
+      },
+      limit: 1,
+    });
+    return data.length !== 0 ? new User(data[0]) : [];
+  }
+
   // Busca en la db userCalendar donde este el usuario
   async getCalendars(page = 0) {
     const pageSize = parseInt(process.env.PAGE_SIZE, 10);

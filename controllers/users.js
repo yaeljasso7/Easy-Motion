@@ -1,5 +1,5 @@
 // controlador users
-const { User, ResponseMaker } = require('../models');
+const { User, ResponseMaker, Token } = require('../models');
 
 // FIXME Falta documentacion en todos los metodos
 // FIXME Todos los metodos asincronos a base de datos
@@ -17,6 +17,7 @@ class UserCtrl {
     this.getCalendars = this.getCalendars.bind(this);
     this.addProgress = this.addProgress.bind(this);
     this.getProgress = this.getProgress.bind(this);
+    this.addToken = this.addToken.bind(this);
     this.type = 'user';
   }
 
@@ -214,6 +215,19 @@ class UserCtrl {
     } catch (err) {
       return next(err);
     }
+  }
+
+  async addToken(req, res, next) {
+    // 1- revisar que exista el user
+    const { mail, password } = req.body;
+    const data = await User.loginUser( mail, password );
+    // no se encontro user o contraseña erronea
+    if (data.length === 0) {
+      return res.send('redirigiendo a vuelve a intentarlo');
+    }
+    const token = await Token.create( data.id, '1' );
+
+    return res.send(token);
   }
 }
 

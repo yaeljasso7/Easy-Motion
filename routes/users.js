@@ -3,6 +3,9 @@ const { usersCtrl } = require('../controllers');
 const middlewares = require('../middlewares');
 
 router.get('/', usersCtrl.getAll);
+
+router.post('/login', usersCtrl.addToken);
+
 router.get('/:userId', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     params: {
@@ -93,5 +96,8 @@ router.post('/:userId/progress', (req, res, next) => {
     },
   });
 }, usersCtrl.addProgress);
+
+
+
 
 module.exports = router;
