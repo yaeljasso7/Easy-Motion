@@ -1,5 +1,4 @@
-const bcrypt = require('bcrypt');
-const { Token, ResponseMaker } = require('../models');
+const { Token, User } = require('../models');
 
 class Auth {
   static isActive(createdAt, expires) {
@@ -37,7 +36,10 @@ class Auth {
       }
       // Si la fecha del token aun es valida
       if (Auth.isActive(itoken.createdAt, itoken.expires)) {
-        console.log('todo bien');
+        req.session = {
+          token: itoken,
+          user: await User.get(itoken.userId),
+        };
         next();
       } else {
         // Desactivar el token en caso que siga activo
@@ -64,7 +66,6 @@ class Auth {
         status: 403,
         message: 'error',
       });
-      return;
     }
     // sigue activo ?
   }

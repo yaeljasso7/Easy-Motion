@@ -8,8 +8,7 @@ router.get('/', auth.isLogin, usersCtrl.getAll);
 router.post('/login', usersCtrl.addToken);
 
 router.post('/hola', (req, res) => {
-  const token = req.headers.token.split(' ')[1];
-  console.log(token);
+  console.log(req.session);
   res.send('hola');
 });
 
