@@ -6,6 +6,12 @@ router.get('/', usersCtrl.getAll);
 
 router.post('/login', usersCtrl.addToken);
 
+router.post('/hola', (req, res) => {
+  const token = req.headers.token.split(' ')[1];
+  console.log(token);
+  res.send('hola');
+});
+
 router.get('/:userId', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     params: {

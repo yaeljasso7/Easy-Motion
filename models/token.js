@@ -17,7 +17,7 @@ class Token {
   static async createToken({ userId, type }) {
     let response;
     // creando hash
-    const hash = await bcrypt.hash('chicharron', 15);
+    const hash = await bcrypt.hash(process.env.SECRET, 10);
 
     // insertando hash en la db...
     try {
