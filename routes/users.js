@@ -1,8 +1,9 @@
 const router = require('express').Router();
 const { usersCtrl } = require('../controllers');
 const middlewares = require('../middlewares');
+const { auth } = require('../middlewares');
 
-router.get('/', usersCtrl.getAll);
+router.get('/', auth.isLogin, usersCtrl.getAll);
 
 router.post('/login', usersCtrl.addToken);
 

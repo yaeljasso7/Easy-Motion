@@ -43,6 +43,43 @@ class Token {
     }
     return [];
   }
+
+  static async get(token) {
+    const cond = { token };
+    try {
+      const data = await db.select({
+        from: 'tokens',
+        where: cond,
+        limit: 1,
+      });
+      if (data.length !== 0) {
+        const itoken = new Token(data[0]);
+        return itoken;
+      }
+    } catch (err) {
+      throw err;
+    }
+    return [];
+  }
+
+  async deactivate(keyVals) {
+    console.log('keyVals', keyVals);
+    let updatedRows;
+    try {
+      const results = await db.advUpdate({
+        table: 'tokens',
+        assign: keyVals,
+        where: {
+          id: this.id,
+        },
+        limit: 1,
+      });
+      updatedRows = results.affectedRows;
+    } catch (err) {
+      throw err;
+    }
+    return updatedRows > 0;
+  }
 }
 
 module.exports = Token;
