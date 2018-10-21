@@ -1,8 +1,17 @@
 const router = require('express').Router();
 const { usersCtrl } = require('../controllers');
 const middlewares = require('../middlewares');
+const { auth } = require('../middlewares');
 
-router.get('/', usersCtrl.getAll);
+router.get('/', auth.isLogin, usersCtrl.getAll);
+
+router.post('/login', usersCtrl.addToken);
+
+router.post('/hola', (req, res) => {
+  console.log(req.session);
+  res.send('hola');
+});
+
 router.get('/:userId', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     params: {
@@ -93,5 +102,8 @@ router.post('/:userId/progress', (req, res, next) => {
     },
   });
 }, usersCtrl.addProgress);
+
+
+
 
 module.exports = router;
