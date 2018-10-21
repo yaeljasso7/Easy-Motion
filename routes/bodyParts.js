@@ -7,7 +7,7 @@ router.get('/', bodyPartsCtrl.getAll);
 router.get('/:bodyPartId', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     params: {
-      trainingTypeId: 'number',
+      bodyPartId: 'number',
     },
   });
 }, bodyPartsCtrl.get);
@@ -26,15 +26,15 @@ router.put('/:bodyPartId', (req, res, next) => {
       name: 'word,required',
     },
     params: {
-      trainingTypeId: 'number',
+      bodyPartId: 'number',
     },
   });
-},  bodyPartsCtrl.update);
+}, bodyPartsCtrl.update);
 
 router.delete('/:bodyPartId', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     params: {
-      trainingTypeId: 'number',
+      bodyPartId: 'number',
     },
   });
 }, bodyPartsCtrl.delete);

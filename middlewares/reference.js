@@ -2,22 +2,23 @@ const mdl = require('../models');
 
 /**
  * @class Reference
- * Checks if the identifiers referred by an object (created, or modified),
+ * Checks if the identifiers referred by an object,
  * belong to existing objects in the database.
- * ----------
- * Usage:
- *   Reference.validate(req, res, next, {
- *     body: {                            <-  section
- *       bodyPartId: 'BodyPart',          <- fieldName1 : 'Type1'
- *       trainingTypeId: 'TrainingType',  <- fieldName2 : 'Type2'
- *     }
- *   });
  */
 class Reference {
+  /**
+   * @method validate Validate if an identifier belogns to existing object in the model
+   *
+   * @param  {Object}   req      Request object
+   * @param  {Object}   res      Response object
+   * @param  {Function} next     Next fuction
+   * @param  {Object}   sections Sections to evaluate references
+   * @return {Promise}           Promise object represents the objects existence
+   */
   static async validate(req, res, next, sections) {
     const error = {
       message: 'Reference Error',
-      status: 409,
+      status: 404,
       details: {},
     };
     const bySection = Object.keys(sections).map(async (part) => {

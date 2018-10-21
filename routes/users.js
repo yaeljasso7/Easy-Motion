@@ -53,7 +53,7 @@ router.delete('/:userId', (req, res, next) => {
   });
 }, usersCtrl.delete);
 
-router.post('/:userId/calendars', (req, res, next) => {
+router.post('/:userId/calendars', [(req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     params: {
       userId: 'number',
@@ -62,9 +62,15 @@ router.post('/:userId/calendars', (req, res, next) => {
       calendarId: 'number',
     },
   });
-}, usersCtrl.addCalendar);
+}, (req, res, next) => {
+  middlewares.reference.validate(req, res, next, {
+    body: {
+      calendarId: 'Calendar',
+    },
+  });
+}], usersCtrl.addCalendar);
 
-router.delete('/:userId/calendars', (req, res, next) => {
+router.delete('/:userId/calendars', [(req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     params: {
       userId: 'number',
@@ -73,7 +79,13 @@ router.delete('/:userId/calendars', (req, res, next) => {
       calendarId: 'number',
     },
   });
-}, usersCtrl.removeCalendar);
+}, (req, res, next) => {
+  middlewares.reference.validate(req, res, next, {
+    body: {
+      calendarId: 'Calendar',
+    },
+  });
+}], usersCtrl.removeCalendar);
 
 router.get('/:userId/calendars', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
@@ -102,8 +114,5 @@ router.post('/:userId/progress', (req, res, next) => {
     },
   });
 }, usersCtrl.addProgress);
-
-
-
 
 module.exports = router;

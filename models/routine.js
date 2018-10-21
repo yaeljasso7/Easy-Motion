@@ -1,5 +1,6 @@
 const db = require('../db');
 const Exercise = require('./exercise');
+const generic = require('./generic');
 
 // FIXME Falta documentacion en todos los metodos
 
@@ -22,7 +23,7 @@ class Routine {
     }
     try {
       const data = await db.select({
-        from: 'routines',
+        from: Routine.table,
         where: cond,
         limit: [page * pageSize, pageSize],
       });
@@ -36,15 +37,13 @@ class Routine {
   }
 
   static async get(id, deletedItems = false) {
-    // si rutina tiene referenciado un ejercicio eliminado, aún se muestra
-    // en la rutina, a menos que se elimine de esta.
     const cond = { id };
     if (!deletedItems) {
       cond.isDeleted = false;
     }
     try {
       const data = await db.select({
-        from: 'routines',
+        from: Routine.table,
         where: cond,
         limit: 1,
       });
@@ -63,7 +62,7 @@ class Routine {
     let response;
     try {
       response = await db.insert({
-        into: 'routines',
+        into: Routine.table,
         resource: {
           name, description, executionTime,
         },
@@ -85,7 +84,7 @@ class Routine {
     let updatedRows;
     try {
       const results = await db.advUpdate({
-        table: 'routines',
+        table: Routine.table,
         assign: keyVals,
         where: {
           id: this.id,
@@ -103,7 +102,7 @@ class Routine {
     let deletedRows;
     try {
       const results = await db.advUpdate({
-        table: 'routines',
+        table: Routine.table,
         assign: {
           isDeleted: true,
         },
@@ -124,7 +123,7 @@ class Routine {
     let response;
     try {
       response = await db.insert({
-        into: 'exercises_routines',
+        into: Routine.exercisesTable,
         resource: {
           routineId: this.id,
           exerciseId,
@@ -141,7 +140,7 @@ class Routine {
     const response = [];
     try {
       const data = await db.select({
-        from: 'exercises_routines',
+        from: Routine.exercisesTable,
         where: {
           routineId: this.id,
         },
@@ -162,7 +161,7 @@ class Routine {
     let deletedRows;
     try {
       const results = await db.advDelete({
-        from: 'exercises_routines',
+        from: Routine.exercisesTable,
         where: {
           routineId: this.id,
           exerciseId,
@@ -181,7 +180,7 @@ class Routine {
     let updatedRows;
     try {
       const results = await db.advUpdate({
-        table: 'exercises_routines',
+        table: Routine.exercisesTable,
         assign: { repetitions },
         where: {
           routineId: this.id,
@@ -196,5 +195,9 @@ class Routine {
     return updatedRows > 0;
   }
 }
+
+Routine.table = 'routines';
+Routine.exercisesTable = 'exercises_routines';
+Routine.exists = generic.exists(Routine.table);
 
 module.exports = Routine;

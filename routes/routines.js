@@ -41,7 +41,7 @@ router.delete('/:routineId', (req, res, next) => {
   });
 }, routinesCtrl.delete);
 
-router.post('/:routineId/exercise', (req, res, next) => {
+router.post('/:routineId/exercise', [(req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
       exerciseId: 'number,required',
@@ -51,9 +51,15 @@ router.post('/:routineId/exercise', (req, res, next) => {
       routineId: 'number',
     },
   });
-}, routinesCtrl.addExercise);
+}, (req, res, next) => {
+  middlewares.reference.validate(req, res, next, {
+    body: {
+      exerciseId: 'Exercise',
+    },
+  });
+}], routinesCtrl.addExercise);
 
-router.delete('/:routineId/exercise', (req, res, next) => {
+router.delete('/:routineId/exercise', [(req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
       exerciseId: 'number,required',
@@ -62,9 +68,15 @@ router.delete('/:routineId/exercise', (req, res, next) => {
       routineId: 'number',
     },
   });
-}, routinesCtrl.removeExercise);
+}, (req, res, next) => {
+  middlewares.reference.validate(req, res, next, {
+    body: {
+      exerciseId: 'Exercise',
+    },
+  });
+}], routinesCtrl.removeExercise);
 
-router.patch('/:routineId/exercise', (req, res, next) => {
+router.patch('/:routineId/exercise', [(req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
       exerciseId: 'number,required',
@@ -74,6 +86,12 @@ router.patch('/:routineId/exercise', (req, res, next) => {
       routineId: 'number',
     },
   });
-}, routinesCtrl.updateExerciseReps);
+}, (req, res, next) => {
+  middlewares.reference.validate(req, res, next, {
+    body: {
+      exerciseId: 'Exercise',
+    },
+  });
+}], routinesCtrl.updateExerciseReps);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const db = require('../db');
+const generic = require('./generic');
 
 // FIXME Falta documentacion en todos los metodos
 
@@ -23,7 +24,7 @@ class Exercise {
     }
     try {
       const data = await db.select({
-        from: 'v_exercises',
+        from: Exercise.vTable,
         where: cond,
         limit: [page * pageSize, pageSize],
       });
@@ -44,7 +45,7 @@ class Exercise {
     }
     try {
       data = await db.select({
-        from: 'v_exercises',
+        from: Exercise.vTable,
         where: cond,
         limit: 1,
       });
@@ -62,7 +63,7 @@ class Exercise {
     let response;
     try {
       response = await db.insert({
-        into: 'exercises',
+        into: Exercise.table,
         resource: {
           name, difficulty, description, trainingType, bodyPart,
         },
@@ -84,7 +85,7 @@ class Exercise {
     let updatedRows;
     try {
       const results = await db.advUpdate({
-        table: 'exercises',
+        table: Exercise.table,
         assign: keyVals,
         where: {
           id: this.id,
@@ -102,7 +103,7 @@ class Exercise {
     let deletedRows;
     try {
       const results = await db.advUpdate({
-        table: 'exercises',
+        table: Exercise.table,
         assign: {
           isDeleted: true,
         },
@@ -119,5 +120,9 @@ class Exercise {
     return deletedRows > 0;
   }
 }
+
+Exercise.table = 'exercises';
+Exercise.vTable = `v_${Exercise.table}`;
+Exercise.exists = generic.exists(Exercise.table);
 
 module.exports = Exercise;

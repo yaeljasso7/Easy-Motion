@@ -23,6 +23,7 @@ class DB {
 
   /**
    * @method select - Retrieve rows selected from one or more tables.
+   *
    * @param  {(string|string[])} columns - The column or columns that you want
    *         to retrieve.
    *         ----------
@@ -111,6 +112,7 @@ class DB {
 
   /**
    * @method advDelete - Remove rows from a table
+   *
    * @param  {(string|string[])} from - The table or tables from which to
    *         delete rows.
    * @param  {Object} where - Identify which rows to delete, with no WHERE,
@@ -137,6 +139,7 @@ class DB {
 
   /**
    * @method advUpdate - Modifies rows in a table
+   *
    * @param  {(string|string[])} table - The table or tables from which to
    *         modify rows.
    * @param  {Object} assign - Indicates which columns to modify and the values
@@ -164,7 +167,8 @@ class DB {
   }
 
   /**
-   * @param getAll - Retrieve all elements from a table.
+   * @method getAll - Retrieve all elements from a table.
+   *
    * @param  {string} table The table from which to retrieve the records.
    * @return {Promise} - Promise object represents the query results.
    */
@@ -180,7 +184,8 @@ class DB {
   }
 
   /**
-   * @param get - Retrieve elements from a table, based on their id.
+   * @method get - Retrieve elements from a table, based on their id.
+   *
    * @param  {string} table The table from which to retrieve records.
    * @param  {number} id - Object id to select.
    * @return {Promise} - Promise object represents the query results.
@@ -198,6 +203,7 @@ class DB {
 
   /**
    * @method delete - Delete elements from a table, based on their id.
+   *
    * @param  {string} table The table from which to delete rows.
    * @param  {number} id - Object id to delete.
    * @return {Promise} - Promise object represents the query results.
@@ -217,7 +223,8 @@ class DB {
   }
 
   /**
-   * @method update - Modifies elements in a table, based on their id
+   * @method update - Modifies elements in a table, based on their id.
+   *
    * @param  {string} table The table from which to modify rows.
    * @param  {Object} obj - Indicates which columns to modify and the values
    *         they should be given.
@@ -241,6 +248,7 @@ class DB {
 
   /**
    * @method insert - Inserts new rows into an existing table.
+   *
    * @param  {string} into - Table to which insert the Object.
    * @param  {Object} resource - The object to insert into the table.
    * @return {Promise} - Promise object represents the query results.
@@ -256,6 +264,13 @@ class DB {
     });
   }
 
+  /**
+   * @method processError - Process the error message from database,
+   * into a readable error message.
+   *
+   * @param  {Object} err - The database error message
+   * @return {Object} - The error message processed
+   */
   processError(err) {
     const error = {};
     let data;
@@ -284,6 +299,12 @@ class DB {
     return error;
   }
 
+  /**
+   * @method getDataFromErrorMsg - Convert string error message into an object.
+   *
+   * @param  {string} message - The message error from database.
+   * @return {Object} - The error message as an object.
+   */
   getDataFromErrorMsg(message) {
     this.void();
     const data = unescape(message).match(/'([^']+)'/g);

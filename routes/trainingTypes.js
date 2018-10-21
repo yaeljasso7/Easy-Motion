@@ -10,7 +10,6 @@ router.get('/:trainingTypeId', (req, res, next) => {
       trainingTypeId: 'number',
     },
   });
-
 }, trainingTypesCtrl.get);
 
 router.post('/', (req, res, next) => {

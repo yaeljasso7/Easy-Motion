@@ -1,6 +1,7 @@
 const db = require('../db');
 const Calendar = require('./calendar');
 const ProgressUser = require('./progressUser');
+const generic = require('./generic');
 
 // FIXME Falta documentacion en todos los metodos
 // FIXME Todos los metodos asincronos a base de datos
@@ -32,7 +33,7 @@ class User {
     }
     try {
       const data = await db.select({
-        from: 'users',
+        from: User.table,
         where: cond,
         limit: [page * pageSize, pageSize],
       });
@@ -52,7 +53,7 @@ class User {
     }
     try {
       const data = await db.select({
-        from: 'users',
+        from: User.table,
         where: cond,
         limit: 1,
       });
@@ -69,7 +70,7 @@ class User {
 
   static async loginUser(mail, password) {
     const data = await db.select({
-      from: 'users',
+      from: User.table,
       where: {
         mail,
         password,
@@ -85,7 +86,7 @@ class User {
     const response = [];
     try {
       const data = await db.select({
-        from: 'users_calendars',
+        from: User.calendarTable,
         where: {
           userId: this.id,
         },
@@ -108,7 +109,7 @@ class User {
     let response;
     try {
       response = await db.insert({
-        into: 'users',
+        into: User.table,
         resource: {
           name, mobile, weight, height, password, mail,
         },
@@ -131,7 +132,7 @@ class User {
     let updatedRows;
     try {
       const results = await db.advUpdate({
-        table: 'users',
+        table: User.table,
         assign: keyVals,
         where: {
           id: this.id,
@@ -149,7 +150,7 @@ class User {
     let deletedRows;
     try {
       const results = await db.advUpdate({
-        table: 'users',
+        table: User.table,
         assign: {
           isDeleted: true,
         },
@@ -170,7 +171,7 @@ class User {
     let response;
     try {
       response = await db.insert({
-        into: 'users_calendars',
+        into: User.calendarTable,
         resource: {
           userId: this.id,
           calendarId,
@@ -187,7 +188,7 @@ class User {
     let response;
     try {
       response = await db.advDelete({
-        from: 'users_calendars',
+        from: User.calendarTable,
         where: {
           userId: this.id,
           calendarId,
@@ -206,7 +207,7 @@ class User {
     const response = [];
     try {
       const data = await db.select({
-        from: 'users_progress',
+        from: User.progressTable,
         where: {
           userId: this.id,
         },
@@ -225,7 +226,7 @@ class User {
     let response;
     try {
       response = await db.insert({
-        into: 'users_progress',
+        into: User.progressTable,
         resource: {
           userId: this.id,
           weight,
@@ -239,5 +240,10 @@ class User {
     return response.affectedRows > 0;
   }
 }
+
+User.table = 'users';
+User.progressTable = 'users_progress';
+User.calendarTable = 'users_calendars';
+User.exists = generic.exists(User.table);
 
 module.exports = User;

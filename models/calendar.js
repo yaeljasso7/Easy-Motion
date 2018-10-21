@@ -1,5 +1,6 @@
 const db = require('../db');
 const Routine = require('./routine');
+const generic = require('./generic');
 
 // FIXME Falta documentacion en todos los metodos
 // FIXME Todos los metodos asincronos a base de datos deberian manejar
@@ -24,7 +25,7 @@ class Calendar {
     }
     try {
       const data = await db.select({
-        from: 'calendars',
+        from: Calendar.table,
         where: cond,
         limit: [page * pageSize, pageSize],
       });
@@ -44,7 +45,7 @@ class Calendar {
     }
     try {
       const data = await db.select({
-        from: 'calendars',
+        from: Calendar.table,
         where: cond,
         limit: 1,
       });
@@ -63,7 +64,7 @@ class Calendar {
     const response = [];
     try {
       const data = await db.select({
-        from: 'routines_calendars',
+        from: Calendar.routineDayTable,
         where: {
           calendarId: this.id,
         },
@@ -86,7 +87,7 @@ class Calendar {
     let response;
     try {
       response = await db.insert({
-        into: 'calendars',
+        into: Calendar.table,
         resource: { name },
       });
     } catch (err) {
@@ -103,7 +104,7 @@ class Calendar {
     let deletedRows;
     try {
       const results = await db.advUpdate({
-        table: 'calendars',
+        table: Calendar.table,
         assign: {
           isDeleted: true,
         },
@@ -124,7 +125,7 @@ class Calendar {
     let updatedRows;
     try {
       const results = await db.advUpdate({
-        table: 'calendars',
+        table: Calendar.table,
         assign: keyVals,
         where: {
           id: this.id,
@@ -142,7 +143,7 @@ class Calendar {
     let response;
     try {
       response = await db.insert({
-        into: 'routines_calendars',
+        into: Calendar.routineDayTable,
         resource: {
           calendarId: this.id,
           routineId,
@@ -160,7 +161,7 @@ class Calendar {
     let deletedRows;
     try {
       const results = await db.advDelete({
-        from: 'routines_calendars',
+        from: Calendar.routineDayTable,
         where: {
           calendarId: this.id,
           routineId,
@@ -176,4 +177,9 @@ class Calendar {
     return deletedRows > 0;
   }
 }
+
+Calendar.table = 'calendars';
+Calendar.routineDayTable = 'routines_calendars';
+Calendar.exists = generic.exists(Calendar.table);
+
 module.exports = Calendar;

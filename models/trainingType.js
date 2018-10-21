@@ -1,4 +1,5 @@
 const db = require('../db');
+const generic = require('./generic');
 
 // FIXME Falta documentacion en todos los metodos
 // FIXME Todos los metodos asincronos a base de datos
@@ -16,7 +17,7 @@ class TrainingType {
     const response = [];
     try {
       const data = await db.select({
-        from: 'training_types',
+        from: TrainingType.table,
         where: { isDeleted: false },
         limit: [page * pageSize, pageSize],
       });
@@ -33,7 +34,7 @@ class TrainingType {
     let data;
     try {
       data = await db.select({
-        from: 'training_types',
+        from: TrainingType.table,
         where: {
           id,
           isDeleted: false,
@@ -48,28 +49,11 @@ class TrainingType {
     return data.length !== 0 ? new TrainingType(data[0]) : [];
   }
 
-  static async exists(id) {
-    try {
-      const data = await db.select({
-        columns: 'id',
-        from: 'training_types',
-        where: {
-          id,
-          isDeleted: false,
-        },
-        limit: 1,
-      });
-      return (data.length !== 0);
-    } catch (err) {
-      throw err;
-    }
-  }
-
   static async create({ name, description }) {
     let response;
     try {
       response = await db.insert({
-        into: 'training_types',
+        into: TrainingType.table,
         resource: {
           name,
           description,
@@ -89,7 +73,7 @@ class TrainingType {
     let updatedRows;
     try {
       const results = await db.advUpdate({
-        table: 'training_types',
+        table: TrainingType.table,
         assign: keyVals,
         where: {
           id: this.id,
@@ -107,7 +91,7 @@ class TrainingType {
     let deletedRows;
     try {
       const results = await db.advUpdate({
-        table: 'training_types',
+        table: TrainingType.table,
         assign: {
           isDeleted: true,
         },
@@ -124,5 +108,8 @@ class TrainingType {
     return deletedRows > 0;
   }
 }
+
+TrainingType.table = 'training_types';
+TrainingType.exists = generic.exists(TrainingType.table);
 
 module.exports = TrainingType;

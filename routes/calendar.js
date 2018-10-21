@@ -38,7 +38,7 @@ router.delete('/:calendarId', (req, res, next) => {
   });
 }, calendarCtrl.delete);
 
-router.post('/:calendarId/routine', (req, res, next) => {
+router.post('/:calendarId/routine', [(req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     params: {
       calendarId: 'number',
@@ -48,9 +48,15 @@ router.post('/:calendarId/routine', (req, res, next) => {
       day: 'required,number',
     },
   });
-}, calendarCtrl.addRoutine);
+}, (req, res, next) => {
+  middlewares.reference.validate(req, res, next, {
+    body: {
+      routineId: 'Routine',
+    },
+  });
+}], calendarCtrl.addRoutine);
 
-router.delete('/:calendarId/routine', (req, res, next) => {
+router.delete('/:calendarId/routine', [(req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     params: {
       calendarId: 'number',
@@ -60,6 +66,12 @@ router.delete('/:calendarId/routine', (req, res, next) => {
       day: 'required,number',
     },
   });
-}, calendarCtrl.removeRoutine);
+}, (req, res, next) => {
+  middlewares.reference.validate(req, res, next, {
+    body: {
+      routineId: 'Routine',
+    },
+  });
+}], calendarCtrl.removeRoutine);
 
 module.exports = router;
