@@ -59,13 +59,39 @@ class User {
       });
       if (data.length !== 0) {
         const user = new User(data[0]);
-        user.calendars = await user.getCalendars();
+        user.permissions = await User.getPermissions(data[0].role);
+        // user.calendars = await user.getCalendars();
         return user;
       }
     } catch (err) {
       throw err;
     }
     return [];
+  }
+
+  static async getPermissions(role) {
+    const response = [];
+    try {
+      const data = await db.select({
+        columns: 'permissions.name',
+        from: 'roles_permissions',
+        join: {
+          table: 'permissions',
+          on: {
+            'roles_permissions.permissionId': 'permissions.id',
+          },
+        },
+        where: {
+          'roles_permissions.roleId': role,
+        },
+      });
+      data.forEach((row) => {
+        response.push(row.name);
+      });
+    } catch (err) {
+      throw err;
+    }
+    return response;
   }
 
   static async loginUser(mail, password) {
