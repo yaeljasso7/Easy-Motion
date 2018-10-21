@@ -12,18 +12,25 @@ router.get('/:exerciseId', (req, res, next) => {
   });
 }, exercisesCtrl.get);
 
-router.post('/', (req, res, next) => {
+router.post('/', [(req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
       name: 'word,required',
       difficulty: 'number,required',
       trainingType: 'number,required',
-      bodyPart: 'number,required'
+      bodyPart: 'number,required',
     },
   });
-}, exercisesCtrl.create);
+}, (req, res, next) => {
+  middlewares.reference.validate(req, res, next, {
+    body: {
+      bodyPart: 'BodyPart',
+      trainingType: 'TrainingType',
+    },
+  });
+}], exercisesCtrl.create);
 
-router.put('/:exerciseId', (req, res, next) => {
+router.put('/:exerciseId', [(req, res, next) => {
   middlewares.validator.validate(req, res, next, {
     body: {
       name: 'word',
@@ -35,7 +42,14 @@ router.put('/:exerciseId', (req, res, next) => {
       exerciseId: 'number',
     },
   });
-}, exercisesCtrl.update);
+}, (req, res, next) => {
+  middlewares.reference.validate(req, res, next, {
+    body: {
+      trainingType: 'TrainingType',
+      bodyPart: 'BodyPart',
+    },
+  });
+}], exercisesCtrl.update);
 
 router.delete('/:exerciseId', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {

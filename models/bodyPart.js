@@ -48,6 +48,23 @@ class BodyPart {
     return data.length !== 0 ? new BodyPart(data[0]) : [];
   }
 
+  static async exists(id) {
+    try {
+      const data = await db.select({
+        columns: 'id',
+        from: 'body_parts',
+        where: {
+          id,
+          isDeleted: false,
+        },
+        limit: 1,
+      });
+      return (data.length !== 0);
+    } catch (err) {
+      throw err;
+    }
+  }
+
   static async create({ name }) {
     let response;
     try {

@@ -48,6 +48,23 @@ class TrainingType {
     return data.length !== 0 ? new TrainingType(data[0]) : [];
   }
 
+  static async exists(id) {
+    try {
+      const data = await db.select({
+        columns: 'id',
+        from: 'training_types',
+        where: {
+          id,
+          isDeleted: false,
+        },
+        limit: 1,
+      });
+      return (data.length !== 0);
+    } catch (err) {
+      throw err;
+    }
+  }
+
   static async create({ name, description }) {
     let response;
     try {
