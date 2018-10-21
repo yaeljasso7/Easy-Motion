@@ -56,6 +56,21 @@ class Query {
     return mysql.format(`?? ${op.toUpperCase()} ?`, [key, qryCond[key]]);
   }
 
+  formatJoin(joins) {
+    if (!joins) {
+      return this.emptyQuery;
+    }
+    const qryJoin = [];
+    const tblJoin = (joins.constructor !== Array) ? [joins] : joins;
+    tblJoin.forEach((join) => {
+      const key = Object.keys(join.on)[First];
+      const keyVal = join.on[key];
+      qryJoin.push(mysql.format('JOIN ?? ON ?? = ??', [join.table, key, keyVal]));
+    });
+
+    return qryJoin.join(' ');
+  }
+
   formatOrderBy(sorter, desc) {
     if (!sorter) {
       return this.emptyQuery;
@@ -71,14 +86,15 @@ class Query {
   }
 
   select({
-    cols, from, where, sorter, desc, limit,
+    columns, from, where, join, sorter, desc, limit,
   }) {
-    const qryColumns = this.formatColumns(cols);
+    const qryColumns = this.formatColumns(columns);
     const qryTables = this.formatTables(from);
     const qryCond = this.formatCondition(where);
     const qryOrder = this.formatOrderBy(sorter, desc);
     const qryLimit = this.formatLimit(limit);
-    return `SELECT ${qryColumns} FROM ${qryTables} WHERE ${qryCond}${qryOrder}${qryLimit}`;
+    const qryJoin = this.formatJoin(join);
+    return `SELECT ${qryColumns} FROM ${qryTables} ${qryJoin} WHERE ${qryCond}${qryOrder}${qryLimit}`;
   }
 
   insert({ into, resource }) {

@@ -96,11 +96,11 @@ class DB {
    * @return {Promise} - Promise object represents the query results.
    */
   select({
-    columns, from, where, sorter, desc, limit,
+    columns, from, where, join, sorter, desc, limit,
   }) {
     return new Promise((resolve, reject) => {
       this.conn.query(Qry.select({
-        columns, from, where, sorter, desc, limit,
+        columns, from, where, join, sorter, desc, limit,
       }), (error, results) => {
         if (error) {
           return reject(this.processError(error));
