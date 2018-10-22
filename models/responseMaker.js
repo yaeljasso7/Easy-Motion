@@ -1,7 +1,7 @@
 
 function ResponseMaker() {
   const notFound = (type, content) => ({
-    code: 404,
+    status: 404,
     msg: 'Not Found',
     data: {
       type,
@@ -10,7 +10,7 @@ function ResponseMaker() {
   });
 
   const noContent = type => ({
-    code: 204,
+    status: 204,
     msg: 'No content',
     data: {
       type,
@@ -18,7 +18,7 @@ function ResponseMaker() {
   });
 
   const conflict = (type, content) => ({
-    code: 409,
+    status: 409,
     msg: 'Conflict',
     data: {
       type,
@@ -27,7 +27,7 @@ function ResponseMaker() {
   });
 
   const created = (type, content) => ({
-    code: 201,
+    status: 201,
     msg: 'Created',
     data: {
       type,
@@ -36,7 +36,7 @@ function ResponseMaker() {
   });
 
   const ok = (msg, type, content) => ({
-    code: 200,
+    status: 200,
     msg,
     data: {
       type,
@@ -45,7 +45,7 @@ function ResponseMaker() {
   });
 
   const paginated = (page, type, content) => ({
-    code: 200,
+    status: 200,
     data: {
       type,
       content,
@@ -54,7 +54,12 @@ function ResponseMaker() {
     per_page: parseInt(process.env.PAGE_SIZE, 10),
     page,
   });
-  
+
+  const forbidden = msg => ({
+    status: 403,
+    msg,
+  });
+
   return {
     notFound,
     noContent,
@@ -62,6 +67,7 @@ function ResponseMaker() {
     created,
     ok,
     paginated,
+    forbidden,
   };
 }
 

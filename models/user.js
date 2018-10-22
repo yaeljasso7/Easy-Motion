@@ -1,11 +1,10 @@
+const bcrypt = require('bcrypt');
 const db = require('../db');
 const Calendar = require('./calendar');
 const ProgressUser = require('./progressUser');
 const generic = require('./generic');
 
 // FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos
-// deberian manejar los errores a traves de un try-catch
 
 class User {
   constructor({
@@ -70,10 +69,10 @@ class User {
   }
 
   static async getPermissions(role) {
-    const response = [];
+    const response = {};
     try {
       const data = await db.select({
-        columns: 'permissions.name',
+        columns: ['name', 'cond'],
         from: 'roles_permissions',
         join: {
           table: 'permissions',
@@ -86,7 +85,7 @@ class User {
         },
       });
       data.forEach((row) => {
-        response.push(row.name);
+        response[row.name] = row.cond;
       });
     } catch (err) {
       throw err;
@@ -94,15 +93,25 @@ class User {
     return response;
   }
 
-  static async loginUser(mail) {
-    const data = await db.select({
-      from: User.table,
-      where: {
-        mail,
-      },
-      limit: 1,
-    });
-    return data.length !== 0 ? new User(data[0]) : [];
+  static async login(mail, password) {
+    try {
+      const userData = await db.select({
+        from: User.table,
+        where: {
+          mail,
+        },
+        limit: 1,
+      });
+      if (userData.length !== 0) {
+        const match = await bcrypt.compare(password, userData[0].password);
+        if (match) {
+          return new User(userData[0]);
+        }
+      }
+    } catch (err) {
+      throw err;
+    }
+    return [];
   }
 
   // Busca en la db userCalendar donde este el usuario
@@ -131,12 +140,14 @@ class User {
   static async create({
     name, mobile, weight, height, password, mail,
   }) {
+    const saltRounds = parseInt(process.env.SALT, 10);
     let response;
     try {
+      const hashPassword = await bcrypt.hash(password, saltRounds);
       response = await db.insert({
         into: User.table,
         resource: {
-          name, mobile, weight, height, password, mail,
+          name, mobile, weight, height, password: hashPassword, mail,
         },
       });
       const id = response.insertId;
@@ -205,7 +216,6 @@ class User {
     } catch (err) {
       throw err;
     }
-
     return response.affectedRows > 0;
   }
 
@@ -223,7 +233,6 @@ class User {
     } catch (err) {
       throw err;
     }
-
     return response.affectedRows > 0;
   }
 
@@ -261,8 +270,11 @@ class User {
     } catch (err) {
       throw err;
     }
-
     return response.affectedRows > 0;
+  }
+
+  canDo(permission) {
+    return Object.keys(this.permissions).includes(permission);
   }
 }
 

@@ -1,27 +1,32 @@
 const router = require('express').Router();
 const { trainingTypesCtrl } = require('../controllers');
-const middlewares = require('../middlewares');
+const { auth, validator } = require('../middlewares');
 
 router.get('/', trainingTypesCtrl.getAll);
 
 router.get('/:trainingTypeId', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     params: {
       trainingTypeId: 'number',
     },
   });
 }, trainingTypesCtrl.get);
 
-router.post('/', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+router.use('/', auth.haveSession,
+  (req, res, next) => {
+    auth.havePermission(req, res, next, 'manageTrainingTypes');
+  });
+
+router.post('/', [(req, res, next) => {
+  validator.validate(req, res, next, {
     body: {
       name: 'word,required',
     },
   });
-}, trainingTypesCtrl.create);
+}], trainingTypesCtrl.create);
 
-router.put('/:trainingTypeId', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+router.put('/:trainingTypeId', [(req, res, next) => {
+  validator.validate(req, res, next, {
     params: {
       trainingTypeId: 'number',
     },
@@ -29,14 +34,14 @@ router.put('/:trainingTypeId', (req, res, next) => {
       name: 'word,required',
     },
   });
-}, trainingTypesCtrl.update);
+}], trainingTypesCtrl.update);
 
-router.delete('/:trainingTypeId', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+router.delete('/:trainingTypeId', [(req, res, next) => {
+  validator.validate(req, res, next, {
     params: {
       trainingTypeId: 'number',
     },
   });
-}, trainingTypesCtrl.delete);
+}], trainingTypesCtrl.delete);
 
 module.exports = router;

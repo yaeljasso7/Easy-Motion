@@ -1,10 +1,8 @@
 const router = require('express').Router();
-const { authCtrl } = require('../controllers');
-const { auth } = require('../middlewares');
-const middlewares = require('../middlewares');
+const { auth, validator } = require('../middlewares');
 
 router.post('/register', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     body: {
       name: 'word,required',
       mail: 'email,required',
@@ -13,19 +11,19 @@ router.post('/register', (req, res, next) => {
       weight: 'isWeight,required',
     },
   });
-}, authCtrl.registerUser);
+}, auth.register);
 
 router.post('/login', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     body: {
       password: 'required',
       mail: 'email,required',
     },
   });
-}, authCtrl.addToken);
+}, auth.login);
 
-router.get('/logout', auth.haveSession, (req, res) => {
-  res.send('iLogin');
+router.get('/logout', [auth.haveSession, auth.logout], (req, res) => {
+  res.send('Logged out!');
 });
 
 module.exports = router;

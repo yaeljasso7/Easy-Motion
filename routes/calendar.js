@@ -1,18 +1,23 @@
 const router = require('express').Router();
 const { calendarCtrl } = require('../controllers');
-const middlewares = require('../middlewares');
+const { auth, reference, validator } = require('../middlewares');
 
 router.get('/', calendarCtrl.getAll);
 router.get('/:calendarId', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     params: {
       calendarId: 'number',
     },
   });
 }, calendarCtrl.get);
 
+router.use('/', [auth.haveSession,
+  (req, res, next) => {
+    auth.havePermission(req, res, next, 'manageCalendars');
+  }]);
+
 router.post('/', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     body: {
       name: 'word,required',
     },
@@ -20,7 +25,7 @@ router.post('/', (req, res, next) => {
 }, calendarCtrl.create);
 
 router.put('/:calendarId', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     params: {
       calendarId: 'number',
     },
@@ -31,7 +36,7 @@ router.put('/:calendarId', (req, res, next) => {
 }, calendarCtrl.update);
 
 router.delete('/:calendarId', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     params: {
       calendarId: 'number',
     },
@@ -39,7 +44,7 @@ router.delete('/:calendarId', (req, res, next) => {
 }, calendarCtrl.delete);
 
 router.post('/:calendarId/routine', [(req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     params: {
       calendarId: 'number',
     },
@@ -49,7 +54,7 @@ router.post('/:calendarId/routine', [(req, res, next) => {
     },
   });
 }, (req, res, next) => {
-  middlewares.reference.validate(req, res, next, {
+  reference.validate(req, res, next, {
     body: {
       routineId: 'Routine',
     },
@@ -57,7 +62,7 @@ router.post('/:calendarId/routine', [(req, res, next) => {
 }], calendarCtrl.addRoutine);
 
 router.delete('/:calendarId/routine', [(req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     params: {
       calendarId: 'number',
     },
@@ -67,7 +72,7 @@ router.delete('/:calendarId/routine', [(req, res, next) => {
     },
   });
 }, (req, res, next) => {
-  middlewares.reference.validate(req, res, next, {
+  reference.validate(req, res, next, {
     body: {
       routineId: 'Routine',
     },

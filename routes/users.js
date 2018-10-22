@@ -1,20 +1,18 @@
 const router = require('express').Router();
 const { usersCtrl } = require('../controllers');
-const middlewares = require('../middlewares');
-const { auth } = require('../middlewares');
+const { auth, validator, reference } = require('../middlewares');
 
-router.get('/', auth.haveSession, usersCtrl.getAll);
+router.use('/', auth.haveSession);
 
-router.get('/:userId', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
-    params: {
-      userId: 'number',
-    },
-  });
-}, usersCtrl.get);
+router.get('/', [(req, res, next) => {
+  auth.havePermission(req, res, next, 'manageUsers');
+}], usersCtrl.getAll);
 
-router.post('/', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+router.post('/', [(req, res, next) => {
+  auth.havePermission(req, res, next, 'manageUsers');
+},
+(req, res, next) => {
+  validator.validate(req, res, next, {
     body: {
       name: 'word,required',
       mail: 'email,required',
@@ -23,10 +21,32 @@ router.post('/', (req, res, next) => {
       weight: 'isWeight,required',
     },
   });
-}, usersCtrl.create);
+}], usersCtrl.create);
+
+router.delete('/:userId', (req, res, next) => {
+  auth.havePermission(req, res, next, 'manageUsers');
+}, (req, res, next) => {
+  validator.validate(req, res, next, {
+    params: {
+      userId: 'number',
+    },
+  });
+}, usersCtrl.delete);
+
+router.use('/:userId', (req, res, next) => {
+  auth.havePermission(req, res, next, 'manageMyUser');
+});
+
+router.get('/:userId', [(req, res, next) => {
+  validator.validate(req, res, next, {
+    params: {
+      userId: 'number',
+    },
+  });
+}], usersCtrl.get);
 
 router.put('/:userId', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },
@@ -38,16 +58,8 @@ router.put('/:userId', (req, res, next) => {
   });
 }, usersCtrl.update);
 
-router.delete('/:userId', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
-    params: {
-      userId: 'number',
-    },
-  });
-}, usersCtrl.delete);
-
 router.post('/:userId/calendars', [(req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },
@@ -56,7 +68,7 @@ router.post('/:userId/calendars', [(req, res, next) => {
     },
   });
 }, (req, res, next) => {
-  middlewares.reference.validate(req, res, next, {
+  reference.validate(req, res, next, {
     body: {
       calendarId: 'Calendar',
     },
@@ -64,7 +76,7 @@ router.post('/:userId/calendars', [(req, res, next) => {
 }], usersCtrl.addCalendar);
 
 router.delete('/:userId/calendars', [(req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },
@@ -73,7 +85,7 @@ router.delete('/:userId/calendars', [(req, res, next) => {
     },
   });
 }, (req, res, next) => {
-  middlewares.reference.validate(req, res, next, {
+  reference.validate(req, res, next, {
     body: {
       calendarId: 'Calendar',
     },
@@ -81,7 +93,7 @@ router.delete('/:userId/calendars', [(req, res, next) => {
 }], usersCtrl.removeCalendar);
 
 router.get('/:userId/calendars', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },
@@ -89,7 +101,7 @@ router.get('/:userId/calendars', (req, res, next) => {
 }, usersCtrl.getCalendars);
 
 router.get('/:userId/progress', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },
@@ -97,7 +109,7 @@ router.get('/:userId/progress', (req, res, next) => {
 }, usersCtrl.getProgress);
 
 router.post('/:userId/progress', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },

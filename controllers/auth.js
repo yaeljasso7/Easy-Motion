@@ -38,8 +38,8 @@ class AuthCtrl {
   }
 
   async registerUser(req, res, next) {
-    req.body.password = await Token.hashPassword(req.body.password);
     try {
+      req.body.password = await Token.hashPassword(req.body.password);
       const user = await User.create(req.body);
       if (user.length !== 0) {
         return res.status(201)

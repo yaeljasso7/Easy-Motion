@@ -14,32 +14,42 @@ class Token {
     this.active = active;
   }
 
-  static async createToken({ userId, type }) {
-    let response;
-    // creando hash
-    const hash = await bcrypt.hash(process.env.SECRET, 10);
-
-    // insertando hash en la db...
-    try {
-      if (hash) {
-        response = await db.insert({
-          into: 'tokens',
-          resource: {
-            token: hash,
-            type,
-            createdAt: new Date(),
-            expires: 12,
-            active: 0,
-            userId,
-          },
-        });
-        const id = response.insertId;
-        if (id > 0) {
-          return { userId, hash };
-        }
+  async isActive() {
+    if (!this.active) {
+      return false;
+    }
+    const now = new Date();
+    if (now < this.createdAt + this.expires) {
+      try {
+        await this.deactivate();
+      } catch (err) {
+        throw err;
       }
-    } catch (e) {
-      throw e;
+      return false;
+    }
+    return true;
+  }
+
+  static async create({ userId, type }) {
+    const createdAt = new Date();
+    try {
+      const token = await bcrypt.hash(`${Token.Secret}${userId}${createdAt}`, Token.SaltRounds);
+      const response = await db.insert({
+        into: 'tokens',
+        resource: {
+          token,
+          type,
+          createdAt,
+          expires: Token.SessionLives,
+          active: 1,
+          userId,
+        },
+      });
+      if (response.insertId > 0) {
+        return { userId, token };
+      }
+    } catch (err) {
+      throw err;
     }
     return [];
   }
@@ -62,37 +72,55 @@ class Token {
     return [];
   }
 
-  static async hashPassword(pass) {
-    const hash = await bcrypt.hash(pass, 1);
-    return hash;
+  static async getActiveToken(userId) {
+    try {
+      const data = await db.select({
+        from: 'tokens',
+        where: {
+          userId,
+          active: true,
+        },
+      });
+      if (data.length !== 0) {
+        const token = new Token(data[0]);
+        const validToken = await token.isActive();
+        if (validToken) {
+          return {
+            userId: token.userId,
+            token: token.token,
+          };
+        }
+      }
+    } catch (err) {
+      throw err;
+    }
+    return [];
   }
 
-  static async checkPassword(pass, hash) {
-    // pass - body / hash - db
-    // console.log('pass: ', pass);
-    // console.log('hash: ', hash);
-    const check = bcrypt.compare(pass, hash);
-    return check;
-  }
-
-  async deactivate(keyVals) {
-    console.log('keyVals', keyVals);
+  async deactivate() {
+    this.active = false;
     let updatedRows;
     try {
       const results = await db.advUpdate({
         table: 'tokens',
-        assign: keyVals,
+        assign: {
+          active: this.active,
+        },
         where: {
           id: this.id,
         },
         limit: 1,
       });
-      updatedRows = results.affectedRows;
+      updatedRows = results.affectedRows > 0;
     } catch (err) {
       throw err;
     }
     return updatedRows > 0;
   }
 }
+
+Token.Secret = process.env.SECRET;
+Token.SaltRounds = parseInt(process.env.SALT, 10);
+Token.SessionLives = parseInt(process.env.SESSION_LIVES, 10);
 
 module.exports = Token;
