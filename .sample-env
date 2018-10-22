@@ -1,7 +1,13 @@
 PORT=3000
+
 DB_USER=user
 DB_PASS=password
 DB_NAME=sampledb
 DB_HOST=localhost
 
-PAGE_SIZE=10
+PAGE_SIZE=5
+DEFAULT_PAGE=0
+
+SECRET=randomString
+SESSION_LIVES=12
+SALT=10
