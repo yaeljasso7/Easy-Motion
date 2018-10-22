@@ -3,11 +3,21 @@ const Calendar = require('./calendar');
 const ProgressUser = require('./progressUser');
 const generic = require('./generic');
 
-// FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos
-// deberian manejar los errores a traves de un try-catch
-
+/**
+ * @class User
+ * Represents an User
+ */
 class User {
+  /**
+   * Routine constructor
+   * @param {Number} id            - The user id
+   * @param {String} name          - The user name
+   * @param {String} mobile          - The user mobile
+   * @param {Number} weight          - The user weight
+   * @param {Number} height          - The user height
+   * @param {String} password          - The user name
+   * @param {Number} mail        - The user mail
+   */
   constructor({
     id, name, mobile, weight, height, password, mail,
   }) {
@@ -20,10 +30,13 @@ class User {
     this.mail = mail;
   }
 
-  save() {
-    db.new(this);
-  }
-
+  /**
+   * @method getAll - Retrieve all the users from a page
+   *
+   * @param  {Number}  [page=0]             - The page to retrieve the users
+   * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
+   * @return {Promise} - Promise Object represents, the users from that page
+   */
   static async getAll(page = 0, deletedItems) {
     const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
@@ -46,6 +59,13 @@ class User {
     return response;
   }
 
+  /**
+   * @method get - Retrieve a user, based on their id
+   *
+   * @param  {Number}  id - The user identifier
+   * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
+   * @return {Promise} - Promise Object represents a user
+   */
   static async get(id, deletedItems = false) {
     const cond = { id };
     if (!deletedItems) {
@@ -94,6 +114,13 @@ class User {
     return response;
   }
 
+  /**
+   * @method get - Retrieve a user, based on their mail
+   *
+   * @param  {Number}  id - The user identifier
+   * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
+   * @return {Promise} - Promise Object represents a user
+   */
   static async loginUser(mail) {
     const data = await db.select({
       from: User.table,
@@ -105,7 +132,10 @@ class User {
     return data.length !== 0 ? new User(data[0]) : [];
   }
 
-  // Busca en la db userCalendar donde este el usuario
+  /**
+   * @method get - Retrieve a calendar assigned to the user
+   * @return {Promise} - Promise Object represents the calendars
+   */
   async getCalendars(page = 0) {
     const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
@@ -128,6 +158,16 @@ class User {
     return response;
   }
 
+  /**
+   * @method create - Inserts a user into the database
+   * @param {Number} id            - The user id
+   * @param {String} name          - The user name
+   * @param {String} mobile          - The user mobile
+   * @param {Number} weight          - The user weight
+   * @param {Number} height          - The user height
+   * @param {String} password          - The user name
+   * @param {Number} mail        - The user mail
+   */
   static async create({
     name, mobile, weight, height, password, mail,
   }) {
@@ -153,6 +193,12 @@ class User {
     return [];
   }
 
+  /**
+   * @method update - Modifies fields from this user.
+   *
+   * @param  {Object}  keyVals - Represents the new values for this user.
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async update(keyVals) {
     let updatedRows;
     try {
@@ -171,6 +217,11 @@ class User {
     return updatedRows > 0;
   }
 
+  /**
+   * @method delete - Deletes this user.
+   *                  Assigns true to isDeleted, in the database.
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async delete() {
     let deletedRows;
     try {
@@ -192,6 +243,11 @@ class User {
     return deletedRows > 0;
   }
 
+  /**
+   * @method addCalendar - Adds a calendar to this user
+   * @param  {Number}  calendarId  - The calendar id to be added
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async addCalendar({ calendarId }) {
     let response;
     try {
@@ -208,6 +264,12 @@ class User {
 
     return response.affectedRows > 0;
   }
+  /**
+   * @method removeCalendar- Removes an calendar from this user
+   *
+   * @param  {Number}  calendarId - The calendar id
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
 
   async removeCalendar({ calendarId }) {
     let response;
@@ -227,6 +289,10 @@ class User {
     return response.affectedRows > 0;
   }
 
+  /**
+   * @method getProgress- Retrieve all the progress of this user
+   * @return {Promise} - Promise Object represents the exercises of this user
+   */
   async getProgress(page = 0) {
     const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
@@ -247,6 +313,12 @@ class User {
     return response;
   }
 
+  /**
+   * @method addProgress - Adds an progress to this user
+   * @param  {Number}  weight  - The weight to be added
+   * @param  {Number}  height  - The height to be added
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async addProgress({ weight, height }) {
     let response;
     try {
