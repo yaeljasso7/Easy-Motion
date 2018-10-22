@@ -189,7 +189,8 @@ Exercise.exists = generic.exists(Exercise.table);
 Exercise.ValidFilters = {
   name: 'asString',
   difficulty: 'asNumber',
-  bodyPartId: 'asNumber',
+  bodyPart: 'asString',
+  trainingType: 'asString',
 };
 
 module.exports = Exercise;

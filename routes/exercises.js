@@ -7,7 +7,8 @@ router.get('/', (req, res, next) => {
     query: {
       page: 'number',
       name: 'word',
-      bodyPartId: 'number',
+      bodyPart: 'word',
+      trainingType: 'word',
       difficulty: 'number',
       sort: 'word',
       order: 'order',
