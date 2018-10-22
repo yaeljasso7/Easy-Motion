@@ -1,9 +1,10 @@
 const { Exercise, ResponseMaker } = require('../models');
 
-// FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos
-// deberian manejar los errores a traves de un try-catch
-
+/**
+ *
+ * @class Class of controller Exercises
+ * - Contain the getAll, get, create, delete, update
+ */
 class ExercisesCtrl {
   constructor() {
     this.getAll = this.getAll.bind(this);
@@ -13,6 +14,15 @@ class ExercisesCtrl {
     this.update = this.update.bind(this);
     this.type = 'exercise';
   }
+
+  /**
+  * @async
+  * Async function to get all exercises from database using the Exercise Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async getAll(req, res, next) {
     const page = req.query.page ? parseInt(req.query.page, 10) : 0;
@@ -29,6 +39,15 @@ class ExercisesCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to get a specific exercise from database using the Exercise Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
   async get(req, res, next) {
     const id = req.params.exerciseId;
     try {
@@ -43,6 +62,15 @@ class ExercisesCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to create a exercise into database using the Exercise Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
   async create(req, res, next) {
     try {
       const data = await Exercise.create(req.body);
@@ -56,6 +84,15 @@ class ExercisesCtrl {
       return next(err);
     }
   }
+
+  /**
+  * @async
+  * Async function to update especific exercise from database using the Exercise Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async update(req, res, next) {
     const id = req.params.exerciseId;
@@ -79,6 +116,15 @@ class ExercisesCtrl {
       return next(err);
     }
   }
+
+  /**
+  * @async
+  * Async function to delete a especific exercise from database using the Exercise Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async delete(req, res, next) {
     const id = await req.params.exerciseId;

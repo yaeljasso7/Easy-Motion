@@ -1,6 +1,10 @@
 const { BodyPart, ResponseMaker } = require('../models');
 
-// FIXME Falta documentacion en todos los metodos
+/**
+ *
+ * @class Class of controller BodyParts
+ * - Contain the getAll, get, create, delete, update
+ */
 
 class BodyPartsCtrl {
   constructor() {
@@ -11,6 +15,15 @@ class BodyPartsCtrl {
     this.update = this.update.bind(this);
     this.type = 'bodyPart';
   }
+
+  /**
+  * @async
+  * Async function to get all bodyParts from database using the BodyPart Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async getAll(req, res, next) {
     const page = req.query.page ? parseInt(req.query.page, 10) : 0;
@@ -29,6 +42,15 @@ class BodyPartsCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to get a especific bodyPart from database using the BodyPart Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
   async get(req, res, next) {
     const id = req.params.bodyPartId;
     try {
@@ -43,6 +65,15 @@ class BodyPartsCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to create a bodyPart into database using the BodyPart Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
   async create(req, res, next) {
     try {
       const data = await BodyPart.create(req.body);
@@ -56,6 +87,15 @@ class BodyPartsCtrl {
       return next(err);
     }
   }
+
+  /**
+  * @async
+  * Async function to delete a especific bodyPart from database using the BodyPart Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async delete(req, res, next) {
     const id = req.params.bodyPartId;
@@ -79,6 +119,15 @@ class BodyPartsCtrl {
       return next(err);
     }
   }
+
+  /**
+  * @async
+  * Async function to update a especific bodyPart from database using the BodyPart Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async update(req, res, next) {
     const id = req.params.bodyPartId;

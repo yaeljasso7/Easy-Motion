@@ -1,10 +1,12 @@
 // controlador users
 const { User, ResponseMaker } = require('../models');
 
-// FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos
-// deberian manejar los errores a traves de un try-catch
-
+/**
+ *
+ * @class Class of controller User
+ * - Contain the getAll, get, create, delete, update, addCalendar, revemoveCalendar
+ * getCaelendars, addProgress, getProgess functions
+ */
 class UserCtrl {
   constructor() {
     this.getAll = this.getAll.bind(this);
@@ -19,6 +21,14 @@ class UserCtrl {
     this.getProgress = this.getProgress.bind(this);
     this.type = 'user';
   }
+  /**
+  * @async
+  * Async function to get all users from database using the User Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async getAll(req, res, next) {
     console.log(req.session);
@@ -35,6 +45,14 @@ class UserCtrl {
       return next(err);
     }
   }
+  /**
+  * @async
+  * Async function to get specific user from database using User Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async get(req, res, next) {
     const id = req.params.userId;
@@ -50,6 +68,15 @@ class UserCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to create specific user into database using User Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
   async create(req, res, next) {
     try {
       const user = await User.create(req.body);
@@ -64,6 +91,15 @@ class UserCtrl {
       return next(err);
     }
   }
+
+  /**
+  * @async
+  * Async function to delete specific user from database using User Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async delete(req, res, next) {
     const id = req.params.userId;
@@ -88,6 +124,15 @@ class UserCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to update specific user from database using User Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
   async update(req, res, next) {
     const id = req.params.userId;
     try {
@@ -110,6 +155,15 @@ class UserCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to add calendars to the user from database using
+      User Model and Calendar Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async addCalendar(req, res, next) {
     const { userId } = req.params;
@@ -134,6 +188,16 @@ class UserCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to remove calendars assigned to specific user from database using User Model
+      and Calendar Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
   async removeCalendar(req, res, next) {
     const { userId } = req.params;
     try {
@@ -153,6 +217,16 @@ class UserCtrl {
       return next(err);
     }
   }
+
+  /**
+  * @async
+  * Async function to get calendars assinged to the user from database using User Model
+      and Calendar Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async getCalendars(req, res, next) {
     const page = req.query.page ? parseInt(req.query.page, 10) : 0;
@@ -174,6 +248,15 @@ class UserCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to get the prossess of specific user from database using User Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
   async getProgress(req, res, next) {
     const page = req.query.page ? parseInt(req.query.page, 10) : 0;
     const { userId } = req.params;
@@ -193,6 +276,15 @@ class UserCtrl {
       return next(err);
     }
   }
+
+  /**
+  * @async
+  * Async function to add progress to specific user from database using User Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async addProgress(req, res, next) {
     const { userId } = req.params;

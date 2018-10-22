@@ -1,25 +1,36 @@
 const db = require('../db');
 const categoryBlog = require('./categoryBlog');
 
-// FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
-
+/**
+ * @class Blog
+ * Represents an blog
+ */
 class Blog {
-  constructor({id, date, autor, data, categoryBlog})
-  {
-    this.id =  id;
+  /**
+   * Blog constructor
+   * @param {Number} id            - The blog id
+   * @param {String} date          - The date publicated
+   * @param {String} autor         - The autor
+   * @param {int} categoryBlog     - The reference id of the categoryBlog
+   */
+  constructor({
+    id, date, autor, data, categoryBlog,
+  }) {
+    this.id = id;
     this.date = date;
     this.autor = autor;
     this.data = data;
     this.categoryBlog = categoryBlog;
-
   }
 
-  save(){
-    db.new(this);
-  }
-
-   static async getBlogs(){
+  /**
+   * @method getAll - Retrieve all the blogs from a page
+   *
+   * @param  {Number}  [page=0]             - The page to retrieve the blog
+   * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
+   * @return {Promise} - Promise Object represents, the blog from that page
+   */
+   static async getAll() {
      const data = await db.getAll('blog');
      const response = [];
      data.forEach((row) => {
@@ -28,8 +39,15 @@ class Blog {
      return response;
    }
 
-   static async getBlog(idBlog) {
-    const data = await db.get('blog', idBlog);
+   /**
+    * @method get - Retrieve a routine and its exercises, based on their id
+    *
+    * @param  {Number}  id - The routine identifier
+    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
+    * @return {Promise} - Promise Object represents a routine
+    */
+   static async get(id) {
+    const data = await db.get('blog', id);
 
     // FIXME En lugar de regresar el objeto de DB para vacio, debes construir tu propio objeto en el manejador de la base de datos
     //return data.length !== 0 ? new Blog(data[0]) : data; //elemento 0 de rowDataPackege
@@ -40,13 +58,27 @@ class Blog {
     }
   }
 
-  static async getCategory(idCategory) {
+  /**
+   * @method get - Retrieve a blog
+   *
+   * @param  {Number}  id - The blog identifier
+   * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
+   * @return {Promise} - Promise Object represents a blog
+   */
+  static async get(idCategory) {
     const response = [];
     const category = await categoryBlog.getcategoryBlog(idCategory);
     response.push(category);
     return response;
   }
-
+  /**
+   * @method create - Inserts a blog into the database
+   *
+   * @param {Number} id            - The blog id
+   * @param {String} date          - The date publicated
+   * @param {String} autor         - The autor
+   * @param {int} categoryBlog     - The reference id of the categoryBlog
+   */
   static async createBlog({ date, autor, data, categoryBlog}) {
     let response;
     try {
@@ -60,8 +92,13 @@ class Blog {
     }
     return [];
   }
-
-  async updateBlog(keyVals) {
+  /**
+   * @method update - Modifies fields from this blog.
+   *
+   * @param  {Object}  keyVals - Represents the new values for this blog.
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
+  async update(keyVals) {
     let updatedRows;
     try {
       const results = await db.update('blog', keyVals, this.id);
@@ -71,7 +108,11 @@ class Blog {
     }
     return updatedRows > 0;
   }
-
+  /**
+   * @method delete - Deletes this blog
+   *                  Assigns true to isDeleted, in the database.
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   static async deleteBlog(idBlog) {
     let deletedRows;
     try {
@@ -86,4 +127,7 @@ class Blog {
 
 }
 
+Routine.table = 'blogs';
+Routine.categoryBlogTable = 'blogs_categories';
+Routine.exists = generic.exists(Blog.table);
 module.exports = Blog;

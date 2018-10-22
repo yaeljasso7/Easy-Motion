@@ -2,11 +2,17 @@ const db = require('../db');
 const Routine = require('./routine');
 const generic = require('./generic');
 
-// FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos deberian manejar
-// los errores a traves de un try-catch
+/**
+ * @class Calendar
+ * Represents a calendar of routines
+ */
 
 class Calendar {
+  /**
+   * Routine constructor
+   * @param {Number} id            - The calendar id
+   * @param {String} name          - The calendar name
+   */
   constructor({ id, name }) {
     this.id = id;
     this.name = name;
@@ -15,7 +21,14 @@ class Calendar {
   save() {
     db.new(this);
   }
-
+  
+  /**
+   * @method getAll - Retrieve all the calendars from a page
+   *
+   * @param  {Number}  [page=0]             - The page to retrieve the calendars
+   * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
+   * @return {Promise} - Promise Object represents, the calendars from that page
+   */
   static async getAll(page = 0, deletedItems = false) {
     const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
@@ -37,7 +50,13 @@ class Calendar {
     }
     return response;
   }
-
+  /**
+   * @method get - Retrieve a calendar and its routines, based on their id
+   *
+   * @param  {Number}  id - The calendar identifier
+   * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
+   * @return {Promise} - Promise Object represents a calendar
+   */
   static async get(id, deletedItems = false) {
     const cond = { id };
     if (!deletedItems) {
@@ -59,7 +78,10 @@ class Calendar {
     }
     return [];
   }
-
+  /**
+   * @method get - Retrieve a routines of calendars
+   * @return {Promise} - Promise Object represents the routines
+   */
   async getRoutines() {
     const response = [];
     try {
@@ -82,7 +104,11 @@ class Calendar {
     }
     return response;
   }
-
+  /**
+   * @method create - Inserts a calendar into database
+   *
+   * @param {String} name - The rcalendar name
+   */
   static async create({ name }) {
     let response;
     try {
@@ -99,7 +125,11 @@ class Calendar {
     }
     return [];
   }
-
+  /**
+   * @method delete - Deletes this calendar
+   *                  Assigns true to isDeleted, in the database.
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async delete() {
     let deletedRows;
     try {
@@ -120,7 +150,12 @@ class Calendar {
     }
     return deletedRows > 0;
   }
-
+  /**
+   * @method update - Modifies fields from this calendar
+   *
+   * @param  {Object}  keyVals - Represents the new values for this calendar.
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async update(keyVals) {
     let updatedRows;
     try {
@@ -138,7 +173,12 @@ class Calendar {
     }
     return updatedRows > 0;
   }
-
+  /**
+   * @method addRoutine Adds an routine to this calendar
+   * @param  {Number}  routineId  - The routine id to be added
+   * @param  {Number}  day - The day where the routine must be done
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async addRoutine({ routineId, day }) {
     let response;
     try {
@@ -156,7 +196,13 @@ class Calendar {
 
     return response.affectedRows > 0;
   }
-
+  /**
+   * @method removeRoutine - Removes an routine from this calendar
+   *
+   * @param  {Number}  routineId - The routine id
+   * @param  {Number}  day - The day
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async removeRoutine({ routineId, day }) {
     let deletedRows;
     try {
@@ -177,9 +223,20 @@ class Calendar {
     return deletedRows > 0;
   }
 }
-
+/**
+ * Database table which rotuine are located
+ * @type {String}
+ */
 Calendar.table = 'calendars';
+/**
+ * Database table which routines, for each calendar, are located
+ * @type {String}
+ */
 Calendar.routineDayTable = 'routines_calendars';
+/**
+ * Checks if a calendar exists in the database, based on its id
+ * @type {[type]}
+ */
 Calendar.exists = generic.exists(Calendar.table);
 
 module.exports = Calendar;
