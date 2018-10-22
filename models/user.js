@@ -67,12 +67,11 @@ class User {
     return [];
   }
 
-  static async loginUser(mail, password) {
+  static async loginUser(mail) {
     const data = await db.select({
       from: 'users',
       where: {
         mail,
-        password,
       },
       limit: 1,
     });

@@ -3,14 +3,7 @@ const { usersCtrl } = require('../controllers');
 const middlewares = require('../middlewares');
 const { auth } = require('../middlewares');
 
-router.get('/', auth.isLogin, usersCtrl.getAll);
-
-router.post('/login', usersCtrl.addToken);
-
-router.post('/hola', (req, res) => {
-  console.log(req.session);
-  res.send('hola');
-});
+router.get('/', auth.haveSession, usersCtrl.getAll);
 
 router.get('/:userId', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
@@ -102,8 +95,6 @@ router.post('/:userId/progress', (req, res, next) => {
     },
   });
 }, usersCtrl.addProgress);
-
-
 
 
 module.exports = router;

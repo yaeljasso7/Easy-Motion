@@ -62,6 +62,19 @@ class Token {
     return [];
   }
 
+  static async hashPassword(pass) {
+    const hash = await bcrypt.hash(pass, 1);
+    return hash;
+  }
+
+  static async checkPassword(pass, hash) {
+    // pass - body / hash - db
+    // console.log('pass: ', pass);
+    // console.log('hash: ', hash);
+    const check = bcrypt.compare(pass, hash);
+    return check;
+  }
+
   async deactivate(keyVals) {
     console.log('keyVals', keyVals);
     let updatedRows;
