@@ -1,9 +1,11 @@
 const { Calendar, ResponseMaker } = require('../models');
 
-// FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos deberian manejar
-// los errores a traves de un try-catch
-
+/**
+ *
+ * @class Class of controller Calendar
+ * - Contain the getAll, get, create, delete, update
+    addRoutine, removeRoutine functions
+ */
 class CalendarCtrl {
   constructor() {
     this.getAll = this.getAll.bind(this);
@@ -15,6 +17,15 @@ class CalendarCtrl {
     this.removeRoutine = this.removeRoutine.bind(this);
     this.type = 'calendar';
   }
+
+  /**
+  * @async
+  * Async function to get all calendars from database using the Calendar Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async getAll(req, res, next) {
     const page = req.query.page ? parseInt(req.query.page, 10) : 0;
@@ -31,6 +42,15 @@ class CalendarCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to get specific calendar from database using the Calendar Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
   async get(req, res, next) {
     const id = req.params.calendarId;
     try {
@@ -44,6 +64,15 @@ class CalendarCtrl {
       return next(err);
     }
   }
+
+  /**
+  * @async
+  * Async function to create a calendar into database using the Calendar Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async create(req, res, next) {
     try {
@@ -59,6 +88,15 @@ class CalendarCtrl {
       return next(err);
     }
   }
+
+  /**
+  * @async
+  * Async function to delete specific calendar from database using the Calendar Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async delete(req, res, next) {
     const id = req.params.calendarId;
@@ -83,6 +121,15 @@ class CalendarCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to update specific calendar from database using the Calendar Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
   async update(req, res, next) {
     const id = req.params.calendarId;
     try {
@@ -104,6 +151,16 @@ class CalendarCtrl {
       return next(err);
     }
   }
+
+  /**
+  * @async
+  * Async function to add routine to calendar from database using the Calendar Model
+      and Routine Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async addRoutine(req, res, next) {
     const { calendarId } = req.params;
@@ -127,6 +184,15 @@ class CalendarCtrl {
       return next(err);
     }
   }
+
+  /**
+  * @async
+  * Async function to remove Routine assingned calendar from database using the Calendar Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async removeRoutine(req, res, next) {
     const { calendarId } = req.params;

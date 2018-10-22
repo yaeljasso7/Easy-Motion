@@ -70,7 +70,7 @@ class UserCtrl {
 
   /**
   * @async
-  * Async function to create specific user from database using User Model
+  * Async function to create specific user into database using User Model
   * @param  {Request Object}     req   Request to the function, includes information in params
   * @param  {Response Object}    res   Response than will give the function
   * @param  {Next Object}        next  In case of get error

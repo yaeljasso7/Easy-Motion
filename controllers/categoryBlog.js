@@ -1,94 +1,156 @@
-//controladores categoryBlog
-const { categoryBlog } = require('../models');
+// controladores categoryBlog
+const { categoryBlog, ResponseMaker } = require('../models');
 
-// FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
 
-class categoryBlogCtrl{
-  constructor(){
+/**
+ *
+ * @class Class of controller CategoryBlog
+ * - Contain the getAll, get, create, delete, update
+    addRoutine, removeRoutine functions
+ */
+class CategoryBlogCtrl {
+  constructor() {
     this.getAll = this.getAll.bind(this);
     this.get = this.get.bind(this);
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
+    this.type = 'categoryBlog';
   }
 
-   async getAll(req, res){
+  /**
+  * @async
+  * Async function to get all categoryBlog from database using the Calendar Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
-     let data = await categoryBlog.getcategoryBlogs();
-
-     // FIXME El objeto tiene formato de paginado, pero no es real
-     const json = {
-       data: data,
-       total_count: data.length,
-       per_page: data.length,
-       page: 0,
-     };
-
-     // In case categoryBlog was not found
-     if (data.length === 0) {
-       res.status(204);
-     }
-
-     res.send(json);
-  }
-
-  async get(req, res){
-      let data = await categoryBlog.getcategoryBlog(req.params.idcategoryBlog);
-      if (data.length === 0) {
-        res.status(204);
-      }
-
-      res.send(data);
-  }
-
-  async create(req, res, next){
+  async getAll(req, res, next) {
+    const page = req.query.page ? parseInt(req.query.page, 10) : 0;
     try {
-      let data = await categoryBlog.createcategoryBlog(req.body); //req.body {}
-      res.status(201).send(data);
-    } catch (e) {
-      res.status (409).send("Insert error: " + e.duplicated.message);
-      next(e);
+      const data = await categoryBlog.getAll(page);
+
+      if (data.length === 0) {
+        return res.status(204)
+          .send(ResponseMaker.noContent(this.type));
+      }
+      return res.send(ResponseMaker.paginated(page, this.type, data));
+    } catch (err) {
+      return next(err);
     }
   }
 
-  async delete(req, res, next){
-    const deleted = await categoryBlog.deletecategoryBlog(req.params.idcategoryBlog);
+  /**
+  * @async
+  * Async function to get all categoryBlog from database using the Calendar Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
-      if (deleted) {
-        res.status(200); // OK
-      } else {
-        res.status(404); // Not Found
+  async get(req, res, next) {
+    const id = req.params.trainingTypeId;
+    try {
+      const data = await categoryBlog.get(id);
+      if (data.length === 0) {
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
       }
-
-      res.send();
+      return res.send(ResponseMaker.ok('Found', this.type, data));
+    } catch (err) {
+      return next(err);
+    }
   }
 
+  /**
+  * @async
+  * Async function to create a categoryBlog into database using the Calendar Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
+  async create(req, res, next) {
+    try {
+      const data = await categoryBlog.create(req.body);
+      if (data.length !== 0) {
+        return res.status(201)
+          .send(ResponseMaker.created(this.type, data));
+      }
+      return res.status(409)
+        .send(ResponseMaker.conflict(this.type, data));
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  /**
+  * @async
+  * Async function to update a categoryBlog from database using the Calendar Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
   async update(req, res, next) {
+    const id = req.params.trainingTypeId;
+    try {
+      const data = await categoryBlog.get(id);
 
-   const data = await categoryBlog.getcategoryBlog(req.params.idcategoryBlog);
+      if (data.length === 0) {
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
+      }
 
-   if (data.length === 0) {
-     res.status(404).send(data); // Not Found
-   }
+      const updated = await data.update(req.body);
 
-   try{
-     const updated = await data.updatecategoryBlog(req.body);
-     if (updated) {
-       res.status(200); // OK
-     } else {
-       res.status(409); // Conflict
-     }
-   }catch(e){
-     res.status(409);
-     next(e);
-   }
+      if (updated) {
+        return res.status(200)
+          .send(ResponseMaker.ok('Updated', this.type, { ...data, ...req.body }));
+      }
+      return res.status(409)
+        .send(ResponseMaker.conflict(this.type, req.body));
+    } catch (err) {
+      return next(err);
+    }
+  }
 
-  // FIXME ESto deberia regresar un objeto de tipo del recurso idealmente o un objeto con un formato definido para respuestas
-   res.send({...data, ...req.body}); 
- }
+  /**
+  * @async
+  * Async function delete specific categoryBlog from database using the Calendar Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
+  async delete(req, res, next) {
+    const id = req.params.trainingTypeId;
+    try {
+      const data = await categoryBlog.get(id);
 
+      if (data.length === 0) {
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
+      }
 
+      const deleted = await data.delete();
+
+      if (deleted) {
+        return res.status(200)
+          .send(ResponseMaker.ok('Deleted', this.type, { id }));
+      }
+      return res.status(409)
+        .send(ResponseMaker.conflict(this.type, req.body));
+    } catch (err) {
+      return next(err);
+    }
+  }
 }
-module.exports = new categoryBlogCtrl();
+
+module.exports = new CategoryBlogCtrl();

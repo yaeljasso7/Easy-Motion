@@ -63,7 +63,7 @@ class BlogCtrl {
 
   /**
   * @async
-  * Async function to create a blog from database using the Blog Model
+  * Async function to create a blog finto database using the Blog Model
   * @param  {Request Object}     req   Request to the function, includes information in params
   * @param  {Response Object}    res   Response than will give the function
   * @param  {Next Object}        next  In case of get error
