@@ -1,11 +1,12 @@
 //controladores blog
 const { Blog } = require('../models');
 
-// FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos deberian manejar los errores a traves de un try-catch
-
-
-class BlogCtrl{
+/**
+ *
+ * @class Class of controller Blog
+ * - Contain the getAll, get, create, delete, update functions
+ */
+class BlogCtrl {
   constructor(){
     this.getAll = this.getAll.bind(this);
     this.get = this.get.bind(this);
@@ -13,6 +14,15 @@ class BlogCtrl{
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
   }
+
+  /**
+  * @async
+  * Async function to get all blogs from database using the Blog Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
    async getAll(req, res){
 
@@ -33,6 +43,15 @@ class BlogCtrl{
      res.send(json);
   }
 
+  /**
+  * @async
+  * Async function to get a specific blog from database using the Blog Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
   async get(req, res){
       let data = await Blog.getBlog(req.params.idBlog);
       if (data.length === 0) {
@@ -41,6 +60,15 @@ class BlogCtrl{
 
       res.send(data);
   }
+
+  /**
+  * @async
+  * Async function to create a blog from database using the Blog Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async create(req, res, next){
     try {
@@ -55,6 +83,15 @@ class BlogCtrl{
     }
   }
 
+  /**
+  * @async
+  * Async function to delete a specific blog from database using the Blog Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
   async delete(req, res, next){
     const deleted = await Blog.deleteBlog(req.params.idBlog);
 
@@ -67,6 +104,14 @@ class BlogCtrl{
       res.send();
   }
 
+  /**
+  * @async
+  * Async function to iptate a specific blog from database using the Blog Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async update(req, res, next) {
 
    const data = await Blog.getBlog(req.params.idBlog);
