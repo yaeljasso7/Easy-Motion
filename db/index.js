@@ -3,7 +3,14 @@ const Qry = require('./query');
 
 // FIXME Falta documentacion en todos los metodos
 
+/**
+ * @class DB
+ * Database abstraction
+ */
 class DB {
+  /**
+   * Creates an mysql connection
+   */
   constructor() {
     this.conn = mysql.createConnection({
       host: process.env.DB_HOST,
@@ -24,7 +31,7 @@ class DB {
   /**
    * @method select - Retrieve rows selected from one or more tables.
    *
-   * @param  {(string|string[])} columns - The column or columns that you want
+   * @param  {(String|String[])} columns - The column or columns that you want
    *         to retrieve.
    *         ----------
    *         Usage:
@@ -33,12 +40,37 @@ class DB {
    *
    *         If no columns specified, all columns are retrieved.
    *
-   * @param  {(string|string[])} from - The table or tables from which to
+   * @param  {(String|String[])} from - The table or tables from which to
    *         retrieve rows.
    *         ----------
    *         Usage:
    *           from: [ 'tbl_name1', ... , 'tbl_nameN' ]
    *           from: 'tbl_name'
+   *
+   * @param  {Object|Object[]} join - The tables and conditions to join with
+   *         ----------
+   *         Usage:
+   *           join: {
+   *             table: 'tbl_name',           <- the table to join
+   *             on: {
+   *               'tbl1_field': 'tbl_field'  <- the condition to join
+   *             }
+   *           }
+   *
+   *           join: [
+   *             {
+   *               table: 'tbl_name1',
+   *               on: {
+   *                 'tbl_field': 'tbl1_field'
+   *               }
+   *             },
+   *             {
+   *               table: 'tbl_name2',
+   *               on: {
+   *                 'tbl_field': 'tbl2_field'
+   *               }
+   *             }
+   *           ]
    *
    * @param  {Object} where - The condition or conditions that rows must to
    *         satisfy to be selected.
@@ -73,7 +105,7 @@ class DB {
    *
    *         If no condition specified, all records are selected.
    *
-   * @param  {(string|string[])} sorter - Sort the records in a result set.
+   * @param  {(String|String[])} sorter - Sort the records in a result set.
    *         ----------
    *         Usage:
    *           sorter: ['key_part1', 'key_part2']
@@ -87,7 +119,7 @@ class DB {
    *           desc: true
    *           desc: false  <-  Optional
    *
-   * @param  {(number|number[])} limit - Limit the number of records returned.
+   * @param  {(Number|Number[])} limit - Limit the Number of records returned.
    *         ----------
    *         Usage:
    *           limit: [start_from, row_count]
@@ -113,13 +145,13 @@ class DB {
   /**
    * @method advDelete - Remove rows from a table
    *
-   * @param  {(string|string[])} from - The table or tables from which to
+   * @param  {(String|String[])} from - The table or tables from which to
    *         delete rows.
    * @param  {Object} where - Identify which rows to delete, with no WHERE,
    *         all rows are deleted.
-   * @param  {(string|string[])} sorter - Delete rows in the specified order.
+   * @param  {(String|String[])} sorter - Delete rows in the specified order.
    * @param  {boolean} desc - Delete the rows in descending order.
-   * @param  {(number|number[])} limit - Limit the number of rows deleted.
+   * @param  {(Number|Number[])} limit - Limit the Number of rows deleted.
    * @return {Promise} - Promise object represents the query results.
    */
   advDelete({
@@ -140,15 +172,15 @@ class DB {
   /**
    * @method advUpdate - Modifies rows in a table
    *
-   * @param  {(string|string[])} table - The table or tables from which to
+   * @param  {(String|String[])} table - The table or tables from which to
    *         modify rows.
    * @param  {Object} assign - Indicates which columns to modify and the values
    *         they should be given.
    * @param  {Object} where - Identify which rows to modify, with no WHERE,
    *         all rows are modified.
-   * @param  {(string|string[])} sorter - Modify rows in the specified order.
+   * @param  {(String|String[])} sorter - Modify rows in the specified order.
    * @param  {boolean} desc - Modify rows in descending order.
-   * @param  {(number|number[])} limit - Limit the number of rows modified.
+   * @param  {(Number|Number[])} limit - Limit the Number of rows modified.
    * @return {Promise} - Promise object represents the query results.
    */
   advUpdate({
@@ -169,7 +201,7 @@ class DB {
   /**
    * @method getAll - Retrieve all elements from a table.
    *
-   * @param  {string} table The table from which to retrieve the records.
+   * @param  {String} table The table from which to retrieve the records.
    * @return {Promise} - Promise object represents the query results.
    */
   getAll(table) {
@@ -186,8 +218,8 @@ class DB {
   /**
    * @method get - Retrieve elements from a table, based on their id.
    *
-   * @param  {string} table The table from which to retrieve records.
-   * @param  {number} id - Object id to select.
+   * @param  {String} table The table from which to retrieve records.
+   * @param  {Number} id - Object id to select.
    * @return {Promise} - Promise object represents the query results.
    */
   get(table, id) {
@@ -204,8 +236,8 @@ class DB {
   /**
    * @method delete - Delete elements from a table, based on their id.
    *
-   * @param  {string} table The table from which to delete rows.
-   * @param  {number} id - Object id to delete.
+   * @param  {String} table The table from which to delete rows.
+   * @param  {Number} id - Object id to delete.
    * @return {Promise} - Promise object represents the query results.
    */
   delete(table, id) {
@@ -225,10 +257,10 @@ class DB {
   /**
    * @method update - Modifies elements in a table, based on their id.
    *
-   * @param  {string} table The table from which to modify rows.
+   * @param  {String} table The table from which to modify rows.
    * @param  {Object} obj - Indicates which columns to modify and the values
    *         they should be given.
-   * @param  {number} id - Object id to modify.
+   * @param  {Number} id - Object id to modify.
    * @return {Promise} - Promise object represents the query results.
    */
   update(table, obj, id) {
@@ -249,7 +281,7 @@ class DB {
   /**
    * @method insert - Inserts new rows into an existing table.
    *
-   * @param  {string} into - Table to which insert the Object.
+   * @param  {String} into - Table to which insert the Object.
    * @param  {Object} resource - The object to insert into the table.
    * @return {Promise} - Promise object represents the query results.
    */
@@ -266,7 +298,7 @@ class DB {
 
   /**
    * @method processError - Process the error message from database,
-   * into a readable error message.
+   *         into a readable error message.
    *
    * @param  {Object} err - The database error message
    * @return {Object} - The error message processed
@@ -300,9 +332,9 @@ class DB {
   }
 
   /**
-   * @method getDataFromErrorMsg - Convert string error message into an object.
+   * @method getDataFromErrorMsg - Convert String error message into an object.
    *
-   * @param  {string} message - The message error from database.
+   * @param  {String} message - The message error from database.
    * @return {Object} - The error message as an object.
    */
   getDataFromErrorMsg(message) {

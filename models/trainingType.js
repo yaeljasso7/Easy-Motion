@@ -1,17 +1,30 @@
 const db = require('../db');
 const generic = require('./generic');
 
-// FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos
-// deberian manejar los errores a traves de un try-catch
-
+/**
+ * @class TrainingType
+ * Represents the training type that an exercise focuses on
+ */
 class TrainingType {
+  /**
+   * TrainingType constructor
+   * @param {Number} id          The training type id
+   * @param {String} name        The training type name
+   * @param {String} description The training type description
+   */
   constructor({ id, name, description }) {
     this.id = id;
     this.name = name;
     this.description = description;
   }
 
+  /**
+   * @method getAll - Retrieve all the training types from a page
+   *
+   * @param  {Number}  [page=0] - The page to retrieve the training types
+   * @return {Promise} - Promise Object represents, the training types
+   * from that page.
+   */
   static async getAll(page = 0) {
     const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
@@ -30,6 +43,12 @@ class TrainingType {
     return response;
   }
 
+  /**
+   * @method get - Retrieve a training type, based on its id
+   *
+   * @param  {Number}  id - The training type identifier
+   * @return {Promise} - Promise Object represents a training type
+   */
   static async get(id) {
     let data;
     try {
@@ -49,6 +68,12 @@ class TrainingType {
     return data.length !== 0 ? new TrainingType(data[0]) : [];
   }
 
+  /**
+   * @method create - Inserts a training type into the database
+   * @param  {String}  name - The training type name
+   * @param  {String}  description - The training type description
+   * @return {Promise} - Promise Object represents the training type created
+   */
   static async create({ name, description }) {
     let response;
     try {
@@ -69,6 +94,12 @@ class TrainingType {
     return [];
   }
 
+  /**
+   * @method update - Modifies fields from this training type.
+   *
+   * @param  {Object}  keyVals - Represents the new values for this training type.
+   * @return {Promise} - Promise Object represents the the operation success (boolean)
+   */
   async update(keyVals) {
     let updatedRows;
     try {
@@ -87,6 +118,11 @@ class TrainingType {
     return updatedRows > 0;
   }
 
+  /**
+   * @method delete - Deletes this training type.
+   *                  Assigns true to isDeleted, in the database.
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async delete() {
     let deletedRows;
     try {
@@ -109,7 +145,15 @@ class TrainingType {
   }
 }
 
+/**
+ * Database table which training types are located.
+ * @type {String}
+ */
 TrainingType.table = 'training_types';
+/**
+ * Checks if a training type exists in the database, based on its id
+ * @type {asyncFunction}
+ */
 TrainingType.exists = generic.exists(TrainingType.table);
 
 module.exports = TrainingType;

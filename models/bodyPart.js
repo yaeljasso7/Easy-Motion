@@ -1,9 +1,16 @@
 const db = require('../db');
 const generic = require('./generic');
 
-// FIXME Falta documentacion en todos los metodos
-
+/**
+ * @class BodyPart
+ * Represents the body part that an exercise focuses on
+ */
 class BodyPart {
+  /**
+   * BodyPart constructor
+   * @param {Number} id   - The body part id
+   * @param {String} name - The body part name
+   */
   constructor({
     id, name,
   }) {
@@ -11,6 +18,12 @@ class BodyPart {
     this.name = name;
   }
 
+  /**
+   * @method getAll - Retrieve all the body parts from a page
+   *
+   * @param  {Number}  [page=0] - The page to retrieve the body parts
+   * @return {Promise} - Promise Object represents, the body parts from that page
+   */
   static async getAll(page = 0) {
     const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
@@ -30,6 +43,12 @@ class BodyPart {
     return response;
   }
 
+  /**
+   * @method get - Retrieve a body part, based on its id
+   *
+   * @param  {Number}  id - The body part identifier
+   * @return {Promise} - Promise Object represents a body part
+   */
   static async get(id) {
     let data;
     try {
@@ -49,6 +68,12 @@ class BodyPart {
     return data.length !== 0 ? new BodyPart(data[0]) : [];
   }
 
+  /**
+   * @method create - Inserts a body part into the database
+   *
+   * @param  {String}  name - The body part name
+   * @return {Promise} - Promise Object represents the body part created
+   */
   static async create({ name }) {
     let response;
     try {
@@ -68,6 +93,12 @@ class BodyPart {
     return [];
   }
 
+  /**
+   * @method update - Modifies fields from this body part.
+   *
+   * @param  {Object}  keyVals - Represents the new values for this body part.
+   * @return {Promise} - Promise Object represents the body part modified.
+   */
   async update(keyVals) {
     let updatedRows;
     try {
@@ -86,6 +117,11 @@ class BodyPart {
     return updatedRows > 0;
   }
 
+  /**
+   * @method delete - Deletes this body part.
+   *                  Assigns true to isDeleted, in the database.
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async delete() {
     let deletedRows;
     try {
@@ -108,7 +144,15 @@ class BodyPart {
   }
 }
 
+/**
+ * Database table which body parts are located.
+ * @type {String}
+ */
 BodyPart.table = 'body_parts';
+/**
+ * Checks if a body part exists in the database, based on its id
+ * @type {asyncFunction}
+ */
 BodyPart.exists = generic.exists(BodyPart.table);
 
 module.exports = BodyPart;

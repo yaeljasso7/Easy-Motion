@@ -1,9 +1,20 @@
 const db = require('../db');
 const generic = require('./generic');
 
-// FIXME Falta documentacion en todos los metodos
-
+/**
+ * @class Exercise
+ * Represents an exercise
+ */
 class Exercise {
+  /**
+   * Exercise constructor
+   * @param {Number} id           - The exercise id
+   * @param {String} name         - The exercise name
+   * @param {Number} difficulty   - The exercise difficulty
+   * @param {String} description  - The exercise description
+   * @param {String} trainingType - the training type that an exercise focuses on
+   * @param {String} bodyPart     - The body part that an exercise focuses on
+   */
   constructor({
     id, name, difficulty, description, trainingType, bodyPart,
   }) {
@@ -15,6 +26,13 @@ class Exercise {
     this.bodyPart = bodyPart;
   }
 
+  /**
+   * @method getAll - Retrieve all the exercises from a page
+   *
+   * @param  {Number}  [page=0]             - The page to retrieve the exercises
+   * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
+   * @return {Promise} - Promise Object represents, the exercises from that page
+   */
   static async getAll(page = 0, deletedItems = false) {
     const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
@@ -37,6 +55,13 @@ class Exercise {
     return response;
   }
 
+  /**
+   * @method get - Retrieve an exercise, based on its id
+   *
+   * @param  {Number}  id - The exercise identifier
+   * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
+   * @return {Promise} - Promise Object represents an exercise
+   */
   static async get(id, deletedItems = false) {
     let data;
     const cond = { id };
@@ -57,6 +82,16 @@ class Exercise {
     return data.length !== 0 ? new Exercise(data[0]) : [];
   }
 
+  /**
+   * @method create - Inserts an exercise into the database.
+   *
+   * @param  {[type]}  name         - The exercise name
+   * @param  {[type]}  difficulty   - The exercise difficulty
+   * @param  {[type]}  description  - The exercise description
+   * @param  {Number}  trainingType - The training type identifier
+   * @param  {Number}  bodyPart     - The body part identifier
+   * @return {Promise} - Promise Object represents the exercise created
+   */
   static async create({
     name, difficulty, description, trainingType, bodyPart,
   }) {
@@ -81,6 +116,12 @@ class Exercise {
     return [];
   }
 
+  /**
+   * @method update - Modifies fields from this exercise.
+   *
+   * @param  {Object}  keyVals - Represents the new values for this exercise.
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async update(keyVals) {
     let updatedRows;
     try {
@@ -99,6 +140,11 @@ class Exercise {
     return updatedRows > 0;
   }
 
+  /**
+   * @method delete - Deletes this exercise.
+   *                  Assigns true to isDeleted, in the database.
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async delete() {
     let deletedRows;
     try {
@@ -121,8 +167,20 @@ class Exercise {
   }
 }
 
+/**
+ * Database table which exercises are located.
+ * @type {String}
+ */
 Exercise.table = 'exercises';
+/**
+ * Database view which the exercises are read.
+ * @type {String}
+ */
 Exercise.vTable = `v_${Exercise.table}`;
+/**
+ * Checks if an exercise exists in the database, based on its id
+ * @type {asyncFunction}
+ */
 Exercise.exists = generic.exists(Exercise.table);
 
 module.exports = Exercise;

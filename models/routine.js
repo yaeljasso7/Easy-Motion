@@ -2,9 +2,18 @@ const db = require('../db');
 const Exercise = require('./exercise');
 const generic = require('./generic');
 
-// FIXME Falta documentacion en todos los metodos
-
+/**
+ * @class Routine
+ * Represents an exercises routine
+ */
 class Routine {
+  /**
+   * Routine constructor
+   * @param {Number} id            - The routine id
+   * @param {String} name          - The routine name
+   * @param {String} description   - The routine description
+   * @param {String} executionTime - The estimated execution time, in minutes.
+   */
   constructor({
     id, name, description, executionTime,
   }) {
@@ -14,6 +23,13 @@ class Routine {
     this.executionTime = executionTime;
   }
 
+  /**
+   * @method getAll - Retrieve all the routines from a page
+   *
+   * @param  {Number}  [page=0]             - The page to retrieve the routines
+   * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
+   * @return {Promise} - Promise Object represents, the routines from that page
+   */
   static async getAll(page = 0, deletedItems = false) {
     const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
@@ -36,6 +52,13 @@ class Routine {
     return response;
   }
 
+  /**
+   * @method get - Retrieve a routine and its exercises, based on their id
+   *
+   * @param  {Number}  id - The routine identifier
+   * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
+   * @return {Promise} - Promise Object represents a routine
+   */
   static async get(id, deletedItems = false) {
     const cond = { id };
     if (!deletedItems) {
@@ -58,6 +81,13 @@ class Routine {
     return [];
   }
 
+  /**
+   * @method create - Inserts a routine into the database
+   *
+   * @param {String} name          - The routine name
+   * @param {String} description   - The routine description
+   * @param {String} executionTime - The estimated execution time, in minutes.
+   */
   static async create({ name, description, executionTime }) {
     let response;
     try {
@@ -80,6 +110,12 @@ class Routine {
     return [];
   }
 
+  /**
+   * @method update - Modifies fields from this routine.
+   *
+   * @param  {Object}  keyVals - Represents the new values for this routine.
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async update(keyVals) {
     let updatedRows;
     try {
@@ -98,6 +134,11 @@ class Routine {
     return updatedRows > 0;
   }
 
+  /**
+   * @method delete - Deletes this routine.
+   *                  Assigns true to isDeleted, in the database.
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async delete() {
     let deletedRows;
     try {
@@ -119,6 +160,12 @@ class Routine {
     return deletedRows > 0;
   }
 
+  /**
+   * @method addExercise - Adds an exercise to this routine
+   * @param  {Number}  exerciseId  - The exercise id to be added
+   * @param  {Number}  repetitions - The times an exercise must be repeated
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async addExercise({ exerciseId, repetitions }) {
     let response;
     try {
@@ -136,6 +183,10 @@ class Routine {
     return response.affectedRows > 0;
   }
 
+  /**
+   * @method getExercises - Retrieve all the exercises of this routine
+   * @return {Promise} - Promise Object represents the exercises of this routine
+   */
   async getExercises() {
     const response = [];
     try {
@@ -157,6 +208,12 @@ class Routine {
     return response;
   }
 
+  /**
+   * @method removeExercise - Removes an exercise from this routine
+   *
+   * @param  {Number}  exerciseId - The exercise id
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async removeExercise({ exerciseId }) {
     let deletedRows;
     try {
@@ -176,6 +233,15 @@ class Routine {
     return deletedRows > 0;
   }
 
+  /**
+   * @method updateExerciseReps - Modifies the times an exercise must be repeated
+   *         for this routine.
+   *
+   * @param  {Number}  exerciseId  - The exercise identifier, to modify its
+   *         repetitions.
+   * @param  {Number}  repetitions - The times this exercise must be repeated
+   * @return {Promise} - Promise Object represents the operation success (boolean)
+   */
   async updateExerciseReps({ exerciseId, repetitions }) {
     let updatedRows;
     try {
@@ -196,8 +262,20 @@ class Routine {
   }
 }
 
+/**
+ * Database table which routines are located
+ * @type {String}
+ */
 Routine.table = 'routines';
+/**
+ * Database table which exercises, for each routine, are located
+ * @type {String}
+ */
 Routine.exercisesTable = 'exercises_routines';
+/**
+ * Checks if a routine exists in the database, based on its id
+ * @type {[type]}
+ */
 Routine.exists = generic.exists(Routine.table);
 
 module.exports = Routine;
