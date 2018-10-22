@@ -94,12 +94,11 @@ class User {
     return response;
   }
 
-  static async loginUser(mail, password) {
+  static async loginUser(mail) {
     const data = await db.select({
       from: User.table,
       where: {
         mail,
-        password,
       },
       limit: 1,
     });
