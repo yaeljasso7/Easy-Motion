@@ -6,6 +6,6 @@ exports.Exercise = require('./exercise');
 exports.BodyPart = require('./bodyPart');
 exports.TrainingType = require('./trainingType');
 exports.Routine = require('./routine');
-exports.progressUser = require('./progressUser');
+exports.ProgressUser = require('./progressUser');
 exports.ResponseMaker = require('./responseMaker');
 exports.Token = require('./token');

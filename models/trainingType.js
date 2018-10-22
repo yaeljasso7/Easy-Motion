@@ -25,13 +25,17 @@ class TrainingType {
    * @return {Promise} - Promise Object represents, the training types
    * from that page.
    */
-  static async getAll(page = 0) {
-    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
+  static async getAll({
+    page, sorter, desc, filters,
+  }) {
+    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     try {
       const data = await db.select({
         from: TrainingType.table,
-        where: { isDeleted: false },
+        where: { ...filters, isDeleted: false },
+        sorter,
+        desc,
         limit: [page * pageSize, pageSize],
       });
       data.forEach((row) => {
@@ -155,5 +159,9 @@ TrainingType.table = 'training_types';
  * @type {asyncFunction}
  */
 TrainingType.exists = generic.exists(TrainingType.table);
+
+TrainingType.ValidFilters = {
+  name: 'asString',
+};
 
 module.exports = TrainingType;

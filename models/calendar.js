@@ -21,7 +21,7 @@ class Calendar {
   save() {
     db.new(this);
   }
-  
+
   /**
    * @method getAll - Retrieve all the calendars from a page
    *
@@ -29,8 +29,10 @@ class Calendar {
    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
    * @return {Promise} - Promise Object represents, the calendars from that page
    */
-  static async getAll(page = 0, deletedItems = false) {
-    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
+  static async getAll({
+    page, sorter, desc, filters,
+  }, deletedItems = false) {
+    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     const cond = {};
     if (!deletedItems) {
@@ -39,7 +41,9 @@ class Calendar {
     try {
       const data = await db.select({
         from: Calendar.table,
-        where: cond,
+        where: { ...filters, ...cond },
+        sorter,
+        desc,
         limit: [page * pageSize, pageSize],
       });
       data.forEach((row) => {
@@ -50,6 +54,7 @@ class Calendar {
     }
     return response;
   }
+
   /**
    * @method get - Retrieve a calendar and its routines, based on their id
    *
@@ -78,6 +83,7 @@ class Calendar {
     }
     return [];
   }
+
   /**
    * @method get - Retrieve a routines of calendars
    * @return {Promise} - Promise Object represents the routines
@@ -104,6 +110,7 @@ class Calendar {
     }
     return response;
   }
+
   /**
    * @method create - Inserts a calendar into database
    *
@@ -125,6 +132,7 @@ class Calendar {
     }
     return [];
   }
+
   /**
    * @method delete - Deletes this calendar
    *                  Assigns true to isDeleted, in the database.
@@ -150,6 +158,7 @@ class Calendar {
     }
     return deletedRows > 0;
   }
+
   /**
    * @method update - Modifies fields from this calendar
    *
@@ -173,6 +182,7 @@ class Calendar {
     }
     return updatedRows > 0;
   }
+
   /**
    * @method addRoutine Adds an routine to this calendar
    * @param  {Number}  routineId  - The routine id to be added
@@ -196,6 +206,7 @@ class Calendar {
 
     return response.affectedRows > 0;
   }
+
   /**
    * @method removeRoutine - Removes an routine from this calendar
    *
@@ -238,5 +249,8 @@ Calendar.routineDayTable = 'routines_calendars';
  * @type {[type]}
  */
 Calendar.exists = generic.exists(Calendar.table);
+Calendar.ValidFilters = {
+  name: 'asString',
+};
 
 module.exports = Calendar;

@@ -11,12 +11,12 @@ const generic = require('./generic');
 class User {
   /**
    * Routine constructor
-   * @param {Number} id            - The user id
-   * @param {String} name          - The user name
-   * @param {String} mobile          - The user mobile
-   * @param {Number} weight          - The user weight
-   * @param {Number} height          - The user height
-   * @param {String} password          - The user name
+   * @param {Number} id          - The user id
+   * @param {String} name        - The user name
+   * @param {String} mobile      - The user mobile
+   * @param {Number} weight      - The user weight
+   * @param {Number} height      - The user height
+   * @param {String} password    - The user name
    * @param {Number} mail        - The user mail
    */
   constructor({
@@ -38,8 +38,10 @@ class User {
    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
    * @return {Promise} - Promise Object represents, the users from that page
    */
-  static async getAll(page = 0, deletedItems) {
-    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
+  static async getAll({
+    page, sorter, desc, filters,
+  }, deletedItems) {
+    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     const cond = {};
     if (!deletedItems) {
@@ -48,7 +50,9 @@ class User {
     try {
       const data = await db.select({
         from: User.table,
-        where: cond,
+        where: { ...filters, ...cond },
+        sorter,
+        desc,
         limit: [page * pageSize, pageSize],
       });
       data.forEach((row) => {
@@ -154,22 +158,38 @@ class User {
    *
    * @return {Promise} - Promise Object represents the calendars
    */
-  async getCalendars(page = 0) {
-    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
+  async getCalendars({
+    page, sorter, desc, filters,
+  }) {
+    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     try {
       const data = await db.select({
         from: User.calendarTable,
+        join: {
+          table: 'calendars',
+          on: {
+            calendarId: 'calendars.id',
+          },
+        },
         where: {
+          ...filters,
           userId: this.id,
         },
+        sorter,
+        desc,
         limit: [page * pageSize, pageSize],
       });
+      data.forEach((row) => {
+        response.push(new Calendar(row));
+      });
+      /*
       const myPromises = data.map(async (row) => {
         const calendar = await Calendar.get(row.calendarId, true);
         response.push(calendar);
       });
       await Promise.all(myPromises); // si se cumplen todas las promesas
+      */
     } catch (err) {
       throw err;
     }
@@ -309,18 +329,23 @@ class User {
   }
 
   /**
-   * @method getProgress- Retrieve all the progress of this user
+   * @method getProgress - Retrieve all the progress of this user
    * @return {Promise} - Promise Object represents the exercises of this user
    */
-  async getProgress(page = 0) {
+  async getProgress({
+    page, sorter, desc, filters,
+  }) {
     const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
     try {
       const data = await db.select({
         from: User.progressTable,
         where: {
+          ...filters,
           userId: this.id,
         },
+        sorter,
+        desc,
         limit: [page * pageSize, pageSize],
       });
       data.forEach((row) => {
@@ -333,7 +358,7 @@ class User {
   }
 
   /**
-   * @method addProgress - Adds an progress to this user
+   * @method addProgress - Adds a progress to this user
    * @param  {Number}  weight  - The weight to be added
    * @param  {Number}  height  - The height to be added
    * @return {Promise} - Promise Object represents the operation success (boolean)
@@ -364,5 +389,11 @@ User.table = 'users';
 User.progressTable = 'users_progress';
 User.calendarTable = 'users_calendars';
 User.exists = generic.exists(User.table);
+
+User.ValidFilters = {
+  mail: 'asString',
+  role: 'asNumber',
+  name: 'asString',
+};
 
 module.exports = User;

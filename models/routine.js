@@ -30,8 +30,10 @@ class Routine {
    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
    * @return {Promise} - Promise Object represents, the routines from that page
    */
-  static async getAll(page = 0, deletedItems = false) {
-    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
+  static async getAll({
+    page, sorter, desc, filters,
+  }, deletedItems = false) {
+    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     const cond = {};
     if (!deletedItems) {
@@ -40,7 +42,9 @@ class Routine {
     try {
       const data = await db.select({
         from: Routine.table,
-        where: cond,
+        where: { ...filters, ...cond },
+        sorter,
+        desc,
         limit: [page * pageSize, pageSize],
       });
       data.forEach((row) => {
@@ -277,5 +281,10 @@ Routine.exercisesTable = 'exercises_routines';
  * @type {[type]}
  */
 Routine.exists = generic.exists(Routine.table);
+
+Routine.ValidFilters = {
+  name: 'asString',
+  executionTime: 'asNumber',
+};
 
 module.exports = Routine;

@@ -26,17 +26,14 @@ class BodyPartsCtrl {
   */
 
   async getAll(req, res, next) {
-    const page = req.query.page ? parseInt(req.query.page, 10) : 0;
     try {
-      const data = await BodyPart.getAll(page);
-
-      // FIXME El objeto tiene formato de paginado, pero no es real
+      const data = await BodyPart.getAll(req.query);
       if (data.length === 0) {
         return res.status(204)
           .send(ResponseMaker.noContent(this.type));
       }
       return res.status(200)
-        .send(ResponseMaker.paginated(page, this.type, data));
+        .send(ResponseMaker.paginated(req.query.page, this.type, data));
     } catch (err) {
       return next(err);
     }

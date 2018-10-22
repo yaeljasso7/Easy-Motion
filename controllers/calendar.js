@@ -28,15 +28,14 @@ class CalendarCtrl {
   */
 
   async getAll(req, res, next) {
-    const page = req.query.page ? parseInt(req.query.page, 10) : 0;
     try {
-      const data = await Calendar.getAll(page);
+      const data = await Calendar.getAll(req.query);
 
       if (data.length === 0) {
         return res.status(204)
           .send(ResponseMaker.noContent(this.type));
       }
-      return res.send(ResponseMaker.paginated(page, this.type, data));
+      return res.send(ResponseMaker.paginated(req.query.page, this.type, data));
     } catch (err) {
       return next(err);
     }

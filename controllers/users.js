@@ -31,16 +31,14 @@ class UserCtrl {
   */
 
   async getAll(req, res, next) {
-    console.log(req.session);
-    const page = req.query.page ? parseInt(req.query.page, 10) : 0;
     try {
-      const data = await User.getAll(page);
+      const data = await User.getAll(req.query);
 
       if (data.length === 0) {
         return res.status(204)
           .send(ResponseMaker.noContent(this.type));
       }
-      return res.send(ResponseMaker.paginated(page, this.type, data));
+      return res.send(ResponseMaker.paginated(req.query.page, this.type, data));
     } catch (err) {
       return next(err);
     }
@@ -229,7 +227,6 @@ class UserCtrl {
   */
 
   async getCalendars(req, res, next) {
-    const page = req.query.page ? parseInt(req.query.page, 10) : 0;
     const { userId } = req.params;
     try {
       const user = await User.get(userId);
@@ -237,12 +234,12 @@ class UserCtrl {
         return res.status(404)
           .send(ResponseMaker.notFound(this.type, { userId }));
       }
-      const data = await user.getCalendars(page);
+      const data = await user.getCalendars(req.query);
       if (data.length === 0) {
         return res.status(204)
           .send(ResponseMaker.noContent('users_calendars'));
       }
-      return res.send(ResponseMaker.paginated(page, 'users_calendars', data));
+      return res.send(ResponseMaker.paginated(req.query.page, 'users_calendars', data));
     } catch (err) {
       return next(err);
     }
@@ -258,7 +255,6 @@ class UserCtrl {
   */
 
   async getProgress(req, res, next) {
-    const page = req.query.page ? parseInt(req.query.page, 10) : 0;
     const { userId } = req.params;
     try {
       const user = await User.get(userId);
@@ -266,12 +262,12 @@ class UserCtrl {
         return res.status(404)
           .send(ResponseMaker.notFound(this.type, { userId }));
       }
-      const data = await user.getProgress(page);
+      const data = await user.getProgress(req.query);
       if (data.length === 0) {
         return res.status(204)
           .send(ResponseMaker.noContent('users_progress'));
       }
-      return res.send(ResponseMaker.paginated(page, 'users_progress', data));
+      return res.send(ResponseMaker.paginated(req.query.page, 'users_progress', data));
     } catch (err) {
       return next(err);
     }

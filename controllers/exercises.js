@@ -25,15 +25,14 @@ class ExercisesCtrl {
   */
 
   async getAll(req, res, next) {
-    const page = req.query.page ? parseInt(req.query.page, 10) : 0;
     try {
-      const data = await Exercise.getAll(page);
+      const data = await Exercise.getAll(req.query);
       if (data.length === 0) {
         return res.status(204)
           .send(ResponseMaker.noContent(this.type));
       }
       return res.status(200)
-        .send(ResponseMaker.paginated(page, this.type, data));
+        .send(ResponseMaker.paginated(req.query.page, this.type, data));
     } catch (err) {
       return next(err);
     }

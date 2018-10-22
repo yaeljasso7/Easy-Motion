@@ -1,14 +1,18 @@
-const db = require('../db');
-
-class progressUser{
-  constructor({idUser, weight, height, date})
-  {
-    this.idUser =  idUser;
+class ProgressUser {
+  constructor({
+    userId, weight, height, date,
+  }) {
+    this.userId = userId;
     this.weight = weight;
     this.height = height;
     this.date = date;
   }
-
 }
 
-module.exports = progressUser;
+ProgressUser.ValidFilters = {
+  weight: 'asNumber',
+  height: 'asNumber',
+  date: 'asString',
+};
+
+module.exports = ProgressUser;

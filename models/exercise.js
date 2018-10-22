@@ -33,8 +33,10 @@ class Exercise {
    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
    * @return {Promise} - Promise Object represents, the exercises from that page
    */
-  static async getAll(page = 0, deletedItems = false) {
-    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
+  static async getAll({
+    page, sorter, desc, filters,
+  }, deletedItems = false) {
+    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     const cond = {};
     if (!deletedItems) {
@@ -43,7 +45,9 @@ class Exercise {
     try {
       const data = await db.select({
         from: Exercise.vTable,
-        where: cond,
+        where: { ...filters, ...cond },
+        sorter,
+        desc,
         limit: [page * pageSize, pageSize],
       });
       data.forEach((row) => {
@@ -182,5 +186,10 @@ Exercise.vTable = `v_${Exercise.table}`;
  * @type {asyncFunction}
  */
 Exercise.exists = generic.exists(Exercise.table);
+Exercise.ValidFilters = {
+  name: 'asString',
+  difficulty: 'asNumber',
+  bodyPartId: 'asNumber',
+};
 
 module.exports = Exercise;

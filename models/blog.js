@@ -1,5 +1,6 @@
 const db = require('../db');
 const categoryBlog = require('./categoryBlog');
+const generic = require('./generic');
 
 /**
  * @class Blog
@@ -127,7 +128,7 @@ class Blog {
 
 }
 
-Routine.table = 'blogs';
-Routine.categoryBlogTable = 'blogs_categories';
-Routine.exists = generic.exists(Blog.table);
+Blog.table = 'blogs';
+Blog.categoryBlogTable = 'blogs_categories';
+Blog.exists = generic.exists(Blog.table);
 module.exports = Blog;

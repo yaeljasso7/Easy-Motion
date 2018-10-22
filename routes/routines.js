@@ -1,24 +1,36 @@
 const router = require('express').Router();
 const { routinesCtrl } = require('../controllers');
-const { auth, reference, validator } = require('../middlewares');
+const mw = require('../middlewares');
 
-router.get('/', routinesCtrl.getAll);
+router.get('/', (req, res, next) => {
+  mw.validator.validate(req, res, next, {
+    query: {
+      page: 'number',
+      name: 'word',
+      executionTime: 'number',
+      sort: 'word',
+      order: 'order',
+    },
+  });
+}, (req, res, next) => {
+  mw.filter.validate(req, res, next, 'Routine');
+}, routinesCtrl.getAll);
 
 router.get('/:routineId', (req, res, next) => {
-  validator.validate(req, res, next, {
+  mw.validator.validate(req, res, next, {
     params: {
       routineId: 'number',
     },
   });
 }, routinesCtrl.get);
 
-router.use('/', auth.haveSession,
+router.use('/', mw.auth.haveSession,
   (req, res, next) => {
-    auth.havePermission(req, res, next, 'manageRoutines');
+    mw.auth.havePermission(req, res, next, 'manageRoutines');
   });
 
 router.post('/', [(req, res, next) => {
-  validator.validate(req, res, next, {
+  mw.validator.validate(req, res, next, {
     body: {
       name: 'word,required',
       executionTime: 'number',
@@ -27,7 +39,7 @@ router.post('/', [(req, res, next) => {
 }], routinesCtrl.create);
 
 router.put('/:routineId', [(req, res, next) => {
-  validator.validate(req, res, next, {
+  mw.validator.validate(req, res, next, {
     body: {
       name: 'word,required',
       executionTime: 'number',
@@ -39,7 +51,7 @@ router.put('/:routineId', [(req, res, next) => {
 }], routinesCtrl.update);
 
 router.delete('/:routineId', [(req, res, next) => {
-  validator.validate(req, res, next, {
+  mw.validator.validate(req, res, next, {
     params: {
       routineId: 'number',
     },
@@ -47,7 +59,7 @@ router.delete('/:routineId', [(req, res, next) => {
 }], routinesCtrl.delete);
 
 router.post('/:routineId/exercise', [(req, res, next) => {
-  validator.validate(req, res, next, {
+  mw.validator.validate(req, res, next, {
     body: {
       exerciseId: 'number,required',
       repetitions: 'number,required',
@@ -57,7 +69,7 @@ router.post('/:routineId/exercise', [(req, res, next) => {
     },
   });
 }, (req, res, next) => {
-  reference.validate(req, res, next, {
+  mw.reference.validate(req, res, next, {
     body: {
       exerciseId: 'Exercise',
     },
@@ -65,7 +77,7 @@ router.post('/:routineId/exercise', [(req, res, next) => {
 }], routinesCtrl.addExercise);
 
 router.delete('/:routineId/exercise', [(req, res, next) => {
-  validator.validate(req, res, next, {
+  mw.validator.validate(req, res, next, {
     body: {
       exerciseId: 'number,required',
     },
@@ -74,7 +86,7 @@ router.delete('/:routineId/exercise', [(req, res, next) => {
     },
   });
 }, (req, res, next) => {
-  reference.validate(req, res, next, {
+  mw.reference.validate(req, res, next, {
     body: {
       exerciseId: 'Exercise',
     },
@@ -82,7 +94,7 @@ router.delete('/:routineId/exercise', [(req, res, next) => {
 }], routinesCtrl.removeExercise);
 
 router.patch('/:routineId/exercise', [(req, res, next) => {
-  validator.validate(req, res, next, {
+  mw.validator.validate(req, res, next, {
     body: {
       exerciseId: 'number,required',
       repetitions: 'number,required',
@@ -92,7 +104,7 @@ router.patch('/:routineId/exercise', [(req, res, next) => {
     },
   });
 }, (req, res, next) => {
-  reference.validate(req, res, next, {
+  mw.reference.validate(req, res, next, {
     body: {
       exerciseId: 'Exercise',
     },

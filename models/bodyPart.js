@@ -24,13 +24,17 @@ class BodyPart {
    * @param  {Number}  [page=0] - The page to retrieve the body parts
    * @return {Promise} - Promise Object represents, the body parts from that page
    */
-  static async getAll(page = 0) {
-    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
+  static async getAll({
+    page, sorter, desc, filters,
+  }) {
+    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     try {
       const data = await db.select({
         from: BodyPart.table,
-        where: { isDeleted: false },
+        where: { ...filters, isDeleted: false },
+        sorter,
+        desc,
         limit: [page * pageSize, pageSize],
       });
 
@@ -154,5 +158,9 @@ BodyPart.table = 'body_parts';
  * @type {asyncFunction}
  */
 BodyPart.exists = generic.exists(BodyPart.table);
+
+BodyPart.ValidFilters = {
+  name: 'asString',
+};
 
 module.exports = BodyPart;

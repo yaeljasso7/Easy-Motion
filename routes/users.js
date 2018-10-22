@@ -1,18 +1,30 @@
 const router = require('express').Router();
 const { usersCtrl } = require('../controllers');
-const { auth, validator, reference } = require('../middlewares');
+const mw = require('../middlewares');
 
-router.use('/', auth.haveSession);
+router.use('/', mw.auth.haveSession);
 
 router.get('/', [(req, res, next) => {
-  auth.havePermission(req, res, next, 'manageUsers');
+  mw.auth.havePermission(req, res, next, 'manageUsers');
+}, (req, res, next) => {
+  mw.validator.validate(req, res, next, {
+    query: {
+      page: 'number',
+      name: 'word',
+      role: 'number',
+      sort: 'word',
+      order: 'order',
+    },
+  });
+}, (req, res, next) => {
+  mw.filter.validate(req, res, next, 'User');
 }], usersCtrl.getAll);
 
 router.post('/', [(req, res, next) => {
-  auth.havePermission(req, res, next, 'manageUsers');
+  mw.auth.havePermission(req, res, next, 'manageUsers');
 },
 (req, res, next) => {
-  validator.validate(req, res, next, {
+  mw.validator.validate(req, res, next, {
     body: {
       name: 'word,required',
       mail: 'email,required',
@@ -24,9 +36,9 @@ router.post('/', [(req, res, next) => {
 }], usersCtrl.create);
 
 router.delete('/:userId', (req, res, next) => {
-  auth.havePermission(req, res, next, 'manageUsers');
+  mw.auth.havePermission(req, res, next, 'manageUsers');
 }, (req, res, next) => {
-  validator.validate(req, res, next, {
+  mw.validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },
@@ -34,11 +46,11 @@ router.delete('/:userId', (req, res, next) => {
 }, usersCtrl.delete);
 
 router.use('/:userId', (req, res, next) => {
-  auth.havePermission(req, res, next, 'manageMyUser');
+  mw.auth.havePermission(req, res, next, 'manageMyUser');
 });
 
 router.get('/:userId', [(req, res, next) => {
-  validator.validate(req, res, next, {
+  mw.validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },
@@ -46,7 +58,7 @@ router.get('/:userId', [(req, res, next) => {
 }], usersCtrl.get);
 
 router.put('/:userId', (req, res, next) => {
-  validator.validate(req, res, next, {
+  mw.validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },
@@ -59,7 +71,7 @@ router.put('/:userId', (req, res, next) => {
 }, usersCtrl.update);
 
 router.post('/:userId/calendars', [(req, res, next) => {
-  validator.validate(req, res, next, {
+  mw.validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },
@@ -68,7 +80,7 @@ router.post('/:userId/calendars', [(req, res, next) => {
     },
   });
 }, (req, res, next) => {
-  reference.validate(req, res, next, {
+  mw.reference.validate(req, res, next, {
     body: {
       calendarId: 'Calendar',
     },
@@ -76,7 +88,7 @@ router.post('/:userId/calendars', [(req, res, next) => {
 }], usersCtrl.addCalendar);
 
 router.delete('/:userId/calendars', [(req, res, next) => {
-  validator.validate(req, res, next, {
+  mw.validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },
@@ -85,31 +97,48 @@ router.delete('/:userId/calendars', [(req, res, next) => {
     },
   });
 }, (req, res, next) => {
-  reference.validate(req, res, next, {
+  mw.reference.validate(req, res, next, {
     body: {
       calendarId: 'Calendar',
     },
   });
 }], usersCtrl.removeCalendar);
 
-router.get('/:userId/calendars', (req, res, next) => {
-  validator.validate(req, res, next, {
+router.get('/:userId/calendars', [(req, res, next) => {
+  mw.validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },
+    query: {
+      page: 'number',
+      name: 'word',
+      sort: 'word',
+      order: 'order',
+    },
   });
-}, usersCtrl.getCalendars);
+}, (req, res, next) => {
+  mw.filter.validate(req, res, next, 'Calendar');
+}], usersCtrl.getCalendars);
 
-router.get('/:userId/progress', (req, res, next) => {
-  validator.validate(req, res, next, {
+router.get('/:userId/progress', [(req, res, next) => {
+  mw.validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },
+    query: {
+      page: 'number',
+      height: 'number',
+      weight: 'number',
+      date: 'optionalDate',
+      sort: 'word',
+    },
   });
-}, usersCtrl.getProgress);
+}, (req, res, next) => {
+  mw.filter.validate(req, res, next, 'ProgressUser');
+}], usersCtrl.getProgress);
 
 router.post('/:userId/progress', (req, res, next) => {
-  validator.validate(req, res, next, {
+  mw.validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },
