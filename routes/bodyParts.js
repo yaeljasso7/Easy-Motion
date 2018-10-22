@@ -17,13 +17,13 @@ router.use('/', auth.haveSession,
     auth.havePermission(req, res, next, 'manageBodyParts');
   });
 
-router.post('/', [(req, res, next) => {
+router.post('/', (req, res, next) => {
   validator.validate(req, res, next, {
     body: {
       name: 'word,required',
     },
   });
-}], bodyPartsCtrl.create);
+}, bodyPartsCtrl.create);
 
 router.put('/:bodyPartId', (req, res, next) => {
   validator.validate(req, res, next, {
