@@ -31,32 +31,30 @@ class Blog {
    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
    * @return {Promise} - Promise Object represents, the blog from that page
    */
-   static async getAll() {
-     const data = await db.getAll('blog');
-     const response = [];
-     data.forEach((row) => {
-       response.push(new Blog(row));
-     });
-     return response;
-   }
-
-   /**
-    * @method get - Retrieve a routine and its exercises, based on their id
-    *
-    * @param  {Number}  id - The routine identifier
-    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
-    * @return {Promise} - Promise Object represents a routine
-    */
-   static async get(id) {
-    const data = await db.get('blog', id);
-
-    // FIXME En lugar de regresar el objeto de DB para vacio, debes construir tu propio objeto en el manejador de la base de datos
-    //return data.length !== 0 ? new Blog(data[0]) : data; //elemento 0 de rowDataPackege
-    if (data.length !== 0) {
-      const blog = new Blog(data[0]); //Row > Objeto User
-      blog.categorys = await Blog.getCategory(blog.categoryBlog);
-      return blog;
+  static async getAll({
+    page, sorter, desc, filters,
+  }, deletedItems = false) {
+    const pageSize = Number(process.env.PAGE_SIZE);
+    const response = [];
+    const cond = {};
+    if (!deletedItems) {
+      cond.isDeleted = false;
     }
+    try {
+      const data = await db.select({
+        from: Blog.vTable,
+        where: { ...filters, ...cond },
+        sorter,
+        desc,
+        limit: [page * pageSize, pageSize],
+      });
+      data.forEach((row) => {
+        response.push(new Blog(row));
+      });
+    } catch (err) {
+      throw err;
+    }
+    return response;
   }
 
   /**
@@ -66,12 +64,25 @@ class Blog {
    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
    * @return {Promise} - Promise Object represents a blog
    */
-  static async get(idCategory) {
-    const response = [];
-    const category = await categoryBlog.getcategoryBlog(idCategory);
-    response.push(category);
-    return response;
+
+  static async get(id, deletedItems = false) {
+    let data;
+    const cond = { id };
+    if (!deletedItems) {
+      cond.isDeleted = false;
+    }
+    try {
+      data = await db.select({
+        from: Blog.Table,
+        where: cond,
+        limit: 1,
+      });
+    } catch (err) {
+      throw err;
+    }
+    return data.length !== 0 ? new Blog(data[0]) : [];
   }
+
   /**
    * @method create - Inserts a blog into the database
    *
@@ -129,6 +140,6 @@ class Blog {
 }
 
 Blog.table = 'blogs';
-Blog.categoryBlogTable = 'blogs_categories';
+Blog.vTable = `v_${Blog.table}`;
 Blog.exists = generic.exists(Blog.table);
 module.exports = Blog;

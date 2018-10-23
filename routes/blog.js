@@ -2,50 +2,41 @@ const router = require('express').Router();
 const { blogCtrl } = require('../controllers');
 const middlewares = require('../middlewares');
 
-//rutas
-//request  /info relativa del cliente
-//response /enviar cliente
-//regresa usuarios todos
 router.get('/', blogCtrl.getAll);
 
-router.get('/:idBlog', (req,res,next) => {
+router.get('/:blogId', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
-  params: {
-    idBlog: 'number',
-  },
+    params: {
+      blogId: 'number',
+    },
   });
-},blogCtrl.get);
+}, blogCtrl.get);
 
 router.post('/', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
-  body: {
+    body: {
       autor: 'word,required',
       data: 'required',
     },
   });
-},blogCtrl.create);
+}, blogCtrl.create);
 
-router.put('/:idBlog',  (req, res, next) => {
+router.put('/:blogId', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
-  body: {
+    body: {
     },
-  params: {
-        idBlog: 'number',
-      },
+    params: {
+      blogId: 'number',
+    },
   });
-},blogCtrl.update);
+}, blogCtrl.update);
 
-router.delete('/:idBlog', (req,res,next) => {
+router.delete('/:blogId', (req, res, next) => {
   middlewares.validator.validate(req, res, next, {
-  params: {
-    idBlog: 'number',
-  },
-});
-},blogCtrl.delete);
-
-
-
-
-
+    params: {
+      blogId: 'number',
+    },
+  });
+}, blogCtrl.delete);
 
 module.exports = router;

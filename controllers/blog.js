@@ -1,5 +1,5 @@
-//controladores blog
-const { Blog } = require('../models');
+// blog controller
+const { Blog, ResponseMaker } = require('../models');
 
 /**
  *
@@ -7,12 +7,13 @@ const { Blog } = require('../models');
  * - Contain the getAll, get, create, delete, update functions
  */
 class BlogCtrl {
-  constructor(){
+  constructor() {
     this.getAll = this.getAll.bind(this);
     this.get = this.get.bind(this);
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
+    this.type = 'blog';
   }
 
   /**
@@ -24,23 +25,18 @@ class BlogCtrl {
   * @return {Promise}                  Promise to return the data results
   */
 
-   async getAll(req, res){
-
-     let data = await Blog.getBlogs();
-
-     // FIXME El objeto tiene formato de paginado, pero no es real
-     const json = {
-       data: data,
-       total_count: data.length,
-       per_page: data.length,
-       page: 0,
-     };
-
-     if (data.length === 0) {
-       res.status(204);
-     }
-
-     res.send(json);
+  async getAll(req, res, next) {
+    try {
+      const data = await Blog.getAll(req.query);
+      if (data.length === 0) {
+        return res.status(204)
+          .send(ResponseMaker.noContent(this.type));
+      }
+      return res.status(200)
+        .send(ResponseMaker.paginated(req.query.page, this.type, data));
+    } catch (err) {
+      return next(err);
+    }
   }
 
   /**
@@ -52,13 +48,18 @@ class BlogCtrl {
   * @return {Promise}                  Promise to return the data results
   */
 
-  async get(req, res){
-      let data = await Blog.getBlog(req.params.idBlog);
-      if (data.length === 0) {
-        res.status(204);
+  async get(req, res, next) {
+    const id = req.params.blogId;
+    try {
+      const routine = await Blog.get(id);
+      if (routine.length === 0) {
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
       }
-
-      res.send(data);
+      return res.send(ResponseMaker.ok('Found', this.type, routine));
+    } catch (err) {
+      return next(err);
+    }
   }
 
   /**
@@ -70,16 +71,17 @@ class BlogCtrl {
   * @return {Promise}                  Promise to return the data results
   */
 
-  async create(req, res, next){
+  async create(req, res, next) {
     try {
-      let data = await Blog.createBlog(req.body); //req.body {}
-      console.log("ctrl-create",data);
-      res.status(201).send(data);
-    } catch (e) {
-      console.log("eee:" ,e);
-
-      res.status (409).send("Insert error: " + e.duplicated.message);
-      next(e);
+      const data = await Blog.create(req.body);
+      if (data.length !== 0) {
+        return res.status(201)
+          .send(ResponseMaker.created(this.type, data));
+      }
+      return res.status(409)
+        .send(ResponseMaker.conflict(this.type, data));
+    } catch (err) {
+      return next(err);
     }
   }
 
@@ -92,16 +94,27 @@ class BlogCtrl {
   * @return {Promise}                  Promise to return the data results
   */
 
-  async delete(req, res, next){
-    const deleted = await Blog.deleteBlog(req.params.idBlog);
+  async delete(req, res, next) {
+    const id = req.params.blogId;
+    try {
+      const data = await Blog.get(id);
 
-      if (deleted) {
-        res.status(200); // OK
-      } else {
-        res.status(404); // Not Found
+      if (data.length === 0) {
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
       }
 
-      res.send();
+      const deleted = await data.delete();
+
+      if (deleted) {
+        return res.status(200)
+          .send(ResponseMaker.ok('Deleted', this.type, { id }));
+      }
+      return res.status(409)
+        .send(ResponseMaker.conflict(this.type, req.body));
+    } catch (err) {
+      return next(err);
+    }
   }
 
   /**
@@ -113,28 +126,23 @@ class BlogCtrl {
   * @return {Promise}                  Promise to return the data results
   */
   async update(req, res, next) {
-
-   const data = await Blog.getBlog(req.params.idBlog);
-
-   if (data.length === 0) {
-     res.status(404).send(data); // Not Found
-   }
-
-   try{
-     const updated = await data.updateBlog(req.body);
-     if (updated) {
-       res.status(200); // OK
-     } else {
-       res.status(409); // Conflict
-     }
-   }catch(e){
-     res.status(409);
-     next(e);
-   }
-   // FIXME ESto deberia regresar un objeto de tipo user idealmente o un objeto con un formato definido para respuestas
-   res.send( {...data, ...req.body} );
-
- }
-
+    const id = req.params.blogId;
+    try {
+      const data = await Blog.get(id);
+      if (data.length === 0) {
+        return res.status(404)
+          .send(ResponseMaker.notFound(this.type, { id }));
+      }
+      const updated = await data.update(req.body);
+      if (updated) {
+        return res.status(200)
+          .send(ResponseMaker.ok('Updated', this.type, { ...data, ...req.body }));
+      }
+      return res.status(409)
+        .send(ResponseMaker.conflict(this.type, req.body));
+    } catch (err) {
+      return next(err);
+    }
+  }
 }
 module.exports = new BlogCtrl();
