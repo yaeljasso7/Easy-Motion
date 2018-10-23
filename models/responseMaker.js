@@ -17,9 +17,9 @@ function ResponseMaker() {
     },
   });
 
-  const conflict = (type, content) => ({
+  const conflict = (type, content, msg = 'Conflict') => ({
     status: 409,
-    msg: 'Conflict',
+    msg,
     data: {
       type,
       content,

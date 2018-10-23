@@ -80,7 +80,7 @@ class Auth {
       return next(err);
     }
     return res.status(409)
-      .send(ResponseMaker.conflict(Auth.type));
+      .send(ResponseMaker.conflict(Auth.type, null, 'Invalid email or password!'));
   }
 
   static async logout(req, res, next) {
