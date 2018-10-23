@@ -28,15 +28,14 @@ class CategoryBlogCtrl {
   */
 
   async getAll(req, res, next) {
-    const page = req.query.page ? parseInt(req.query.page, 10) : 0;
     try {
-      const data = await categoryBlog.getAll(page);
+      const data = await categoryBlog.getAll(req.query);
 
       if (data.length === 0) {
         return res.status(204)
           .send(ResponseMaker.noContent(this.type));
       }
-      return res.send(ResponseMaker.paginated(page, this.type, data));
+      return res.send(ResponseMaker.paginated(req.query.page, this.type, data));
     } catch (err) {
       return next(err);
     }
@@ -52,7 +51,7 @@ class CategoryBlogCtrl {
   */
 
   async get(req, res, next) {
-    const id = req.params.trainingTypeId;
+    const id = req.params.categoryBlogId;
     try {
       const data = await categoryBlog.get(id);
       if (data.length === 0) {
@@ -98,7 +97,7 @@ class CategoryBlogCtrl {
   */
 
   async update(req, res, next) {
-    const id = req.params.trainingTypeId;
+    const id = req.params.categoryBlogId;
     try {
       const data = await categoryBlog.get(id);
 
@@ -130,7 +129,7 @@ class CategoryBlogCtrl {
   */
 
   async delete(req, res, next) {
-    const id = req.params.trainingTypeId;
+    const id = req.params.categoryBlogId;
     try {
       const data = await categoryBlog.get(id);
 

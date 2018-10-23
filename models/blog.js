@@ -15,13 +15,13 @@ class Blog {
    * @param {int} categoryBlog     - The reference id of the categoryBlog
    */
   constructor({
-    id, date, autor, data, categoryBlog,
+    id, date, autor, data, category,
   }) {
     this.id = id;
     this.date = date;
     this.autor = autor;
     this.data = data;
-    this.categoryBlog = categoryBlog;
+    this.category = category;
   }
 
   /**
@@ -73,7 +73,7 @@ class Blog {
     }
     try {
       data = await db.select({
-        from: Blog.Table,
+        from: Blog.vTable,
         where: cond,
         limit: 1,
       });
@@ -89,57 +89,90 @@ class Blog {
    * @param {Number} id            - The blog id
    * @param {String} date          - The date publicated
    * @param {String} autor         - The autor
-   * @param {int} categoryBlog     - The reference id of the categoryBlog
+   * @param {int} category         - The reference id of the categoryBlog
    */
-  static async createBlog({ date, autor, data, categoryBlog}) {
+  static async create({
+    autor, data, category, date,
+  }) {
     let response;
     try {
-      response = await db.insert('blog', { date, autor, data, categoryBlog });
+      response = await db.insert({
+        into: Blog.table,
+        resource: {
+          data, autor, category,
+        },
+      });
     } catch (e) {
       throw e;
     }
     const id = response.insertId;
+
     if (id > 0) {
-      return new Blog({ id, date, autor, data, categoryBlog });
+      return new Blog({
+        id, date, autor, data, category,
+      });
     }
     return [];
   }
+
   /**
    * @method update - Modifies fields from this blog.
    *
    * @param  {Object}  keyVals - Represents the new values for this blog.
    * @return {Promise} - Promise Object represents the operation success (boolean)
    */
+
   async update(keyVals) {
     let updatedRows;
     try {
-      const results = await db.update('blog', keyVals, this.id);
+      const results = await db.advUpdate({
+        table: Blog.table,
+        assign: keyVals,
+        where: {
+          id: this.id,
+        },
+        limit: 1,
+      });
       updatedRows = results.affectedRows;
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      throw err;
     }
     return updatedRows > 0;
   }
+
   /**
    * @method delete - Deletes this blog
    *                  Assigns true to isDeleted, in the database.
    * @return {Promise} - Promise Object represents the operation success (boolean)
    */
-  static async deleteBlog(idBlog) {
+  static async deleteBlog() {
     let deletedRows;
     try {
-      const results = await db.delete('blog', idBlog);
+      const results = await db.advUpdate({
+        table: Blog.table,
+        assign: {
+          isDeleted: true,
+        },
+        where: {
+          id: this.id,
+          isDeleted: false,
+        },
+        limit: 1,
+      });
       deletedRows = results.affectedRows;
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      throw err;
     }
-
     return deletedRows > 0;
   }
-
 }
+
 
 Blog.table = 'blogs';
 Blog.vTable = `v_${Blog.table}`;
 Blog.exists = generic.exists(Blog.table);
+Blog.ValidFilters = {
+  autor: 'asString',
+  category: 'asString',
+};
 module.exports = Blog;

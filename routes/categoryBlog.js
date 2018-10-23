@@ -1,49 +1,59 @@
 const router = require('express').Router();
 const { categoryBlogCtrl } = require('../controllers');
-const middlewares = require('../middlewares');
+const { auth, validator, filter } = require('../middlewares');
 
-//rutas
-//request  /info relativa del cliente
-//response /enviar cliente
-//regresa usuarios todos
-router.get('/', categoryBlogCtrl.getAll);
-
-router.get('/:idcategoryBlog', (req,res,next) => {
-  middlewares.validator.validate(req, res, next, {
-  params: {
-    idcategoryBlog: 'number',
-  },
-});
-},categoryBlogCtrl.get);
-
-router.post('/', (req,res,next) => {
-  middlewares.validator.validate(req, res, next, {
-  body: {
-    name: 'word,required',
-  },
-});
-},categoryBlogCtrl.create);
-
-router.put('/:idcategoryBlog', (req,res,next) => {
-  middlewares.validator.validate(req, res, next, {
-  params: {
-      idcategoryBlog: 'number',
-    },
-  body: {
-    name: 'word,required',
-  },
-});
-},categoryBlogCtrl.update);
-
-router.delete('/:idcategoryBlog',(req,res,next) => {
-    middlewares.validator.validate(req, res, next, {
-    params: {
-      idcategoryBlog: 'number',
+router.get('/', (req, res, next) => {
+  validator.validate(req, res, next, {
+    query: {
+      page: 'number',
+      name: 'word',
+      sort: 'word',
+      order: 'order',
     },
   });
-},categoryBlogCtrl.delete);
+}, (req, res, next) => {
+  filter.validate(req, res, next, 'categoryBlog');
+}, categoryBlogCtrl.getAll);
 
+router.get('/:categoryBlogId', (req, res, next) => {
+  validator.validate(req, res, next, {
+    params: {
+      categoryId: 'number',
+    },
+  });
+}, categoryBlogCtrl.get);
 
+router.use('/', auth.haveSession,
+  (req, res, next) => {
+    auth.havePermission(req, res, next, 'manageCategoryBlogs');
+  });
+
+router.post('/', [(req, res, next) => {
+  validator.validate(req, res, next, {
+    body: {
+      name: 'word,required',
+    },
+  });
+}], categoryBlogCtrl.create);
+
+router.put('/:categoryBlogId', [(req, res, next) => {
+  validator.validate(req, res, next, {
+    params: {
+      categoryId: 'number',
+    },
+    body: {
+      name: 'word,required',
+    },
+  });
+}], categoryBlogCtrl.update);
+
+router.delete('/:categoryBlogId', [(req, res, next) => {
+  validator.validate(req, res, next, {
+    params: {
+      categoryId: 'number',
+    },
+  });
+}], categoryBlogCtrl.delete);
 
 
 module.exports = router;
