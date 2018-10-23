@@ -1,9 +1,8 @@
 const { BodyPart, ResponseMaker } = require('../models');
 
 /**
- *
  * @class Class of controller BodyParts
- * - Contain the getAll, get, create, delete, update
+ * - Contain the getAll, get, create, delete, update methods
  */
 
 class BodyPartsCtrl {

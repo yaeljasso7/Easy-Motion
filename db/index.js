@@ -1,8 +1,6 @@
 const mysql = require('mysql');
 const Qry = require('./query');
 
-// FIXME Falta documentacion en todos los metodos
-
 /**
  * @class DB
  * Database abstraction

@@ -81,8 +81,6 @@ class Exercise {
     } catch (err) {
       throw err;
     }
-    // FIXME En lugar de regresar el objeto de DB para vacio,
-    // debes construir tu propio objeto en el manejador de la base de datos
     return data.length !== 0 ? new Exercise(data[0]) : [];
   }
 

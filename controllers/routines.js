@@ -1,8 +1,9 @@
 const { Routine, ResponseMaker } = require('../models');
 
-// FIXME Falta documentacion en todos los metodos
-// FIXME Todos los metodos asincronos a base de datos
-//  deberian manejar los errores a traves de un try-catch
+/**
+ * @class BodyParts Controller
+ * - Contain the getAll, get, create, delete, update methods
+ */
 
 class RoutinesCtrl {
   constructor() {
@@ -17,6 +18,14 @@ class RoutinesCtrl {
     this.type = 'routine';
   }
 
+  /**
+  * @async
+  * Async function to get all Routines from database using the Routine Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async getAll(req, res, next) {
     try {
       const data = await Routine.getAll(req.query);
@@ -31,6 +40,14 @@ class RoutinesCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to get a especific Routine from database using the Routine Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async get(req, res, next) {
     const id = req.params.routineId;
     try {
@@ -45,6 +62,14 @@ class RoutinesCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to create a routine into database using the Routine Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async create(req, res, next) {
     try {
       const data = await Routine.create(req.body);
@@ -59,6 +84,14 @@ class RoutinesCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to update a especific Routine from database using the Routine Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async update(req, res, next) {
     const id = req.params.routineId;
     try {
@@ -79,6 +112,14 @@ class RoutinesCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to delete a especific Routine from database using the Routine Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async delete(req, res, next) {
     const id = req.params.exerciseId;
     try {
@@ -102,6 +143,14 @@ class RoutinesCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to add an exercise to a specific routine
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async addExercise(req, res, next) {
     const { routineId } = req.params;
     try {
@@ -125,6 +174,14 @@ class RoutinesCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to remove an exercise from a specific routine
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async removeExercise(req, res, next) {
     const { routineId } = req.params;
     try {
@@ -145,6 +202,14 @@ class RoutinesCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to update the times an exercises must be repeated in a specific routine
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async updateExerciseReps(req, res, next) {
     const { routineId } = req.params;
     try {
