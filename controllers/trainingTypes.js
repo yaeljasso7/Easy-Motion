@@ -1,7 +1,9 @@
 const { TrainingType, ResponseMaker } = require('../models');
 
-// FIXME Falta documentacion en todos los metodos
-
+/**
+ * @class TrainingType controller
+ * - Contain the getAll, get, create, delete, update
+ */
 class TrainingTypesCtrl {
   constructor() {
     this.getAll = this.getAll.bind(this);
@@ -12,6 +14,15 @@ class TrainingTypesCtrl {
     this.type = 'trainingType';
   }
 
+  /**
+  * @async
+  * Async function to get all TrainingTypes from database using the TrainingType
+  * Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async getAll(req, res, next) {
     try {
       const data = await TrainingType.getAll(req.query);
@@ -26,6 +37,15 @@ class TrainingTypesCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to get specific TrainingType from database using the
+  * TrainingType Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async get(req, res, next) {
     const id = req.params.trainingTypeId;
     try {
@@ -40,6 +60,15 @@ class TrainingTypesCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to create specific TrainingType into database using the
+  * TrainingType Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async create(req, res, next) {
     try {
       const data = await TrainingType.create(req.body);
@@ -54,6 +83,15 @@ class TrainingTypesCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to update specific TrainingType from database using the
+  * TrainingType Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async update(req, res, next) {
     const id = req.params.trainingTypeId;
     try {
@@ -77,6 +115,15 @@ class TrainingTypesCtrl {
     }
   }
 
+  /**
+  * @async
+  * Async function to delete specific TrainingType from database using the
+  * TrainingType Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async delete(req, res, next) {
     const id = req.params.trainingTypeId;
     try {
