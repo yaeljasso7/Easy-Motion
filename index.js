@@ -1,4 +1,4 @@
-//app.js
+// app.js
 require('dotenv').config();
 const express = require('express');
 
@@ -22,7 +22,7 @@ app.use(router);
 app.use(errorHandler);
 
 app.listen(port, () => {
-    console.log(`Listening on http://localhost:${port}/`);
+  console.log(`Listening on http://localhost:${port}/`);
 });
 
 /*

@@ -11,3 +11,8 @@ DEFAULT_PAGE=0
 SECRET=randomString
 SESSION_LIVES=12
 SALT=10
+
+MAIL_PORT=587
+MAIL_HOST=smtp.ethereal.email
+MAIL_USER=user@email.com
+MAIL_PASS=password
