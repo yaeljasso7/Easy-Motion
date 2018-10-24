@@ -8,6 +8,7 @@ router.get('/', (req, res, next) => {
     query: {
       page: 'number',
       autor: 'word',
+      title: 'word',
       category: 'word',
       sort: 'word',
       order: 'order',
@@ -36,6 +37,7 @@ router.post('/', [(req, res, next) => {
       autor: 'word,required',
       data: 'required',
       category: 'required',
+      title: 'word,required',
     },
   });
 }, (req, res, next) => {
