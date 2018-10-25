@@ -11,17 +11,19 @@ class Blog {
    * Blog constructor
    * @param {Number} id            - The blog id
    * @param {String} date          - The date publicated
+   * @param {String} title          - The title blog
    * @param {String} autor         - The autor
    * @param {int} categoryBlog     - The reference id of the categoryBlog
    */
   constructor({
-    id, date, autor, data, category,
+    id, date, autor, data, category, title,
   }) {
     this.id = id;
     this.date = date;
     this.autor = autor;
     this.data = data;
     this.category = category;
+    this.title = title;
   }
 
   /**
@@ -88,18 +90,19 @@ class Blog {
    *
    * @param {Number} id            - The blog id
    * @param {String} date          - The date publicated
+   * @param {String} title         - The title blog
    * @param {String} autor         - The autor
    * @param {int} category         - The reference id of the categoryBlog
    */
   static async create({
-    autor, data, category, date,
+    autor, title, data, category, date,
   }) {
     let response;
     try {
       response = await db.insert({
         into: Blog.table,
         resource: {
-          data, autor, category,
+          data, title, autor, category,
         },
       });
     } catch (e) {
@@ -109,7 +112,7 @@ class Blog {
 
     if (id > 0) {
       return new Blog({
-        id, date, autor, data, category,
+        id, date, title, autor, data, category,
       });
     }
     return [];
@@ -173,6 +176,7 @@ Blog.vTable = `v_${Blog.table}`;
 Blog.exists = generic.exists(Blog.table);
 Blog.ValidFilters = {
   autor: 'asString',
+  title: 'asString',
   category: 'asString',
 };
 module.exports = Blog;

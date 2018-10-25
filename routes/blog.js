@@ -2,11 +2,13 @@ const router = require('express').Router();
 const { blogCtrl } = require('../controllers');
 const mw = require('../middlewares');
 
+
 router.get('/', (req, res, next) => {
   mw.validator.validate(req, res, next, {
     query: {
       page: 'number',
       autor: 'word',
+      title: 'word',
       category: 'word',
       sort: 'word',
       order: 'order',
@@ -24,12 +26,18 @@ router.get('/:blogId', (req, res, next) => {
   });
 }, blogCtrl.get);
 
+router.use('/', [mw.auth.haveSession,
+  (req, res, next) => {
+    mw.auth.havePermission(req, res, next, 'manageBlogs');
+  }]);
+
 router.post('/', [(req, res, next) => {
   mw.validator.validate(req, res, next, {
     body: {
       autor: 'word,required',
       data: 'required',
       category: 'required',
+      title: 'word,required',
     },
   });
 }, (req, res, next) => {
