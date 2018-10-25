@@ -10,7 +10,12 @@ const trainingTypesRouter = require('./trainingTypes');
 const routinesRouter = require('./routines');
 const authRouter = require('./auth');
 
-router.get('/', (req, res) => res.send('hello'));
+const mailer = require('../mail');
+
+router.get('/', (req, res) => {
+  mailer.sendMail({ to: 'easymotion-user@mail.com' });
+  res.send('hello');
+});
 router.use('/users', usersRouter);
 router.use('/blog', blogRouter);
 router.use('/categoryBlog', categoryBlogRouter);
