@@ -13,7 +13,7 @@ const authRouter = require('./auth');
 const mailer = require('../mail');
 
 router.get('/', (req, res) => {
-  mailer.sendMail({ to: 'easymotion-user@mail.com' });
+  mailer.sendMail({ to: 'christopher_x10x@hotmail.com' });
   res.send('hello');
 });
 router.use('/users', usersRouter);

@@ -1,14 +1,35 @@
 const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
+
+const OAuth2 = google.auth.OAuth2;
 
 class Mailer {
   constructor() {
+    this.oauth2Client = new OAuth2(
+      process.env.ID_CLIENTE, // ClientID
+      process.env.SECRET_CLIENTE, // Client Secret
+      'https://developers.google.com/oauthplayground', // Redirect URL
+    );
+
+    this.oauth2Client.setCredentials({
+      refresh_token: process.env.REFRESH_TOKEN,
+    });
+
+    /*
+    this.accessToken = this.oauth2Client.getRequestHeaders()
+      .then(res => res.credentials.refreshToken());
+      */
+    this.accessToken = this.oauth2Client.getAccessToken();
+
     this.transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST,
-      port: process.env.MAIL_PORT,
-      secure: false,
+      service: 'gmail',
       auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        type: 'OAuth2',
+        user: 'christopherx10x@gmail.com',
+        clientId: process.env.ID_CLIENTE,
+        clientSecret: process.env.SECRET_CLIENTE,
+        refreshToken: process.env.REFRESH_TOKEN,
+        accessToken: this.accessToken,
       },
     });
 
@@ -17,12 +38,13 @@ class Mailer {
         console.log(err);
       } else {
         console.log('SMTP Connect!', success);
+        // console.log(this.transporter);
       }
     });
 
     this.mailOptions = {
-      from: '"Testing mailer" <testing@mailer.com>',
-      subject: 'Hello ✔',
+      from: '"Testing mailer" <christopherx10x@gmail.com>',
+      subject: 'Helloo ✔',
       text: 'Hello Testing?',
       html: '<b>Hello Testing?</b>',
     };
