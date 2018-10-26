@@ -56,6 +56,7 @@ class Token {
 
   static async get(token) {
     const cond = { token };
+    // console.log('cond: ', cond);
     try {
       const data = await db.select({
         from: 'tokens',
@@ -70,6 +71,12 @@ class Token {
       throw err;
     }
     return [];
+  }
+
+  static async getHashPass(password) {
+    const saltRounds = parseInt(process.env.SALT, 10);
+    const hashPassword = await bcrypt.hash(password, saltRounds);
+    return hashPassword;
   }
 
   static async getActiveToken(userId) {

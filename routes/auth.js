@@ -28,10 +28,18 @@ router.get('/logout', [auth.haveSession, auth.logout], (req, res) => {
 
 router.post('/forgot', auth.forgot);
 
+router.get('/reset/:token', auth.reset);
+router.post('/reset/:token', auth.resetPass);
+
+/*
 router.get('/reset/:token', (req, res) => {
   console.log(req.params);
+  /* por query
+  {{app}}/auth/reset/123?gorrita=800
   console.log(req.query);
+
   res.send('reset');
-});
+})
+*/
 
 module.exports = router;

@@ -105,6 +105,37 @@ class Auth {
     mailer.sendMailRecover(user.mail, token);
     res.send('Check you email :)');
   }
+
+  static async reset(req, res) {
+    const { token } = req.params;
+    // Issue: si el usuario inserta en los parametros un ejem  {{app}}/auth/reset/1
+    // si trae el token por id?, aun que la condicion este buscando por token
+    const myToken = await Token.get(token);
+    console.log(myToken);
+
+    res.send(req.body);
+  }
+
+  static async resetPass(req, res) {
+    const { token } = req.params;
+    const { pass, confirmpass } = req.body;
+    const myToken = await Token.get(token);
+    // verifica que la nueva contraseña
+    if (pass === confirmpass) {
+      // genera el hash de la nueva pass
+      const password = await Token.getHashPass(pass);
+      // actualiza la nueva pass hasheada al user
+      const user = await User.get(myToken.userId);
+      const updated = await user.update({ password });
+      if (updated) {
+        mailer.sendMailChanged({ to: user.mail });
+        return res.status(200)
+          .send(ResponseMaker.ok('Updated', 'user', { ...user }));
+      // desactivar token
+      }
+    }
+    return res.send('Las contraseñas no son iguales');
+  }
 }
 
 Auth.type = 'auth';
