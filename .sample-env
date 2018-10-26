@@ -16,3 +16,7 @@ MAIL_PORT=587
 MAIL_HOST=smtp.ethereal.email
 MAIL_USER=user@email.com
 MAIL_PASS=password
+
+ID_CLIENTE=
+SECRET_CLIENTE=
+REFRESH_TOKEN=
