@@ -28,8 +28,16 @@ router.get('/logout', [auth.haveSession, auth.logout], (req, res) => {
 
 router.post('/forgot', auth.forgot);
 
-router.get('/reset/:token', auth.reset);
-router.post('/reset/:token', auth.resetPass);
+router.patch('/reset', [(req, res, next) => {
+  validator.validate(req, res, next, {
+    body: {
+      password: 'required',
+      rePassword: 'required',
+    },
+  });
+}, validator.matchPassword], auth.reset);
+
+router.get('/confirm', auth.confirm);
 
 /*
 router.get('/reset/:token', (req, res) => {

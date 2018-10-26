@@ -153,7 +153,7 @@ class User {
    */
   static async login(mail, password) {
     try {
-      const user = User.getByEmail(mail);
+      const user = await User.getByEmail(mail);
       if (user.length !== 0) {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
@@ -223,20 +223,23 @@ class User {
   static async create({
     name, mobile, weight, height, password, mail,
   }) {
-    const saltRounds = parseInt(process.env.SALT, 10);
     let response;
     try {
-      const hashPassword = await bcrypt.hash(password, saltRounds);
       response = await db.insert({
         into: User.table,
         resource: {
-          name, mobile, weight, height, password: hashPassword, mail,
+          name,
+          mobile,
+          weight,
+          height,
+          password: await User.hashPassword(password),
+          mail,
         },
       });
       const id = response.insertId;
       if (id > 0) {
         const user = new User({
-          id, name, mobile, weight, height, password, mail,
+          id, name, mobile, weight, height, mail,
         });
         await user.addProgress({ weight, height });
         return user;
@@ -274,6 +277,15 @@ class User {
   async confirm() {
     try {
       return await this.update({ confirmed: true });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  static async hashPassword(password) {
+    try {
+      const hashedPassword = await bcrypt.hash(password, User.saltRounds);
+      return hashedPassword;
     } catch (err) {
       throw err;
     }
@@ -416,5 +428,7 @@ User.ValidFilters = {
   role: 'asNumber',
   name: 'asString',
 };
+
+User.saltRounds = Number(process.env.SALT);
 
 module.exports = User;

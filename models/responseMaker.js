@@ -48,6 +48,7 @@ function ResponseMaker() {
 
   const ok = (msg, type, content) => (
     basic({
+      status: 200,
       msg: msg || 'Ok',
       type,
       content,

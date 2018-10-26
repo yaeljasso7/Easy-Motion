@@ -93,74 +93,74 @@ class Auth {
     return next();
   }
 
-  static async forgot(req, res) {
-    // trae usuario por mail
-    const user = await User.getMail(req.body.mail);
-    console.log(user);
-    // genera token aleatorio
-    const token = await Token.ramdomToken({ userId: user.id, type: '2' });
-    console.log(token);
-    // mandar correo a usuario con Token
-    // mailer.sendMail({ to: 'christopher_x10x@hotmail.com' });
-    mailer.sendMailRecover(user.mail, token);
-    res.send('Check you email :)');
-  }
-
-  static async reset(req, res) {
-    const { token } = req.params;
-    // Issue: si el usuario inserta en los parametros un ejem  {{app}}/auth/reset/1
-    // si trae el token por id?, aun que la condicion este buscando por token
-    const myToken = await Token.get(token);
-    console.log(myToken);
-
-    res.send(req.body);
-  }
-
-  static async resetPass(req, res) {
-    const { token } = req.params;
-    const { pass, confirmpass } = req.body;
-    const myToken = await Token.get(token);
-    // verifica que la nueva contraseña
-    if (pass === confirmpass) {
-      // genera el hash de la nueva pass
-      const password = await Token.getHashPass(pass);
-      // actualiza la nueva pass hasheada al user
-      const user = await User.get(myToken.userId);
-      const updated = await user.update({ password });
-      if (updated) {
-        mailer.sendMailChanged({ to: user.mail });
-        return res.status(200)
-          .send(ResponseMaker.ok('Updated', 'user', { ...user }));
-      // desactivar token
-      }
-    }
-    return res.send('Las contraseñas no son iguales');
-
-  static async confirm(req, res, next) {
-    const hToken = req.params.token;
+  static async forgot(req, res, next) {
     try {
-      const token = await Token.get(hToken, Token.confirm);
-      if (token.token) {
-        const validToken = await token.isActive();
-        if (validToken) {
-          const user = await User.get(token.userId);
-          if (user.id) {
-            user.confirm();
-          }
-          return next();
+      const user = await User.getByEmail(req.body.mail);
+      if (user.id) {
+        const token = await Token.getValidToken(user.id, Token.reset);
+        if (token.token) {
+          mailer.sendMail(MailMaker.reset(user.mail, token.token));
         }
       }
     } catch (err) {
       return next(err);
     }
-    return next(ResponseMaker.conflict(0, 0, 'Invalid Operation!'));
+    return res.send('Check your email :)');
   }
 
-  static async sendMsg(user, typeName) {
+  static async reset(req, res, next) {
+    const { key } = req.query;
+    const { password } = req.body;
     try {
-      const token = await Token.getValidToken(user.id, Token[typeName]);
-      if (token.token) {
-        mailer.sendMail(MailMaker[typeName](user.mail, token));
+      const token = await Token.get(key, Token.reset);
+      if (token.token) { // si es un token valido
+        const validToken = await token.isActive();
+        if (validToken) {
+          const user = await User.get(token.userId);
+          await user.update({
+            password: await User.hashPassword(password),
+          });
+          token.deactivate();
+          Auth.sendMsg(user, Auth.passwordChangedMsg, false); // no enviar token
+          return res.status(200)
+            .send(ResponseMaker.ok('Password reset succesfully'));
+        }
+      }
+    } catch (err) {
+      return next(err);
+    }
+    return res.status(409).send({ status: 409, msg: 'Expired token!' });
+  }
+
+  static async confirm(req, res, next) {
+    const { key } = req.query;
+    try {
+      const token = await Token.get(key, Token.confirm);
+      if (token.token) { // si es un token valido
+        const validToken = await token.isActive();
+        if (validToken) {
+          const user = await User.get(token.userId);
+          await user.confirm();
+          await token.deactivate();
+          return res.status(200)
+            .send(ResponseMaker.ok('Confirmation succesfully!'));
+        }
+      }
+    } catch (err) {
+      return next(err);
+    }
+    return res.status(409).send({ status: 409, msg: 'Expired token!' });
+  }
+
+  static async sendMsg(user, typeName, requireToken = true) {
+    try {
+      if (requireToken) {
+        const token = await Token.getValidToken(user.id, Token[typeName]);
+        if (token.token) {
+          mailer.sendMail(MailMaker[typeName](user.mail, token));
+        }
+      } else {
+        mailer.sendMail(MailMaker[typeName](user.mail));
       }
     } catch (err) {
       throw err;
@@ -171,5 +171,6 @@ class Auth {
 Auth.type = 'auth';
 Auth.resetMsg = 'reset';
 Auth.confirmMsg = 'confirm';
+Auth.passwordChangedMsg = 'passwordChanged';
 
 module.exports = Auth;

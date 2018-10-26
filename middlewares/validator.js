@@ -46,10 +46,17 @@ class Validator {
     return (Validator.regex.email.test(data));
   }
 
+  static matchPassword(req, res, next) {
+    if (req.body.password === req.body.rePassword) {
+      return next();
+    }
+    return next({ status: 409, msg: 'Passwords does not match!' });
+  }
+
   static validate(req, res, next, rules) {
     const error = {
-      message: 'Validation Error',
       status: 409,
+      msg: 'Validation error',
       details: {},
     };
 

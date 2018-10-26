@@ -79,11 +79,14 @@ class Token {
   }
 
   static async get(token, type = Token.session) {
-    const cond = { token, type };
     try {
       const data = await db.select({
         from: Token.table,
-        where: cond,
+        where: {
+          token,
+          type,
+          active: true,
+        },
         limit: 1,
       });
       if (data.length !== 0) {
