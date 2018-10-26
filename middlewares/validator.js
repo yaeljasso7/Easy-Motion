@@ -30,12 +30,12 @@ class Validator {
 
   static isWeight(data) {
     const weight = Number(data);
-    return (weight > 0 && weight < 400) || isNaN(weight);
+    return (weight > 0 && weight < 400) || Number.isNaN(weight);
   }
 
   static isHeight(data) {
     const height = Number(data);
-    return (height > 0 && height < 250) || isNaN(height);
+    return (height > 0 && height < 250) || Number.isNaN(height);
   }
 
   static required(data) {

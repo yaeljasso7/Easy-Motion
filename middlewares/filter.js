@@ -18,12 +18,10 @@ class Filter {
     const mdlFilters = mdl[type].ValidFilters;
     const mdlFilterKeys = Object.keys(mdlFilters);
     const page = Number(req.query.page);
-    req.query.page = isNaN(page) ? Filter.DefaultPage : page;
+    req.query.page = Number.isNaN(page) ? Filter.DefaultPage : page;
     const { sort, order } = req.query;
-    if (mdlFilterKeys.includes(sort)) {
-      req.query.sorter = sort;
-      req.query.desc = (order && order.toLowerCase() === 'desc');
-    }
+    req.query.sorter = mdlFilterKeys.includes(sort) ? sort : undefined;
+    req.query.desc = (order && order.toLowerCase() === 'desc');
     mdlFilterKeys.forEach((cond) => {
       if (req.query[cond] && req.query[cond].length !== 0) {
         const extraAction = mdlFilters[cond];
@@ -38,7 +36,7 @@ class Filter {
   }
 
   static asString(data) {
-    return String(data);
+    return `%${data}%`;
   }
 }
 

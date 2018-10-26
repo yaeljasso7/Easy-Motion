@@ -1,24 +1,9 @@
 
 function ResponseMaker() {
-  const notFound = (type, content) => ({
-    status: 404,
-    msg: 'Not Found',
-    data: {
-      type,
-      content,
-    },
-  });
-
-  const noContent = type => ({
-    status: 204,
-    msg: 'No content',
-    data: {
-      type,
-    },
-  });
-
-  const conflict = (type, content, msg = 'Conflict') => ({
-    status: 409,
+  const basic = ({
+    status, type, content, msg,
+  }) => ({
+    status: status || 500,
     msg,
     data: {
       type,
@@ -26,41 +11,72 @@ function ResponseMaker() {
     },
   });
 
-  const created = (type, content) => ({
-    status: 201,
-    msg: 'Created',
-    data: {
+  const notFound = (type, content) => (
+    basic({
+      status: 404,
       type,
       content,
-    },
-  });
+      msg: 'Not Found',
+    })
+  );
 
-  const ok = (msg, type, content) => ({
-    status: 200,
-    msg,
-    data: {
+  const noContent = type => (
+    basic({
+      status: 204,
+      type,
+      msg: 'No content',
+    })
+  );
+
+  const conflict = (type, content, msg) => (
+    basic({
+      status: 409,
       type,
       content,
-    },
-  });
+      msg: msg || 'Conflict',
+    })
+  );
+
+  const created = (type, content, msg) => (
+    basic({
+      status: 201,
+      type,
+      content,
+      msg: msg || 'Created',
+    })
+  );
+
+  const ok = (msg, type, content) => (
+    basic({
+      msg: msg || 'Ok',
+      type,
+      content,
+    })
+  );
 
   const paginated = (page, type, content) => ({
-    status: 200,
-    data: {
-      type,
-      content,
-    },
+    ...ok(0, type, content),
     total_count: content.length,
-    per_page: parseInt(process.env.PAGE_SIZE, 10),
+    per_page: Number(process.env.PAGE_SIZE),
     page,
   });
 
-  const forbidden = msg => ({
-    status: 403,
-    msg,
-  });
+  const forbidden = msg => (
+    basic({
+      status: 403,
+      msg: msg || 'Forbidden',
+    })
+  );
+
+  const unauthorized = msg => (
+    basic({
+      status: 401,
+      msg: msg || 'Unauthenticated',
+    })
+  );
 
   return {
+    basic,
     notFound,
     noContent,
     conflict,
@@ -68,6 +84,7 @@ function ResponseMaker() {
     ok,
     paginated,
     forbidden,
+    unauthorized,
   };
 }
 

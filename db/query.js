@@ -102,7 +102,7 @@ class Query {
     }
     if (op === this.oprel[First] && qryCond[key].constructor === String) {
       return mysql.format(`?? ${this.oprel[Like].toUpperCase()} ?`,
-        [key, `%${qryCond[key]}%`]);
+        [key, qryCond[key]]);
     }
     return mysql.format(`?? ${op.toUpperCase()} ?`, [key, qryCond[key]]);
   }

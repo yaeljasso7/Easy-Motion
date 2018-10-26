@@ -1,5 +1,5 @@
 const { Token, User, ResponseMaker } = require('../models');
-const mailer = require('../mail');
+const { mailer, MailMaker } = require('../mail');
 
 class Auth {
   static getHeaderToken(bearer) {
@@ -13,7 +13,7 @@ class Auth {
     const hToken = Auth.getHeaderToken(req.headers.authorization);
     try {
       const token = await Token.get(hToken);
-      if (token.length !== 0) {
+      if (token.token) {
         const validSession = await token.isActive();
         if (validSession) {
           req.session = {
@@ -23,10 +23,10 @@ class Auth {
           return next();
         }
       }
-      return next(ResponseMaker.forbidden('You need to be logged!'));
     } catch (err) {
       return next(err);
     }
+    return next(ResponseMaker.forbidden('You need to be logged!'));
   }
 
   static havePermission(req, res, next, permission) {
@@ -37,15 +37,16 @@ class Auth {
         if (Auth[condition](req, user)) {
           return next();
         }
-        return next(ResponseMaker.forbidden('You have no permission to do this!'));
+        // return next(ResponseMaker.forbidden('You have no permission to do this!'));
+      } else {
+        return next();
       }
-      return next();
     }
-    return next(ResponseMaker.forbidden('You have not permission to do this!'));
+    return next(ResponseMaker.forbidden('You have no permission to do this!'));
   }
 
   static equalsId(req, user) {
-    const userId = parseInt(req.params.userId, 10);
+    const userId = Number(req.params.userId);
     return user.id === userId;
   }
 
@@ -53,6 +54,7 @@ class Auth {
     try {
       const user = await User.create(req.body);
       if (user.length !== 0) {
+        Auth.sendMsg(user, Auth.confirmMsg);
         return res.status(201)
           .send(ResponseMaker.created(Auth.type, user));
       }
@@ -65,23 +67,21 @@ class Auth {
 
   static async login(req, res, next) {
     const { mail, password } = req.body;
+    let token;
     try {
       const user = await User.login(mail, password);
       if (user.length !== 0) {
-        const activeToken = await Token.getActiveToken(user.id);
-        if (activeToken.length !== 0) {
-          return res.send(ResponseMaker.ok('Logged in!', Auth.type, activeToken));
+        token = await Token.getValidToken(user.id, Token.session);
+        if (!token.token) {
+          return res.send(ResponseMaker.conflict('Token', mail));
         }
-        const token = await Token.create({ userId: user.id, type: '1' });
-        if (token.length !== 0) {
-          return res.send(ResponseMaker.ok('Logged in!', Auth.type, token));
-        }
+        return res.send(ResponseMaker.ok('Logged in!', Auth.type, token));
       }
     } catch (err) {
       return next(err);
     }
-    return res.status(409)
-      .send(ResponseMaker.conflict(Auth.type, null, 'Invalid email or password!'));
+    return res.status(401)
+      .send(ResponseMaker.unauthorized('Invalid email or password!'));
   }
 
   static async logout(req, res, next) {
@@ -135,9 +135,41 @@ class Auth {
       }
     }
     return res.send('Las contraseñas no son iguales');
+
+  static async confirm(req, res, next) {
+    const hToken = req.params.token;
+    try {
+      const token = await Token.get(hToken, Token.confirm);
+      if (token.token) {
+        const validToken = await token.isActive();
+        if (validToken) {
+          const user = await User.get(token.userId);
+          if (user.id) {
+            user.confirm();
+          }
+          return next();
+        }
+      }
+    } catch (err) {
+      return next(err);
+    }
+    return next(ResponseMaker.conflict(0, 0, 'Invalid Operation!'));
+  }
+
+  static async sendMsg(user, typeName) {
+    try {
+      const token = await Token.getValidToken(user.id, Token[typeName]);
+      if (token.token) {
+        mailer.sendMail(MailMaker[typeName](user.mail, token));
+      }
+    } catch (err) {
+      throw err;
+    }
   }
 }
 
 Auth.type = 'auth';
+Auth.resetMsg = 'reset';
+Auth.confirmMsg = 'confirm';
 
 module.exports = Auth;

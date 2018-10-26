@@ -20,7 +20,7 @@ class User {
    * @param {Number} mail        - The user mail
    */
   constructor({
-    id, name, mobile, weight, height, password, mail,
+    id, name, mobile, weight, height, password, mail, confirmed,
   }) {
     this.id = id;
     this.name = name;
@@ -29,6 +29,7 @@ class User {
     this.height = height;
     this.password = password;
     this.mail = mail;
+    this.confirmed = confirmed;
   }
 
   /**
@@ -94,22 +95,17 @@ class User {
     return [];
   }
 
-  static async getMail(mail, deletedItems = false) {
-    const cond = { mail };
-    if (!deletedItems) {
-      cond.isDeleted = false;
-    }
+  static async getByEmail(mail) {
     try {
-      const data = await db.select({
+      const userData = await db.select({
         from: User.table,
-        where: cond,
+        where: {
+          mail,
+        },
         limit: 1,
       });
-      if (data.length !== 0) {
-        const user = new User(data[0]);
-        user.permissions = await User.getPermissions(data[0].role);
-        // user.calendars = await user.getCalendars();
-        return user;
+      if (userData !== 0) {
+        return new User(userData[0]);
       }
     } catch (err) {
       throw err;
@@ -157,17 +153,11 @@ class User {
    */
   static async login(mail, password) {
     try {
-      const userData = await db.select({
-        from: User.table,
-        where: {
-          mail,
-        },
-        limit: 1,
-      });
-      if (userData.length !== 0) {
-        const match = await bcrypt.compare(password, userData[0].password);
+      const user = User.getByEmail(mail);
+      if (user.length !== 0) {
+        const match = await bcrypt.compare(password, user.password);
         if (match) {
-          return new User(userData[0]);
+          return user;
         }
       }
     } catch (err) {
@@ -279,6 +269,14 @@ class User {
       throw err;
     }
     return updatedRows > 0;
+  }
+
+  async confirm() {
+    try {
+      return await this.update({ confirmed: true });
+    } catch (err) {
+      throw err;
+    }
   }
 
   /**

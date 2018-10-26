@@ -14,6 +14,30 @@ class Token {
     this.active = active;
   }
 
+  static get table() {
+    return 'tokens';
+  }
+
+  static get session() {
+    return 's';
+  }
+
+  static get confirm() {
+    return 'c';
+  }
+
+  static get reset() {
+    return 'r';
+  }
+
+  static get expireTime() {
+    return {
+      s: Number(process.env.SESSION_LIVES),
+      c: Number(process.env.CONFIRM_LIVES),
+      r: Number(process.env.RESET_LIVES),
+    };
+  }
+
   async isActive() {
     if (!this.active) {
       return false;
@@ -33,14 +57,14 @@ class Token {
   static async create({ userId, type }) {
     const createdAt = new Date();
     try {
-      const token = await bcrypt.hash(`${Token.Secret}${userId}${createdAt}`, Token.SaltRounds);
+      const token = await bcrypt.hash(`${process.env.SECRET}${userId}${createdAt}`, Number(process.env.SALT));
       const response = await db.insert({
-        into: 'tokens',
+        into: Token.table,
         resource: {
           token,
           type,
           createdAt,
-          expires: Token.SessionLives,
+          expires: Token.expireTime[type],
           active: 1,
           userId,
         },
@@ -54,18 +78,16 @@ class Token {
     return [];
   }
 
-  static async get(token) {
-    const cond = { token };
-    // console.log('cond: ', cond);
+  static async get(token, type = Token.session) {
+    const cond = { token, type };
     try {
       const data = await db.select({
-        from: 'tokens',
+        from: Token.table,
         where: cond,
         limit: 1,
       });
       if (data.length !== 0) {
-        const itoken = new Token(data[0]);
-        return itoken;
+        return new Token(data[0]);
       }
     } catch (err) {
       throw err;
@@ -73,18 +95,13 @@ class Token {
     return [];
   }
 
-  static async getHashPass(password) {
-    const saltRounds = parseInt(process.env.SALT, 10);
-    const hashPassword = await bcrypt.hash(password, saltRounds);
-    return hashPassword;
-  }
-
-  static async getActiveToken(userId) {
+  static async getActiveToken(userId, type = Token.session) {
     try {
       const data = await db.select({
-        from: 'tokens',
+        from: Token.table,
         where: {
           userId,
+          type,
           active: true,
         },
       });
@@ -104,12 +121,25 @@ class Token {
     return [];
   }
 
+  static async getValidToken(userId, type = Token.session) {
+    let token;
+    try {
+      token = await Token.getActiveToken(userId, type);
+      if (!token.token) {
+        token = await Token.create({ userId, type });
+      }
+    } catch (err) {
+      throw err;
+    }
+    return token;
+  }
+
   async deactivate() {
     this.active = false;
     let updatedRows;
     try {
       const results = await db.advUpdate({
-        table: 'tokens',
+        table: Token.table,
         assign: {
           active: this.active,
         },
@@ -124,34 +154,11 @@ class Token {
     }
     return updatedRows > 0;
   }
-
-  static async ramdomToken({ userId, type }) {
-    const createdAt = new Date();
-    try {
-      const token = await bcrypt.hash(`${Token.Secret}${userId}${createdAt}`, Token.SaltRounds);
-      const response = await db.insert({
-        into: 'tokens',
-        resource: {
-          token,
-          type,
-          createdAt,
-          expires: Token.SessionLives,
-          active: 1,
-          userId,
-        },
-      });
-      if (response.insertId > 0) {
-        return token;
-      }
-    } catch (err) {
-      throw err;
-    }
-    return [];
-  }
 }
 
-Token.Secret = process.env.SECRET;
-Token.SaltRounds = parseInt(process.env.SALT, 10);
-Token.SessionLives = parseInt(process.env.SESSION_LIVES, 10);
+// Token.secret = process.env.secret;
+// Token.saltRounds = parseInt(process.env.SALT, 10);
+// Token.sessionLives = parseInt(process.env.SESSION_LIVES, 10);
+// Token.table = 'tokens';
 
 module.exports = Token;
