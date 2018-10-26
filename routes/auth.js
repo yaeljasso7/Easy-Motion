@@ -26,4 +26,12 @@ router.get('/logout', [auth.haveSession, auth.logout], (req, res) => {
   res.send('Logged out!');
 });
 
+router.post('/forgot', auth.forgot);
+
+router.get('/reset/:token', (req, res) => {
+  console.log(req.params);
+  console.log(req.query);
+  res.send('reset');
+});
+
 module.exports = router;

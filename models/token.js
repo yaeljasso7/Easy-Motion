@@ -117,6 +117,30 @@ class Token {
     }
     return updatedRows > 0;
   }
+
+  static async ramdomToken({ userId, type }) {
+    const createdAt = new Date();
+    try {
+      const token = await bcrypt.hash(`${Token.Secret}${userId}${createdAt}`, Token.SaltRounds);
+      const response = await db.insert({
+        into: 'tokens',
+        resource: {
+          token,
+          type,
+          createdAt,
+          expires: Token.SessionLives,
+          active: 1,
+          userId,
+        },
+      });
+      if (response.insertId > 0) {
+        return token;
+      }
+    } catch (err) {
+      throw err;
+    }
+    return [];
+  }
 }
 
 Token.Secret = process.env.SECRET;

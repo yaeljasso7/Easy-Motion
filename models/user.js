@@ -94,6 +94,29 @@ class User {
     return [];
   }
 
+  static async getMail(mail, deletedItems = false) {
+    const cond = { mail };
+    if (!deletedItems) {
+      cond.isDeleted = false;
+    }
+    try {
+      const data = await db.select({
+        from: User.table,
+        where: cond,
+        limit: 1,
+      });
+      if (data.length !== 0) {
+        const user = new User(data[0]);
+        user.permissions = await User.getPermissions(data[0].role);
+        // user.calendars = await user.getCalendars();
+        return user;
+      }
+    } catch (err) {
+      throw err;
+    }
+    return [];
+  }
+
   /**
    * @method getPermissions - Get all permissions for a user role
    *

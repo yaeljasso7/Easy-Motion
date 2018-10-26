@@ -1,4 +1,5 @@
 const { Token, User, ResponseMaker } = require('../models');
+const mailer = require('../mail');
 
 class Auth {
   static getHeaderToken(bearer) {
@@ -90,6 +91,19 @@ class Auth {
       return next(err);
     }
     return next();
+  }
+
+  static async forgot(req, res) {
+    // trae usuario por mail
+    const user = await User.getMail(req.body.mail);
+    console.log(user);
+    // genera token aleatorio
+    const token = await Token.ramdomToken({ userId: user.id, type: '2' });
+    console.log(token);
+    // mandar correo a usuario con Token
+    // mailer.sendMail({ to: 'christopher_x10x@hotmail.com' });
+    mailer.sendMailRecover(user.mail, token);
+    res.send('Check you email :)');
   }
 }
 

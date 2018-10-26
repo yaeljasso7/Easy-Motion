@@ -48,10 +48,31 @@ class Mailer {
       text: 'Hello Testing?',
       html: '<b>Hello Testing?</b>',
     };
+
+    this.recoverOptions = {
+      from: '"Easy-Motion" <christopherx10x@gmail.com>',
+      subject: 'Recover Pass ✔',
+      // html: '<b>Hello Testing?</b>',
+    };
   }
 
   sendMail(options) {
     this.transporter.sendMail({ ...this.mailOptions, ...options }, (err, info) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log('Message sent: %s', info.messageId);
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    });
+  }
+
+  sendMailRecover(mail, token) {
+    const data = { text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+          'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+          'http://easy-motion/reset/token=' + token + '\n\n' +
+          'If you did not request this, please ignore this email and your password will remain unchanged.\n', to: mail };
+    // console.log('options:', options);
+    this.transporter.sendMail({ ...this.recoverOptions, ...data }, (err, info) => {
       if (err) {
         console.log(err);
       }
