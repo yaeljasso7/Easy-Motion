@@ -1,7 +1,17 @@
 const { Token, User, ResponseMaker } = require('../models');
 const { mailer, MailMaker } = require('../mail');
 
+/**
+ * @class Auth
+ * Manage authentication & authorization
+ */
 class Auth {
+  /**
+   * @static
+   * @method getHeaderToken - Retrieve the token value
+   * @param  {String} bearer - The header where the token is
+   * @return {String} - The token
+   */
   static getHeaderToken(bearer) {
     if (!bearer) {
       return '';
@@ -9,19 +19,60 @@ class Auth {
     return bearer.split(' ')[1];
   }
 
+  /**
+   * @property type
+   * @type {String}
+   */
+  static get type() {
+    return 'Auth';
+  }
+
+  /**
+   * @property resetMsg
+   * The reset message typename
+   * @type {String}
+   */
+  static get resetMsg() {
+    return 'reset';
+  }
+
+  /**
+   * @property resetMsg
+   * The confirm message typename
+   * @type {String}
+   */
+  static get confirmMsg() {
+    return 'confirm';
+  }
+
+  /**
+   * @property resetMsg
+   * The password changed message typename
+   * @type {String}
+   */
+  static get passwordChangedMsg() {
+    return 'passwordChanged';
+  }
+
+  /**
+   * @static @async
+   * @method haveSession - It checks if the user have a valid session
+   *
+   * @param  {Object}   req  - The Request Object
+   * @param  {Object}   res  - The Response Object
+   * @param  {Function} next - The next function in the cycle
+   * @return {Promise} - Promise object, represents the next function
+   */
   static async haveSession(req, res, next) {
     const hToken = Auth.getHeaderToken(req.headers.authorization);
     try {
-      const token = await Token.get(hToken);
+      const token = await Token.get(hToken, Token.session);
       if (token.token) {
-        const validSession = await token.isActive();
-        if (validSession) {
-          req.session = {
-            token,
-            user: await User.get(token.userId),
-          };
-          return next();
-        }
+        req.session = {
+          token,
+          user: await User.get(token.userId),
+        };
+        return next();
       }
     } catch (err) {
       return next(err);
@@ -29,6 +80,15 @@ class Auth {
     return next(ResponseMaker.forbidden('You need to be logged!'));
   }
 
+  /**
+   * @static @async
+   * @method havePermission - It checks if the user have the permission
+   *
+   * @param  {Object}   req  - The Request Object
+   * @param  {Object}   res  - The Response Object
+   * @param  {Function} next - The next function in the cycle
+   * @return {Promise} - Promise object, represents the next function
+   */
   static havePermission(req, res, next, permission) {
     const { user } = req.session;
     if (user.canDo(permission)) {
@@ -37,7 +97,6 @@ class Auth {
         if (Auth[condition](req, user)) {
           return next();
         }
-        // return next(ResponseMaker.forbidden('You have no permission to do this!'));
       } else {
         return next();
       }
@@ -45,11 +104,26 @@ class Auth {
     return next(ResponseMaker.forbidden('You have no permission to do this!'));
   }
 
+  /**
+   * [equalsId description]
+   * @param  {Object} req  - The Request Object
+   * @param  {User} user   - The user, to compare with
+   * @return {Boolean}     - whether the param userId is equals to the user id
+   */
   static equalsId(req, user) {
     const userId = Number(req.params.userId);
     return user.id === userId;
   }
 
+  /**
+   * @static @async
+   * @method register - Registers a user in the system
+   *
+   * @param  {Object}   req  - The Request Object
+   * @param  {Object}   res  - The Response Object
+   * @param  {Function} next - The next function in the cycle
+   * @return {Promise} - Promise object, represents the next function
+   */
   static async register(req, res, next) {
     try {
       const user = await User.create(req.body);
@@ -58,32 +132,47 @@ class Auth {
         return res.status(201)
           .send(ResponseMaker.created(Auth.type, user));
       }
-      return res.status(409)
-        .send(ResponseMaker.conflict(Auth.type, user));
+      return next(ResponseMaker.conflict(Auth.type, user));
     } catch (err) {
       return next(err);
     }
   }
 
+  /**
+   * @static @async
+   * @method login - User login
+   *
+   * @param  {Object}   req  - The Request Object
+   * @param  {Object}   res  - The Response Object
+   * @param  {Function} next - The next function in the cycle
+   * @return {Promise} - Promise object, represents the next function
+   */
   static async login(req, res, next) {
     const { mail, password } = req.body;
-    let token;
     try {
       const user = await User.login(mail, password);
       if (user.length !== 0) {
-        token = await Token.getValidToken(user.id, Token.session);
+        const token = await Token.create({ userId: user.id, type: Token.session });
         if (!token.token) {
-          return res.send(ResponseMaker.conflict('Token', mail));
+          return next(ResponseMaker.conflict('Token', mail));
         }
         return res.send(ResponseMaker.ok('Logged in!', Auth.type, token));
       }
     } catch (err) {
       return next(err);
     }
-    return res.status(401)
-      .send(ResponseMaker.unauthorized('Invalid email or password!'));
+    return next(ResponseMaker.unauthorized('Invalid email or password!'));
   }
 
+  /**
+   * @static @async
+   * @method logout - User logout
+   *
+   * @param  {Object}   req  - The Request Object
+   * @param  {Object}   res  - The Response Object
+   * @param  {Function} next - The next function in the cycle
+   * @return {Promise} - Promise object, represents the next function
+   */
   static async logout(req, res, next) {
     try {
       await req.session.token.deactivate();
@@ -93,14 +182,21 @@ class Auth {
     return next();
   }
 
+  /**
+   * @static @async
+   * @method forgot - User password recovery
+   * Sends a token to the user email, in order to reset the password
+   *
+   * @param  {Object}   req  - The Request Object
+   * @param  {Object}   res  - The Response Object
+   * @param  {Function} next - The next function in the cycle
+   * @return {Promise} - Promise object, represents the next function
+   */
   static async forgot(req, res, next) {
     try {
       const user = await User.getByEmail(req.body.mail);
       if (user.id) {
-        const token = await Token.getValidToken(user.id, Token.reset);
-        if (token.token) {
-          mailer.sendMail(MailMaker.reset(user.mail, token.token));
-        }
+        await Auth.sendMsg(user, Auth.resetMsg);
       }
     } catch (err) {
       return next(err);
@@ -108,56 +204,76 @@ class Auth {
     return res.send('Check your email :)');
   }
 
+  /**
+   * @static @async
+   * @method reset - User password reset
+   * Set the new user password
+   *
+   * @param  {Object}   req  - The Request Object
+   * @param  {Object}   res  - The Response Object
+   * @param  {Function} next - The next function in the cycle
+   * @return {Promise} - Promise object, represents the next function
+   */
   static async reset(req, res, next) {
     const { key } = req.query;
     const { password } = req.body;
     try {
       const token = await Token.get(key, Token.reset);
-      if (token.token) { // si es un token valido
-        const validToken = await token.isActive();
-        if (validToken) {
-          const user = await User.get(token.userId);
-          await user.update({
-            password: await User.hashPassword(password),
-          });
-          token.deactivate();
-          Auth.sendMsg(user, Auth.passwordChangedMsg, false); // no enviar token
-          return res.status(200)
-            .send(ResponseMaker.ok('Password reset succesfully'));
-        }
+      if (token.token) {
+        const user = await User.get(token.userId);
+        await user.update({
+          password: await User.hashPassword(password),
+        });
+        await token.deactivate();
+        Auth.sendMsg(user, Auth.passwordChangedMsg, false);
+        return res.send(ResponseMaker.ok('Password reset succesfully'));
       }
     } catch (err) {
       return next(err);
     }
-    return res.status(409).send({ status: 409, msg: 'Expired token!' });
+    return next(ResponseMaker.basic({ status: 409, msg: 'Expired token!' }));
   }
 
+  /**
+   * @static @async
+   * @method confirm - Confirms the user email
+   *
+   * @param  {Object}   req  - The Request Object
+   * @param  {Object}   res  - The Response Object
+   * @param  {Function} next - The next function in the cycle
+   * @return {Promise} - Promise object, represents the next function
+   */
   static async confirm(req, res, next) {
     const { key } = req.query;
     try {
       const token = await Token.get(key, Token.confirm);
-      if (token.token) { // si es un token valido
-        const validToken = await token.isActive();
-        if (validToken) {
-          const user = await User.get(token.userId);
-          await user.confirm();
-          await token.deactivate();
-          return res.status(200)
-            .send(ResponseMaker.ok('Confirmation succesfully!'));
-        }
+      if (token.token) {
+        const user = await User.get(token.userId);
+        await user.confirm();
+        await token.deactivate();
+        return res.send(ResponseMaker.ok('Confirmation succesfully!'));
       }
     } catch (err) {
       return next(err);
     }
-    return res.status(409).send({ status: 409, msg: 'Expired token!' });
+    return next(ResponseMaker.basic({ status: 409, msg: 'Expired token!' }));
   }
 
+  /**
+   * @static @async
+   * @method sendMsg - Sends a mail to an existing user
+   *
+   * @param  {Object}  user                - The user to send the mail
+   * @param  {String}  typeName            - The message typename
+   * @param  {Boolean} [requireToken=true] - Whether send or not a token in the message
+   * @return {Promise} - Promise object, represents the current operation
+   */
   static async sendMsg(user, typeName, requireToken = true) {
     try {
       if (requireToken) {
         const token = await Token.getValidToken(user.id, Token[typeName]);
         if (token.token) {
-          mailer.sendMail(MailMaker[typeName](user.mail, token));
+          mailer.sendMail(MailMaker[typeName](user.mail, token.token));
         }
       } else {
         mailer.sendMail(MailMaker[typeName](user.mail));
@@ -167,10 +283,5 @@ class Auth {
     }
   }
 }
-
-Auth.type = 'auth';
-Auth.resetMsg = 'reset';
-Auth.confirmMsg = 'confirm';
-Auth.passwordChangedMsg = 'passwordChanged';
 
 module.exports = Auth;

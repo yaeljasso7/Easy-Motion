@@ -1,7 +1,22 @@
 const bcrypt = require('bcrypt');
 const db = require('../db');
 
+/**
+ * @class Token
+ * Represents a token in the system
+ */
 class Token {
+  /**
+   * @constructor Token
+   *
+   * @param {Number}  id        The token identifier
+   * @param {String}  token     The generated unique token
+   * @param {Number}  userId    The user identifier whom the token belongs
+   * @param {String}  type      The token type
+   * @param {Date}    createdAt The date which the token has been created
+   * @param {Number}  expires   The expiration time
+   * @param {Boolean} active    whether the token is active
+   */
   constructor({
     id, token, userId, type, createdAt, expires, active,
   }) {
@@ -14,22 +29,42 @@ class Token {
     this.active = active;
   }
 
+  /**
+   * @property table
+   * @type {String} - The Database table which the tokens are stored
+   */
   static get table() {
     return 'tokens';
   }
 
+  /**
+   * @property session
+   * @type {String} - Represents a session token type
+   */
   static get session() {
     return 's';
   }
 
+  /**
+   * @property confirm
+   * @type {String} - Represents a confirm token type
+   */
   static get confirm() {
     return 'c';
   }
 
+  /**
+   * @property reset
+   * @type {String} - Represents a reset token type
+   */
   static get reset() {
     return 'r';
   }
 
+  /**
+   * @property expireTime
+   * @type {Object} - An object with the token types and its expire time.
+   */
   static get expireTime() {
     return {
       s: Number(process.env.SESSION_LIVES),
@@ -38,6 +73,12 @@ class Token {
     };
   }
 
+  /**
+   * @async
+   * @method isActive - Checks if the current token is still active
+   *
+   * @return {Promise} - Promise object, represents if the token is still active
+   */
   async isActive() {
     if (!this.active) {
       return false;
@@ -54,6 +95,14 @@ class Token {
     return true;
   }
 
+  /**
+   * @static @async
+   * @method create - Creates a token of a specific type
+   *
+   * @param  {Number}  userId - The user identifier to whom the token belongs
+   * @param  {String}  type - The token type, to be generated
+   * @return {Promise} - Promise object, represents the pair (userId, token)
+   */
   static async create({ userId, type }) {
     const createdAt = new Date();
     try {
@@ -78,6 +127,16 @@ class Token {
     return [];
   }
 
+  /**
+   * @static @async
+   * @method get - Retrieve an active token
+   *         Searches in Database for the token.
+   *         Returns the token if it's still active.
+   *
+   * @param  {String}  token - The token to be matched in Database.
+   * @param  {String}  [type=Token.session] - The token type.
+   * @return {Promise} - Promise object, represents the token.
+   */
   static async get(token, type = Token.session) {
     try {
       const data = await db.select({
@@ -90,32 +149,10 @@ class Token {
         limit: 1,
       });
       if (data.length !== 0) {
-        return new Token(data[0]);
-      }
-    } catch (err) {
-      throw err;
-    }
-    return [];
-  }
-
-  static async getActiveToken(userId, type = Token.session) {
-    try {
-      const data = await db.select({
-        from: Token.table,
-        where: {
-          userId,
-          type,
-          active: true,
-        },
-      });
-      if (data.length !== 0) {
-        const token = new Token(data[0]);
-        const validToken = await token.isActive();
+        const tk = new Token(data[0]);
+        const validToken = await tk.isActive();
         if (validToken) {
-          return {
-            userId: token.userId,
-            token: token.token,
-          };
+          return tk;
         }
       }
     } catch (err) {
@@ -124,19 +161,57 @@ class Token {
     return [];
   }
 
-  static async getValidToken(userId, type = Token.session) {
-    let token;
+  /**
+   * @static @async
+   * @method deactivateAll - It deactivates all tokens that match userId and type
+   *
+   * @param  {Number}  userId               - The userId, to deactivate the tokens
+   * @param  {String}  [type=Token.session] - The token type, to be deactivate
+   * @return {Promise} - Promise object, represents such operation
+   */
+  static async deactivateAll(userId, type = Token.session) {
     try {
-      token = await Token.getActiveToken(userId, type);
-      if (!token.token) {
-        token = await Token.create({ userId, type });
-      }
+      await db.advUpdate({
+        table: Token.table,
+        assign: {
+          active: false,
+        },
+        where: {
+          userId,
+          type,
+          active: true,
+        },
+      });
     } catch (err) {
       throw err;
     }
-    return token;
   }
 
+  /**
+   * @static @async
+   * @method getValidToken - Returns a valid token, keeping only one of this type
+   *         Calls deactivateAll, and then create a new token.
+   *
+   * @param  {Number}  userId - The user identifier, to whom the token belongs.
+   * @param  {String}  [type=Token.session] - The returned token type.
+   * @return {Promise} - Promise object, represents the valid token.
+   */
+  static async getValidToken(userId, type = Token.session) {
+    try {
+      await Token.deactivateAll(userId, type);
+      const token = await Token.create({ userId, type });
+      return token;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  /**
+   * @async
+   * @method deactivate - It deactivates the current token
+   *
+   * @return {Promise} - Promise object, represents the success operation
+   */
   async deactivate() {
     this.active = false;
     let updatedRows;
@@ -159,9 +234,5 @@ class Token {
   }
 }
 
-// Token.secret = process.env.secret;
-// Token.saltRounds = parseInt(process.env.SALT, 10);
-// Token.sessionLives = parseInt(process.env.SESSION_LIVES, 10);
-// Token.table = 'tokens';
 
 module.exports = Token;

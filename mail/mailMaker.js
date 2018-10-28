@@ -1,5 +1,15 @@
 
+/**
+ * Returns an object with the mail options as attributes
+ * @constructor
+ */
 function MailMaker() {
+  /**
+   * Options for Confirm message
+   * @param  {String} mail  - Email to send the message
+   * @param  {String} token - Token to attach in the message
+   * @return {Object} - The confirm message options
+   */
   const confirm = (mail, token) => ({
     from: process.env.MAIL_FROM,
     to: mail,
@@ -8,6 +18,12 @@ function MailMaker() {
     html: `<b>http://easy-motion/auth/confirm?key=${token}</b>`,
   });
 
+  /**
+   * Options for Reset password message
+   * @param  {String} mail  - Email to send the message
+   * @param  {String} token - Token to attach in the message
+   * @return {Object} - The reset message options
+   */
   const reset = (mail, token) => ({
     from: process.env.MAIL_FROM,
     to: mail,
@@ -19,6 +35,12 @@ function MailMaker() {
     html: `<b>http://easy-motion/auth/reset?key=${token}</b>`,
   });
 
+  /**
+   * Options for password change message
+   * @param  {String} mail  - Email to send the message
+   * @param  {String} token - Token to attach in the message
+   * @return {Object} - The password changed message options
+   */
   const passwordChanged = mail => ({
     from: process.env.MAIL_FROM,
     to: mail,

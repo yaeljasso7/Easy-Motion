@@ -3,7 +3,15 @@ const { google } = require('googleapis');
 
 const { OAuth2 } = google.auth;
 
+/**
+ * @class Mailer
+ * Sends messages to emails
+ */
 class Mailer {
+  /**
+   * @constructor
+   * Configures the mailer transporter
+   */
   constructor() {
     this.mailer = process.env.MAILER;
     this[`config${this.mailer}`]();
@@ -23,6 +31,10 @@ class Mailer {
     };
   }
 
+  /**
+   * @method configEthereal
+   * Configures the transport with ethereal
+   */
   configEthereal() {
     this.transporter = nodemailer.createTransport({
       host: process.env.MAIL_HOST,
@@ -35,6 +47,10 @@ class Mailer {
     });
   }
 
+  /**
+   * @method configGmail
+   * Configures the transport with gmail
+   */
   configGmail() {
     this.oauth2Client = new OAuth2(
       process.env.ID_CLIENTE, // ClientID
@@ -65,13 +81,27 @@ class Mailer {
     });
   }
 
+  /**
+   * @method sendMail - Sends message to email
+   *
+   * @param  {Object} options - the mail options
+   * ----------
+   * Example:
+   *   options = {
+   *     from: '"Testing mailer" <testing@mailer.com>',
+   *     subject: 'Hello ✔',
+   *     text: 'Hello Testing?',
+   *     html: '<b>Hello Testing?</b>',
+   *     };
+   */
   sendMail(options) {
     this.transporter.sendMail({ ...this.mailOptions, ...options }, (err, info) => {
       if (err) {
-        throw err;
+        console.log(err);
+      } else if (info) {
+        console.log('Message sent: %s', info.messageId);
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
       }
-      console.log('Message sent: %s', info.messageId);
-      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     });
   }
 }
