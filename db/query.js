@@ -31,7 +31,7 @@ class Query {
    * Usage:
    *   formatColumns(['col1', 'col2']);
    *   formatColumns('col');
-   * If not columns, return the universal [*]
+   * If there's not columns, return the universal [*] (all columns)
    */
   formatColumns(cols) {
     if (!cols || !cols.length) {
@@ -56,7 +56,7 @@ class Query {
   /**
    * @method formatCondition - Format a query condition
    *
-   * @param  {Object} [qryCond={}]           - The query condition
+   * @param  {Object} [qryCond={}] - The query condition
    * ----------
    * Example:
    *   qryCond = {
@@ -68,7 +68,7 @@ class Query {
    *   }
    * This example, will be interpreted as follows:
    *
-   * id = 5 OR deleted = false AND name LIKE '%name%'
+   * id = 5 OR deleted = false AND name = 'name'
    *
    * @param  {String} [op=this.oprel[First]] - Default operator to join key-val
    * @return {String} - The query contition formated
@@ -79,7 +79,6 @@ class Query {
     if (keys.length === Zero) {
       return this.defaultCondition;
     }
-
     if (keys.length > One) {
       const tmpQry = {};
       tmpQry[this.oplog[First]] = qryCond;
@@ -99,10 +98,6 @@ class Query {
     }
     if (this.oprel.includes(key.toLowerCase())) {
       return this.formatCondition(qryCond[key], key);
-    }
-    if (op === this.oprel[First] && qryCond[key].constructor === String) {
-      return mysql.format(`?? ${this.oprel[Like].toUpperCase()} ?`,
-        [key, qryCond[key]]);
     }
     return mysql.format(`?? ${op.toUpperCase()} ?`, [key, qryCond[key]]);
   }

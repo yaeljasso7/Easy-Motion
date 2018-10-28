@@ -8,8 +8,10 @@ const Qry = require('./query');
 class DB {
   /**
    * Creates an mysql connection
+   * @constructor
    */
   constructor() {
+    this.pageSize = Number(process.env.PAGE_SIZE);
     this.conn = mysql.createConnection({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
@@ -24,6 +26,16 @@ class DB {
         console.log('Db Conect!');
       }
     });
+  }
+
+  /**
+   * @method pageLimit - Format page as sql limit
+   *
+   * @param  {Number} page - The page number
+   * @return {Number[]} - The page formated as sql limit
+   */
+  pageLimit(page) {
+    return [(page - 1) * this.pageSize, this.pageSize];
   }
 
   /**
@@ -111,7 +123,7 @@ class DB {
    *
    *         If no sorter specified, the results aren't sorted.
    *
-   * @param  {boolean} desc - Sorts the result set in descending order.
+   * @param  {Boolean} desc - Sorts the result set in descending order.
    *         ----------
    *         Usage:
    *           desc: true
@@ -222,7 +234,10 @@ class DB {
    */
   get(table, id) {
     return new Promise((resolve, reject) => {
-      this.conn.query(Qry.select({ from: table, id }), (error, results) => {
+      this.conn.query(Qry.select({
+        from: table,
+        where: { id },
+      }), (error, results) => {
         if (error) {
           return reject(this.processError(error));
         }
@@ -336,7 +351,7 @@ class DB {
    * @return {Object} - The error message as an object.
    */
   getDataFromErrorMsg(message) {
-    this.void();
+    this.void = '';
     const data = unescape(message).match(/'([^']+)'/g);
     return {
       field: data[1].slice(1, -1),
