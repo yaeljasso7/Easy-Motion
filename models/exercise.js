@@ -27,16 +27,47 @@ class Exercise {
   }
 
   /**
+   * Database table which exercises are located.
+   * @type {String}
+   */
+  static get table() {
+    return 'exercises';
+  }
+
+  /**
+   * Database view which the exercises are read.
+   * @type {String}
+   */
+  static get vTable() {
+    return `v_${Exercise.table}`;
+  }
+
+  /**
+   * The Exercise Valid Filters
+   * @type {Object}
+   */
+  static get ValidFilters() {
+    return {
+      name: 'asString',
+      difficulty: 'asNumber',
+      bodyPart: 'asString',
+      trainingType: 'asString',
+    };
+  }
+
+  /**
    * @method getAll - Retrieve all the exercises from a page
    *
-   * @param  {Number}  [page=0]             - The page to retrieve the exercises
-   * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
-   * @return {Promise} - Promise Object represents, the exercises from that page
+   * @param  {Number}  page - The page to retrieve the exercises
+   * @param  {String}  sorter - The sorter criteria
+   * @param  {Boolean} desc - Whether the sort order is descendent
+   * @param  {Boolean} [deletedItems=false] - Whether include deleted items
+   * @return {Promise} [Array] - Promise Object, represents the exercises from
+   *         that page
    */
   static async getAll({
     page, sorter, desc, filters,
   }, deletedItems = false) {
-    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     const cond = {};
     if (!deletedItems) {
@@ -48,7 +79,7 @@ class Exercise {
         where: { ...filters, ...cond },
         sorter,
         desc,
-        limit: [page * pageSize, pageSize],
+        limit: db.pageLimit(page),
       });
       data.forEach((row) => {
         response.push(new Exercise(row));
@@ -64,7 +95,7 @@ class Exercise {
    *
    * @param  {Number}  id - The exercise identifier
    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
-   * @return {Promise} - Promise Object represents an exercise
+   * @return {Promise} [Exercise] - Promise Object, represents an exercise
    */
   static async get(id, deletedItems = false) {
     let data;
@@ -92,7 +123,7 @@ class Exercise {
    * @param  {[type]}  description  - The exercise description
    * @param  {Number}  trainingType - The training type identifier
    * @param  {Number}  bodyPart     - The body part identifier
-   * @return {Promise} - Promise Object represents the exercise created
+   * @return {Promise} [Exercise] - Promise Object, represents the exercise created
    */
   static async create({
     name, difficulty, description, trainingType, bodyPart,
@@ -122,9 +153,14 @@ class Exercise {
    * @method update - Modifies fields from this exercise.
    *
    * @param  {Object}  keyVals - Represents the new values for this exercise.
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   * @return {Promise} [Boolean]- Promise Object, represents the operation success
    */
-  async update(keyVals) {
+  async update({
+    name, difficulty, description, trainingType, bodyPart,
+  }) {
+    const keyVals = {
+      name, difficulty, description, trainingType, bodyPart,
+    };
     let updatedRows;
     try {
       const results = await db.advUpdate({
@@ -144,8 +180,8 @@ class Exercise {
 
   /**
    * @method delete - Deletes this exercise.
-   *                  Assigns true to isDeleted, in the database.
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   *         Assigns true to isDeleted, in the database.
+   * @return {Promise} [Boolean] - Promise Object, represents the operation success
    */
   async delete() {
     let deletedRows;
@@ -170,25 +206,9 @@ class Exercise {
 }
 
 /**
- * Database table which exercises are located.
- * @type {String}
- */
-Exercise.table = 'exercises';
-/**
- * Database view which the exercises are read.
- * @type {String}
- */
-Exercise.vTable = `v_${Exercise.table}`;
-/**
  * Checks if an exercise exists in the database, based on its id
  * @type {asyncFunction}
  */
-Exercise.exists = generic.exists(Exercise.table);
-Exercise.ValidFilters = {
-  name: 'asString',
-  difficulty: 'asNumber',
-  bodyPart: 'asString',
-  trainingType: 'asString',
-};
+Exercise.exists = generic.exists(Exercise.table, 'id');
 
 module.exports = Exercise;

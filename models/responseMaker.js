@@ -1,65 +1,66 @@
 
 function ResponseMaker() {
   const basic = ({
-    status, type, content, msg,
+    status, type, data, msg,
   }) => ({
     status: status || 500,
-    msg,
-    data: {
-      type,
-      content,
-    },
+    msg: `${type}: ${msg}`,
+    data,
   });
 
-  const notFound = (type, content) => (
+  const notFound = ({ type, data, msg }) => (
     basic({
       status: 404,
       type,
-      content,
-      msg: 'Not Found',
+      data,
+      msg: msg || 'Not Found',
     })
   );
 
-  const noContent = type => (
+  const nodata = ({ type, msg }) => (
     basic({
       status: 204,
       type,
-      msg: 'No content',
+      msg: msg || 'No data',
     })
   );
 
-  const conflict = (type, content, msg) => (
+  const conflict = ({ type, data, msg }) => (
     basic({
       status: 409,
       type,
-      content,
+      data,
       msg: msg || 'Conflict',
     })
   );
 
-  const created = (type, content, msg) => (
+  const created = ({ type, data, msg }) => (
     basic({
       status: 201,
       type,
-      content,
+      data,
       msg: msg || 'Created',
     })
   );
 
-  const ok = (msg, type, content) => (
+  const ok = ({ type, data, msg }) => (
     basic({
       status: 200,
-      msg: msg || 'Ok',
       type,
-      content,
+      data,
+      msg: msg || 'Ok',
     })
   );
 
-  const paginated = (page, type, content) => ({
-    ...ok(0, type, content),
-    total_count: content.length,
-    per_page: Number(process.env.PAGE_SIZE),
-    page,
+  const paginated = ({
+    page, type, data, msg,
+  }) => ({
+    ...ok({ type, data, msg }),
+    details: {
+      total_count: data.length,
+      per_page: Number(process.env.PAGE_SIZE),
+      page,
+    },
   });
 
   const forbidden = msg => (
@@ -79,7 +80,7 @@ function ResponseMaker() {
   return {
     basic,
     notFound,
-    noContent,
+    nodata,
     conflict,
     created,
     ok,

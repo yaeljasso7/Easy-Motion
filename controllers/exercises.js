@@ -2,8 +2,8 @@ const { Exercise, ResponseMaker } = require('../models');
 
 /**
  *
- * @class Class of controller Exercises
- * - Contain the getAll, get, create, delete, update
+ * @class Exercise Controller
+ * - Contains the getAll, get, create, delete & update methods
  */
 class ExercisesCtrl {
   constructor() {
@@ -12,27 +12,25 @@ class ExercisesCtrl {
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
-    this.type = 'exercise';
+    this.type = 'Exercise';
   }
 
   /**
   * @async
   * Async function to get all exercises from database using the Exercise Model
   * @param  {Request Object}     req   Request to the function, includes information in params
-  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Response Object}    res   Response that will give this function
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async getAll(req, res, next) {
     try {
-      const data = await Exercise.getAll(req.query);
-      if (data.length === 0) {
-        return res.status(204)
-          .send(ResponseMaker.noContent(this.type));
-      }
-      return res.status(200)
-        .send(ResponseMaker.paginated(req.query.page, this.type, data));
+      const exercises = await Exercise.getAll(req.query);
+      return res.send(ResponseMaker.paginated({
+        page: req.query.page,
+        type: this.type,
+        data: exercises,
+      }));
     } catch (err) {
       return next(err);
     }
@@ -42,7 +40,7 @@ class ExercisesCtrl {
   * @async
   * Async function to get a specific exercise from database using the Exercise Model
   * @param  {Request Object}     req   Request to the function, includes information in params
-  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Response Object}    res   Response that will give this function
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
@@ -50,12 +48,18 @@ class ExercisesCtrl {
   async get(req, res, next) {
     const id = req.params.exerciseId;
     try {
-      const data = await Exercise.get(id);
-      if (data.length === 0) {
-        return res.status(404)
-          .send(ResponseMaker.notFound(this.type, { id }));
+      const exercise = await Exercise.get(id);
+      if (!exercise.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
       }
-      return res.send(ResponseMaker.ok('Found', this.type, data));
+      return res.send(ResponseMaker.ok({
+        msg: 'Found',
+        type: this.type,
+        data: exercise,
+      }));
     } catch (err) {
       return next(err);
     }
@@ -65,20 +69,25 @@ class ExercisesCtrl {
   * @async
   * Async function to create a exercise into database using the Exercise Model
   * @param  {Request Object}     req   Request to the function, includes information in params
-  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Response Object}    res   Response that vill give this function
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
 
   async create(req, res, next) {
     try {
-      const data = await Exercise.create(req.body);
-      if (data.length !== 0) {
+      const exercise = await Exercise.create(req.body);
+      if (!exercise.id) {
         return res.status(201)
-          .send(ResponseMaker.created(this.type, data));
+          .send(ResponseMaker.created({
+            type: this.type,
+            data: exercise,
+          }));
       }
-      return res.status(409)
-        .send(ResponseMaker.conflict(this.type, data));
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: exercise,
+      }));
     } catch (err) {
       return next(err);
     }
@@ -86,31 +95,37 @@ class ExercisesCtrl {
 
   /**
   * @async
-  * Async function to update especific exercise from database using the Exercise Model
+  * Async function to update specific exercise from database using the Exercise Model
   * @param  {Request Object}     req   Request to the function, includes information in params
-  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Response Object}    res   Response that vill give this function
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async update(req, res, next) {
     const id = req.params.exerciseId;
     try {
-      const data = await Exercise.get(id);
+      const exercise = await Exercise.get(id);
 
-      if (data.length === 0) {
-        return res.status(404)
-          .send(ResponseMaker.notFound(this.type, { id }));
+      if (!exercise.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
       }
 
-      const updated = await data.update(req.body);
+      const updated = await exercise.update(req.body);
 
       if (updated) {
-        return res.status(200)
-          .send(ResponseMaker.ok('Updated', this.type, { ...data, ...req.body }));
+        return res.send(ResponseMaker.ok({
+          msg: 'Updated',
+          type: this.type,
+          data: { id },
+        }));
       }
-      return res.status(409)
-        .send(ResponseMaker.conflict(this.type, req.body));
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: req.body,
+      }));
     } catch (err) {
       return next(err);
     }
@@ -118,31 +133,34 @@ class ExercisesCtrl {
 
   /**
   * @async
-  * Async function to delete a especific exercise from database using the Exercise Model
+  * Async function to delete a specific exercise from database using the Exercise Model
   * @param  {Request Object}     req   Request to the function, includes information in params
-  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Response Object}    res   Response that vill give this function
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async delete(req, res, next) {
     const id = await req.params.exerciseId;
     try {
-      const data = await Exercise.get(id);
+      const exercise = await Exercise.get(id);
 
-      if (data.length === 0) {
-        return res.status(404)
-          .send(ResponseMaker.notFound(this.type, { id }));
+      if (!exercise.id) {
+        return next(ResponseMaker.notFound(this.type, { id }));
       }
 
-      const deleted = await data.delete();
+      const deleted = await exercise.delete();
 
       if (deleted) {
-        return res.status(200)
-          .send(ResponseMaker.ok('Deleted', this.type, { id }));
+        return res.send(ResponseMaker.ok({
+          msg: 'Deleted',
+          type: this.type,
+          data: { id },
+        }));
       }
-      return res.status(409)
-        .send(ResponseMaker.conflict(this.type, req.body));
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: req.body,
+      }));
     } catch (err) {
       return next(err);
     }

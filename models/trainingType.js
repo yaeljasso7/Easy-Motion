@@ -7,10 +7,10 @@ const generic = require('./generic');
  */
 class TrainingType {
   /**
-   * TrainingType constructor
-   * @param {Number} id          The training type id
-   * @param {String} name        The training type name
-   * @param {String} description The training type description
+   * @constructor
+   * @param {Number} id          - The training type id
+   * @param {String} name        - The training type name
+   * @param {String} description - The training type description
    */
   constructor({ id, name, description }) {
     this.id = id;
@@ -19,16 +19,35 @@ class TrainingType {
   }
 
   /**
+   * Database table which training types are located.
+   * @type {String}
+   */
+  static get table() {
+    return 'training_types';
+  }
+
+  /**
+   * The TrainingType valid filters
+   * @type {Object}
+   */
+  static get ValidFilters() {
+    return {
+      name: 'asString',
+    };
+  }
+
+  /**
    * @method getAll - Retrieve all the training types from a page
    *
-   * @param  {Number}  [page=0] - The page to retrieve the training types
-   * @return {Promise} - Promise Object represents, the training types
-   * from that page.
+   * @param  {Number}  page - The page to retrieve the training types
+   * @param  {String}  sorter - The sorter criteria
+   * @param  {Boolean} desc - Whether the sort order is descendent
+   * @return {Promise} [Array]- Promise Object, represents the training types
+   *         from that page.
    */
   static async getAll({
     page, sorter, desc, filters,
   }) {
-    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     try {
       const data = await db.select({
@@ -36,7 +55,7 @@ class TrainingType {
         where: { ...filters, isDeleted: false },
         sorter,
         desc,
-        limit: [page * pageSize, pageSize],
+        limit: db.pageLimit(page),
       });
       data.forEach((row) => {
         response.push(new TrainingType(row));
@@ -51,7 +70,7 @@ class TrainingType {
    * @method get - Retrieve a training type, based on its id
    *
    * @param  {Number}  id - The training type identifier
-   * @return {Promise} - Promise Object represents a training type
+   * @return {Promise} [TrainingType]- Promise Object, represents the training type
    */
   static async get(id) {
     let data;
@@ -74,7 +93,8 @@ class TrainingType {
    * @method create - Inserts a training type into the database
    * @param  {String}  name - The training type name
    * @param  {String}  description - The training type description
-   * @return {Promise} - Promise Object represents the training type created
+   * @return {Promise} [TrainingType]- Promise Object, represents the
+   *         training type created
    */
   static async create({ name, description }) {
     let response;
@@ -99,15 +119,19 @@ class TrainingType {
   /**
    * @method update - Modifies fields from this training type.
    *
-   * @param  {Object}  keyVals - Represents the new values for this training type.
-   * @return {Promise} - Promise Object represents the the operation success (boolean)
+   * @param  {String}  name - The new name for this training type
+   * @param  {String}  description - The new description for this training type
+   * @return {Promise} [Boolean] - Promise Object, represents the operation success
    */
-  async update(keyVals) {
+  async update({ name, description }) {
     let updatedRows;
     try {
       const results = await db.advUpdate({
         table: TrainingType.table,
-        assign: keyVals,
+        assign: {
+          name,
+          description,
+        },
         where: {
           id: this.id,
         },
@@ -122,8 +146,8 @@ class TrainingType {
 
   /**
    * @method delete - Deletes this training type.
-   *                  Assigns true to isDeleted, in the database.
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   *         Assigns true to isDeleted, in the database.
+   * @return {Promise} [Boolean] - Promise Object, represents the operation success
    */
   async delete() {
     let deletedRows;
@@ -148,18 +172,9 @@ class TrainingType {
 }
 
 /**
- * Database table which training types are located.
- * @type {String}
- */
-TrainingType.table = 'training_types';
-/**
  * Checks if a training type exists in the database, based on its id
  * @type {asyncFunction}
  */
-TrainingType.exists = generic.exists(TrainingType.table);
-
-TrainingType.ValidFilters = {
-  name: 'asString',
-};
+TrainingType.exists = generic.exists(TrainingType.table, 'id');
 
 module.exports = TrainingType;

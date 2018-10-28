@@ -7,7 +7,7 @@ const generic = require('./generic');
  */
 class BodyPart {
   /**
-   * BodyPart constructor
+   * @constructor
    * @param {Number} id   - The body part id
    * @param {String} name - The body part name
    */
@@ -19,15 +19,34 @@ class BodyPart {
   }
 
   /**
+   * Database table which body parts are located.
+   * @type {String}
+   */
+  static get table() {
+    return 'body_parts';
+  }
+
+  /**
+   * The BodyPart valid filters
+   * @type {Object}
+   */
+  static get ValidFilters() {
+    return {
+      name: 'asString',
+    };
+  }
+
+  /**
    * @method getAll - Retrieve all the body parts from a page
    *
-   * @param  {Number}  [page=0] - The page to retrieve the body parts
-   * @return {Promise} - Promise Object represents, the body parts from that page
+   * @param  {Number}  page - The page to retrieve the body parts
+   * @param  {String}  sorter - The sorter criteria
+   * @param  {Boolean} desc - Whether the sort order is descendent
+   * @return {Promise} [Array]- Promise Object, represents the body parts from that page
    */
   static async getAll({
     page, sorter, desc, filters,
   }) {
-    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     try {
       const data = await db.select({
@@ -35,7 +54,7 @@ class BodyPart {
         where: { ...filters, isDeleted: false },
         sorter,
         desc,
-        limit: [page * pageSize, pageSize],
+        limit: db.pageLimit(page),
       });
 
       data.forEach((row) => {
@@ -51,7 +70,7 @@ class BodyPart {
    * @method get - Retrieve a body part, based on its id
    *
    * @param  {Number}  id - The body part identifier
-   * @return {Promise} - Promise Object represents a body part
+   * @return {Promise} [BodyPart] - Promise Object, represents the body part
    */
   static async get(id) {
     let data;
@@ -74,7 +93,7 @@ class BodyPart {
    * @method create - Inserts a body part into the database
    *
    * @param  {String}  name - The body part name
-   * @return {Promise} - Promise Object represents the body part created
+   * @return {Promise} [BodyPart] - Promise Object, represents the body part created
    */
   static async create({ name }) {
     let response;
@@ -98,15 +117,15 @@ class BodyPart {
   /**
    * @method update - Modifies fields from this body part.
    *
-   * @param  {Object}  keyVals - Represents the new values for this body part.
-   * @return {Promise} - Promise Object represents the body part modified.
+   * @param  {String}  name - The new name for this body part.
+   * @return {Promise} [Boolean] - Promise Object, represents the operation success.
    */
-  async update(keyVals) {
+  async update({ name }) {
     let updatedRows;
     try {
       const results = await db.advUpdate({
         table: BodyPart.table,
-        assign: keyVals,
+        assign: { name },
         where: {
           id: this.id,
         },
@@ -121,8 +140,8 @@ class BodyPart {
 
   /**
    * @method delete - Deletes this body part.
-   *                  Assigns true to isDeleted, in the database.
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   *         Assigns true to isDeleted, in the database.
+   * @return {Promise} [Boolean] - Promise Object, represents the operation success.
    */
   async delete() {
     let deletedRows;
@@ -147,18 +166,9 @@ class BodyPart {
 }
 
 /**
- * Database table which body parts are located.
- * @type {String}
- */
-BodyPart.table = 'body_parts';
-/**
  * Checks if a body part exists in the database, based on its id
  * @type {asyncFunction}
  */
-BodyPart.exists = generic.exists(BodyPart.table);
-
-BodyPart.ValidFilters = {
-  name: 'asString',
-};
+BodyPart.exists = generic.exists(BodyPart.table, 'id');
 
 module.exports = BodyPart;

@@ -4,24 +4,27 @@ const db = require('../../db');
  * @function exists - Checks object existence in database table
  *
  * @param  {string} table - The table where to check
- * @return {asyncFunction} - Async Function to check object existence by id
+ * @return {asyncFunction} - Async Function to check the object existence
  */
-function exists(table) {
+function exists(table, columns = 'id') {
   const tbl = table;
+  const col = columns.constructor === Array ? columns : [columns];
   /**
-   * Checks object existence by id
-   * @param  {number}  id - The object identifier
-   * @return {Promise} [boolean] - Promise Object represents if the object exists
+   * Checks object existence by the columns specified above
+   * @param  {number}  val - The object values to be matched with the columns
+   * @return {Promise} [Boolean] - Promise Object, represents whether the object exists
    */
-  return async (id) => {
+  return async (val) => {
+    const vals = val.constructor === Array ? val : [val];
+    const cond = { isDeleted: false };
+    vals.forEach((v, i) => {
+      cond[col[i]] = v;
+    });
     try {
       const data = await db.select({
-        columns: 'id',
+        columns: col,
         from: tbl,
-        where: {
-          id,
-          isDeleted: false,
-        },
+        where: cond,
         limit: 1,
       });
       return (data.length !== 0);
