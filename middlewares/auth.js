@@ -68,6 +68,7 @@ class Auth {
     console.log('token recibido:', hToken);
     try {
       const token = await Token.get(hToken, Token.session);
+      console.log('token: ', token);
       if (token.token) {
         req.session = {
           token,
