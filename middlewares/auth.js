@@ -73,6 +73,7 @@ class Auth {
           token,
           user: await User.get(token.userId),
         };
+        console.log('req.session: ', req.session);
         return next();
       }
     } catch (err) {
