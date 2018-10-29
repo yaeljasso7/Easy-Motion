@@ -234,6 +234,6 @@ class Token {
   }
 }
 
-Token.get('$2b$10$f1HHkhK/BFcx4AAjgt3vdOWyzyYopQTYz00.pqnhrKU.kuXKz3xZK');
+// Token.get('$2b$10$f1HHkhK/BFcx4AAjgt3vdOWyzyYopQTYz00.pqnhrKU.kuXKz3xZK');
 
 module.exports = Token;
