@@ -65,6 +65,7 @@ class Auth {
    */
   static async haveSession(req, res, next) {
     const hToken = Auth.getHeaderToken(req.headers.authorization);
+    console.log('token recibido:', hToken);
     try {
       const token = await Token.get(hToken, Token.session);
       if (token.token) {
