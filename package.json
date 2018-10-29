@@ -2,7 +2,7 @@
   "name": "Easy-Motion",
   "version": "1.0.0",
   "engines": {
-    "node:": "7.0.0"
+    "node:": "7.10.0"
   },
   "description": "Easy Motion es una platafprma que te ofrece distintas rutinas y planes rutinarios para seguirlos y lograr tus metas",
   "main": "index.js",
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/yaeljasso7/Easy-Motion#readme",
   "dependencies": {
-    "bcryptjs": "^3.0.2",
+    "bcrypt": "^3.0.2",
     "body-parser": "^1.18.3",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
