@@ -148,6 +148,7 @@ class Token {
         },
         limit: 1,
       });
+      console.log(data);
       if (data.length !== 0) {
         const tk = new Token(data[0]);
         const validToken = await tk.isActive();
