@@ -104,16 +104,6 @@ router.delete('/:userId/calendars', [(req, res, next) => {
   });
 }], usersCtrl.removeCalendar);
 
-<<<<<<< HEAD
-router.delete('/:idUser', (req,res,next) => {
-  middlewares.validator.validate(req, res, next, {
-  params: {
-    idUser: 'number',
-  },
-});
-},usersCtrl.delete);
-
-=======
 router.get('/:userId/calendars', [(req, res, next) => {
   mw.validator.validate(req, res, next, {
     params: {
@@ -158,6 +148,5 @@ router.post('/:userId/progress', (req, res, next) => {
     },
   });
 }, usersCtrl.addProgress);
->>>>>>> dev
 
 module.exports = router;
