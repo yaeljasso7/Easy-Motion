@@ -158,7 +158,7 @@ class User {
         },
         limit: 1,
       });
-      if (userData !== 0) {
+      if (userData.length !== 0) {
         return new User(userData[0]);
       }
     } catch (err) {
