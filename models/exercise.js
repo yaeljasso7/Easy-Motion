@@ -73,7 +73,7 @@ class Exercise {
     const response = [];
     const cond = {};
     if (!deletedItems) {
-      cond.isDeleted = false;
+      cond.deleted = false;
     }
     try {
       const data = await db.select({
@@ -104,7 +104,7 @@ class Exercise {
     let data;
     const cond = { id };
     if (!deletedItems) {
-      cond.isDeleted = false;
+      cond.deleted = false;
     }
     try {
       data = await db.select({
@@ -186,7 +186,7 @@ class Exercise {
   /**
    * @async
    * @method delete - Deletes this exercise.
-   *         Assigns true to isDeleted, in the database.
+   *         Assigns true to deleted, in the database.
    * @return {Promise} [Boolean] - Promise Object, represents the operation success
    */
   async delete() {
@@ -195,11 +195,11 @@ class Exercise {
       const results = await db.advUpdate({
         table: Exercise.table,
         assign: {
-          isDeleted: true,
+          deleted: true,
         },
         where: {
           id: this.id,
-          isDeleted: false,
+          deleted: false,
         },
         limit: 1,
       });

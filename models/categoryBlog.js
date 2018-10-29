@@ -31,7 +31,7 @@ class CategoryBlog {
     try {
       const data = await db.select({
         from: CategoryBlog.table,
-        where: { ...filters, isDeleted: false },
+        where: { ...filters, deleted: false },
         sorter,
         desc,
         limit: [page * pageSize, pageSize],
@@ -58,7 +58,7 @@ class CategoryBlog {
         from: CategoryBlog.table,
         where: {
           id,
-          isDeleted: false,
+          deleted: false,
         },
         limit: 1,
       });
@@ -121,7 +121,7 @@ class CategoryBlog {
 
   /**
    * @method delete - Deletes this categorys type.
-   *                  Assigns true to isDeleted, in the database.
+   *                  Assigns true to deleted, in the database.
    * @return {Promise} - Promise Object represents the operation success (boolean)
    */
   async delete() {
@@ -130,11 +130,11 @@ class CategoryBlog {
       const results = await db.advUpdate({
         table: CategoryBlog.table,
         assign: {
-          isDeleted: true,
+          deleted: true,
         },
         where: {
           id: this.id,
-          isDeleted: false,
+          deleted: false,
         },
         limit: 1,
       });

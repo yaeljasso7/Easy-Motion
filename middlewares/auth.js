@@ -148,16 +148,16 @@ class Auth {
    * @return {Promise} - Promise object, represents the next function
    */
   static async login(req, res, next) {
-    const { mail, password } = req.body;
+    const { email, password } = req.body;
     try {
-      const user = await User.login(mail, password);
+      const user = await User.login(email, password);
       if (user.id) {
         const token = await Token.create({ userId: user.id, type: Token.session });
         if (!token.token) {
           return next(ResponseMaker.conflict({
             msg: 'Cannot create the token',
             type: Auth.type,
-            data: mail,
+            data: email,
           }));
         }
         return res.send(ResponseMaker.ok({
@@ -202,7 +202,7 @@ class Auth {
    */
   static async forgot(req, res, next) {
     try {
-      const user = await User.getByEmail(req.body.mail);
+      const user = await User.getByEmail(req.body.email);
       if (user.id) {
         await Auth.sendMsg(user, Auth.resetMsg);
       }
@@ -287,10 +287,10 @@ class Auth {
       if (requireToken) {
         const token = await Token.getValidToken(user.id, Token[typeName]);
         if (token.token) {
-          mailer.sendMail(MailMaker[typeName](user.mail, token.token));
+          mailer.sendMail(MailMaker[typeName](user.email, token.token));
         }
       } else {
-        mailer.sendMail(MailMaker[typeName](user.mail));
+        mailer.sendMail(MailMaker[typeName](user.email));
       }
     } catch (err) {
       throw err;

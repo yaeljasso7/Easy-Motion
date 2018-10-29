@@ -54,7 +54,7 @@ class TrainingType {
     try {
       const data = await db.select({
         from: TrainingType.table,
-        where: { ...filters, isDeleted: false },
+        where: { ...filters, deleted: false },
         sorter,
         desc,
         limit: db.pageLimit(page),
@@ -82,7 +82,7 @@ class TrainingType {
         from: TrainingType.table,
         where: {
           id,
-          isDeleted: false,
+          deleted: false,
         },
         limit: 1,
       });
@@ -152,7 +152,7 @@ class TrainingType {
   /**
    * @async
    * @method delete - Deletes this training type.
-   *         Assigns true to isDeleted, in the database.
+   *         Assigns true to deleted, in the database.
    * @return {Promise} [Boolean] - Promise Object, represents the operation success
    */
   async delete() {
@@ -161,11 +161,11 @@ class TrainingType {
       const results = await db.advUpdate({
         table: TrainingType.table,
         assign: {
-          isDeleted: true,
+          deleted: true,
         },
         where: {
           id: this.id,
-          isDeleted: false,
+          deleted: false,
         },
         limit: 1,
       });

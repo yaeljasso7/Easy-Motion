@@ -53,7 +53,7 @@ class BodyPart {
     try {
       const data = await db.select({
         from: BodyPart.table,
-        where: { ...filters, isDeleted: false },
+        where: { ...filters, deleted: false },
         sorter,
         desc,
         limit: db.pageLimit(page),
@@ -82,7 +82,7 @@ class BodyPart {
         from: BodyPart.table,
         where: {
           id,
-          isDeleted: false,
+          deleted: false,
         },
         limit: 1,
       });
@@ -147,7 +147,7 @@ class BodyPart {
   /**
    * @async
    * @method delete - Deletes this body part.
-   *         Assigns true to isDeleted, in the database.
+   *         Assigns true to deleted, in the database.
    * @return {Promise} [Boolean] - Promise Object, represents the operation success.
    */
   async delete() {
@@ -156,11 +156,11 @@ class BodyPart {
       const results = await db.advUpdate({
         table: BodyPart.table,
         assign: {
-          isDeleted: true,
+          deleted: true,
         },
         where: {
           id: this.id,
-          isDeleted: false,
+          deleted: false,
         },
         limit: 1,
       });

@@ -40,7 +40,7 @@ class Blog {
     const response = [];
     const cond = {};
     if (!deletedItems) {
-      cond.isDeleted = false;
+      cond.deleted = false;
     }
     try {
       const data = await db.select({
@@ -71,7 +71,7 @@ class Blog {
     let data;
     const cond = { id };
     if (!deletedItems) {
-      cond.isDeleted = false;
+      cond.deleted = false;
     }
     try {
       data = await db.select({
@@ -145,7 +145,7 @@ class Blog {
 
   /**
    * @method delete - Deletes this blog
-   *                  Assigns true to isDeleted, in the database.
+   *                  Assigns true to deleted, in the database.
    * @return {Promise} - Promise Object represents the operation success (boolean)
    */
   static async deleteBlog() {
@@ -154,11 +154,11 @@ class Blog {
       const results = await db.advUpdate({
         table: Blog.table,
         assign: {
-          isDeleted: true,
+          deleted: true,
         },
         where: {
           id: this.id,
-          isDeleted: false,
+          deleted: false,
         },
         limit: 1,
       });

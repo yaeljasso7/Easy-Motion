@@ -16,7 +16,7 @@ function exists(table, columns = 'id') {
    */
   return async (val) => {
     const vals = val.constructor === Array ? val : [val];
-    const cond = { isDeleted: false };
+    const cond = { deleted: false };
     vals.forEach((v, i) => {
       cond[col[i]] = v;
     });

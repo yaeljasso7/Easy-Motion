@@ -39,15 +39,4 @@ router.patch('/reset', [(req, res, next) => {
 
 router.get('/confirm', auth.confirm);
 
-/*
-router.get('/reset/:token', (req, res) => {
-  console.log(req.params);
-  /* por query
-  {{app}}/auth/reset/123?gorrita=800
-  console.log(req.query);
-
-  res.send('reset');
-})
-*/
-
 module.exports = router;

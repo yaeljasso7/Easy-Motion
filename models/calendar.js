@@ -61,7 +61,7 @@ class Calendar {
     const response = [];
     const cond = {};
     if (!deletedItems) {
-      cond.isDeleted = false;
+      cond.deleted = false;
     }
     try {
       const data = await db.select({
@@ -91,7 +91,7 @@ class Calendar {
   static async get(id, deletedItems = false) {
     const cond = { id };
     if (!deletedItems) {
-      cond.isDeleted = false;
+      cond.deleted = false;
     }
     try {
       const data = await db.select({
@@ -166,7 +166,7 @@ class Calendar {
   /**
    * @async
    * @method delete - Deletes this calendar
-   *                  Assigns true to isDeleted, in the database.
+   *                  Assigns true to deleted, in the database.
    * @return {Promise} - Promise Object represents the operation success (boolean)
    */
   async delete() {
@@ -175,11 +175,11 @@ class Calendar {
       const results = await db.advUpdate({
         table: Calendar.table,
         assign: {
-          isDeleted: true,
+          deleted: true,
         },
         where: {
           id: this.id,
-          isDeleted: false,
+          deleted: false,
         },
         limit: 1,
       });

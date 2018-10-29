@@ -67,7 +67,7 @@ class Routine {
     const response = [];
     const cond = {};
     if (!deletedItems) {
-      cond.isDeleted = false;
+      cond.deleted = false;
     }
     try {
       const data = await db.select({
@@ -97,7 +97,7 @@ class Routine {
   static async get(id, deletedItems = false) {
     const cond = { id };
     if (!deletedItems) {
-      cond.isDeleted = false;
+      cond.deleted = false;
     }
     try {
       const data = await db.select({
@@ -177,7 +177,7 @@ class Routine {
   /**
    * @async
    * @method delete - Deletes this routine.
-   *         Assigns true to isDeleted, in the database.
+   *         Assigns true to deleted, in the database.
    * @return {Promise} [Boolean] - Promise Object represents the operation success (boolean)
    */
   async delete() {
@@ -186,11 +186,11 @@ class Routine {
       const results = await db.advUpdate({
         table: Routine.table,
         assign: {
-          isDeleted: true,
+          deleted: true,
         },
         where: {
           id: this.id,
-          isDeleted: false,
+          deleted: false,
         },
         limit: 1,
       });

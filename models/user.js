@@ -6,21 +6,21 @@ const generic = require('./generic');
 
 /**
  * @class User
- * Represents an User
+ * Represents a User
  */
 class User {
   /**
-   * Routine constructor
+   * @constructor
    * @param {Number} id          - The user id
    * @param {String} name        - The user name
    * @param {String} mobile      - The user mobile
    * @param {Number} weight      - The user weight
    * @param {Number} height      - The user height
    * @param {String} password    - The user name
-   * @param {Number} mail        - The user mail
+   * @param {Number} email        - The user email
    */
   constructor({
-    id, name, mobile, weight, height, password, mail, confirmed,
+    id, name, mobile, weight, height, password, email, confirmed,
   }) {
     this.id = id;
     this.name = name;
@@ -28,7 +28,7 @@ class User {
     this.weight = weight;
     this.height = height;
     this.password = password;
-    this.mail = mail;
+    this.email = email;
     this.confirmed = confirmed;
   }
 
@@ -46,7 +46,7 @@ class User {
     const response = [];
     const cond = {};
     if (!deletedItems) {
-      cond.isDeleted = false;
+      cond.deleted = false;
     }
     try {
       const data = await db.select({
@@ -75,7 +75,7 @@ class User {
   static async get(id, deletedItems = false) {
     const cond = { id };
     if (!deletedItems) {
-      cond.isDeleted = false;
+      cond.deleted = false;
     }
     try {
       const data = await db.select({
@@ -95,12 +95,12 @@ class User {
     return [];
   }
 
-  static async getByEmail(mail) {
+  static async getByEemail(email) {
     try {
       const userData = await db.select({
         from: User.table,
         where: {
-          mail,
+          email,
         },
         limit: 1,
       });
@@ -145,15 +145,15 @@ class User {
   }
 
   /**
-   * @method login - Retrieve the user that match email & password
+   * @method login - Retrieve the user that match eemail & password
    *
-   * @param  {String}   mail - Mail to match with the user
+   * @param  {String}   email - Mail to match with the user
    * @param  {String}   password - Password to match with the user
    * @return {Promise} - Promise Object represents a user
    */
-  static async login(mail, password) {
+  static async login(email, password) {
     try {
-      const user = await User.getByEmail(mail);
+      const user = await User.getByEemail(email);
       if (user.length !== 0) {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
@@ -218,10 +218,10 @@ class User {
    * @param {Number} weight      - The user weight
    * @param {Number} height      - The user height
    * @param {String} password    - The user name
-   * @param {Number} mail        - The user mail
+   * @param {Number} email        - The user email
    */
   static async create({
-    name, mobile, weight, height, password, mail,
+    name, mobile, weight, height, password, email,
   }) {
     let response;
     try {
@@ -233,13 +233,13 @@ class User {
           weight,
           height,
           password: await User.hashPassword(password),
-          mail,
+          email,
         },
       });
       const id = response.insertId;
       if (id > 0) {
         const user = new User({
-          id, name, mobile, weight, height, mail,
+          id, name, mobile, weight, height, email,
         });
         await user.addProgress({ weight, height });
         return user;
@@ -293,7 +293,7 @@ class User {
 
   /**
    * @method delete - Deletes this user.
-   *                  Assigns true to isDeleted, in the database.
+   *                  Assigns true to deleted, in the database.
    * @return {Promise} - Promise Object represents the operation success (boolean)
    */
   async delete() {
@@ -302,11 +302,11 @@ class User {
       const results = await db.advUpdate({
         table: User.table,
         assign: {
-          isDeleted: true,
+          deleted: true,
         },
         where: {
           id: this.id,
-          isDeleted: false,
+          deleted: false,
         },
         limit: 1,
       });
@@ -424,7 +424,7 @@ User.calendarTable = 'users_calendars';
 User.exists = generic.exists(User.table);
 
 User.ValidFilters = {
-  mail: 'asString',
+  email: 'asString',
   role: 'asNumber',
   name: 'asString',
 };
