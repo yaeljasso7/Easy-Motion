@@ -119,7 +119,7 @@ class TrainingTypesCtrl {
         return res.send(ResponseMaker.ok({
           msg: 'Updated',
           type: this.type,
-          data: { id },
+          data: { ...trainingType, ...req.body },
         }));
       }
       return next(ResponseMaker.conflict({

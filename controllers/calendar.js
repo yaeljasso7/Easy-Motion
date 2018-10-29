@@ -156,7 +156,7 @@ class CalendarCtrl {
         return res.send(ResponseMaker.ok({
           msg: 'Updated',
           type: this.type,
-          data: { id },
+          data: { ...calendar, ...req.body },
         }));
       }
       return next(ResponseMaker.conflict({

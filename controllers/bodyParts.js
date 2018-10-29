@@ -155,7 +155,7 @@ class BodyPartsCtrl {
         return res.send(ResponseMaker.ok({
           msg: 'Updated',
           type: this.type,
-          data: { id },
+          data: { ...bodyPart, ...req.body },
         }));
       }
       return next(ResponseMaker.conflict({

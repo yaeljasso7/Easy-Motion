@@ -88,11 +88,11 @@ class Routine {
 
   /**
    * @static @async
-   * @method get - Retrieve a routine and its exercises, based on their id
+   * @method get - Retrieve a routine and its exercises, based on its id
    *
    * @param  {Number}  id - The routine identifier
    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
-   * @return {Promise} - Promise Object represents a routine
+   * @return {Promise} [Routine] - Promise Object represents a routine
    */
   static async get(id, deletedItems = false) {
     const cond = { id };

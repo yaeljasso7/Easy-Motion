@@ -275,6 +275,6 @@ class Calendar {
  * Checks if a calendar exists in the database, based on its id
  * @type {asyncFunction}
  */
-Calendar.exists = generic.exists(Calendar.table);
+Calendar.exists = generic.exists(Calendar.table, 'id');
 
 module.exports = Calendar;

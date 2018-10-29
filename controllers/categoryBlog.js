@@ -1,12 +1,10 @@
 // controladores categoryBlog
 const { categoryBlog, ResponseMaker } = require('../models');
 
-
 /**
  *
  * @class Class of controller CategoryBlog
- * - Contain the getAll, get, create, delete, update
-    addRoutine, removeRoutine functions
+ * - Contains the getAll, get, create, delete & update methods
  */
 class CategoryBlogCtrl {
   constructor() {
@@ -15,7 +13,7 @@ class CategoryBlogCtrl {
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
-    this.type = 'categoryBlog';
+    this.type = 'BlogCategory';
   }
 
   /**
@@ -26,16 +24,15 @@ class CategoryBlogCtrl {
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async getAll(req, res, next) {
     try {
-      const data = await categoryBlog.getAll(req.query);
+      const categories = await categoryBlog.getAll(req.query);
 
-      if (data.length === 0) {
-        return res.status(204)
-          .send(ResponseMaker.noContent(this.type));
-      }
-      return res.send(ResponseMaker.paginated(req.query.page, this.type, data));
+      return res.send(ResponseMaker.paginated({
+        page: req.query.page,
+        type: this.type,
+        data: categories,
+      }));
     } catch (err) {
       return next(err);
     }
@@ -49,16 +46,21 @@ class CategoryBlogCtrl {
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async get(req, res, next) {
     const id = req.params.categoryBlogId;
     try {
-      const data = await categoryBlog.get(id);
-      if (data.length === 0) {
-        return res.status(404)
-          .send(ResponseMaker.notFound(this.type, { id }));
+      const category = await categoryBlog.get(id);
+      if (!category.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
       }
-      return res.send(ResponseMaker.ok('Found', this.type, data));
+      return res.send(ResponseMaker.ok({
+        msg: 'Found',
+        type: this.type,
+        data: category,
+      }));
     } catch (err) {
       return next(err);
     }
@@ -72,16 +74,20 @@ class CategoryBlogCtrl {
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async create(req, res, next) {
     try {
-      const data = await categoryBlog.create(req.body);
-      if (data.length !== 0) {
+      const category = await categoryBlog.create(req.body);
+      if (category.id) {
         return res.status(201)
-          .send(ResponseMaker.created(this.type, data));
+          .send(ResponseMaker.created({
+            type: this.type,
+            data: category,
+          }));
       }
-      return res.status(409)
-        .send(ResponseMaker.conflict(this.type, data));
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: category,
+      }));
     } catch (err) {
       return next(err);
     }
@@ -95,25 +101,30 @@ class CategoryBlogCtrl {
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async update(req, res, next) {
     const id = req.params.categoryBlogId;
     try {
-      const data = await categoryBlog.get(id);
+      const category = await categoryBlog.get(id);
 
-      if (data.length === 0) {
-        return res.status(404)
-          .send(ResponseMaker.notFound(this.type, { id }));
+      if (!category.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
       }
 
-      const updated = await data.update(req.body);
-
+      const updated = await category.update(req.body);
       if (updated) {
-        return res.status(200)
-          .send(ResponseMaker.ok('Updated', this.type, { ...data, ...req.body }));
+        return res.send(ResponseMaker.ok({
+          msg: 'Updated',
+          type: this.type,
+          data: { ...category, ...req.body },
+        }));
       }
-      return res.status(409)
-        .send(ResponseMaker.conflict(this.type, req.body));
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: req.body,
+      }));
     } catch (err) {
       return next(err);
     }
@@ -127,25 +138,30 @@ class CategoryBlogCtrl {
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async delete(req, res, next) {
     const id = req.params.categoryBlogId;
     try {
-      const data = await categoryBlog.get(id);
+      const category = await categoryBlog.get(id);
 
-      if (data.length === 0) {
-        return res.status(404)
-          .send(ResponseMaker.notFound(this.type, { id }));
+      if (!category.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
       }
 
-      const deleted = await data.delete();
-
+      const deleted = await category.delete();
       if (deleted) {
-        return res.status(200)
-          .send(ResponseMaker.ok('Deleted', this.type, { id }));
+        return res.send(ResponseMaker.ok({
+          msg: 'Deleted',
+          type: this.type,
+          data: { id },
+        }));
       }
-      return res.status(409)
-        .send(ResponseMaker.conflict(this.type, req.body));
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: req.body,
+      }));
     } catch (err) {
       return next(err);
     }

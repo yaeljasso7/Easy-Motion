@@ -117,7 +117,7 @@ class RoutinesCtrl {
         return res.send(ResponseMaker.ok({
           msg: 'Updated',
           type: this.type,
-          data: { id },
+          data: { ...routine, ...req.body },
         }));
       }
       return next(ResponseMaker.conflict({

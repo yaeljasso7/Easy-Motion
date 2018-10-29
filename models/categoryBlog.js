@@ -3,13 +3,13 @@ const generic = require('./generic');
 
 /**
  * @class CategoryBlog
- * Represents the categorys type that an exercise focuses on
+ * Represents the category types that a blog focuses on
  */
 class CategoryBlog {
   /**
-   * CategoryBlog constructor
-   * @param {Number} id          The categorys type id
-   * @param {String} name        The categorys type name
+   * @constructor
+   * @param {Number} id   - The category type id
+   * @param {String} name - The category type name
    */
   constructor({ id, name }) {
     this.id = id;
@@ -17,16 +17,37 @@ class CategoryBlog {
   }
 
   /**
-   * @method getAll - Retrieve all the categorys types from a page
+   * Database table which category types are located.
+   * @type {String}
+   */
+  static get table() {
+    return 'blogs_categories';
+  }
+
+  /**
+   * The Category valid filters
+   * @type {Object}
+   */
+  static get ValidFilters() {
+    return {
+      name: 'asString',
+    };
+  }
+
+  /**
+   * @static @async
+   * @method getAll - Retrieve all the category types from a page
    *
-   * @param  {Number}  [page=0] - The page to retrieve the categorys types
-   * @return {Promise} - Promise Object represents, the categorys types
+   * @param  {Number}  page - The page to retrieve the body parts
+   * @param  {String}  sorter - The sorter criteria
+   * @param  {Boolean} desc - Whether the sort order is descendent
+   * @param  {Object}  filters - The filters to be applied while getting all
+   * @return {Promise} - Promise Object represents, the category types
    * from that page.
    */
   static async getAll({
     page, sorter, desc, filters,
   }) {
-    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     try {
       const data = await db.select({
@@ -34,7 +55,7 @@ class CategoryBlog {
         where: { ...filters, deleted: false },
         sorter,
         desc,
-        limit: [page * pageSize, pageSize],
+        limit: db.pageLimit(page),
       });
       data.forEach((row) => {
         response.push(new CategoryBlog(row));
@@ -46,10 +67,11 @@ class CategoryBlog {
   }
 
   /**
-   * @method get - Retrieve a categorys type, based on its id
+   * @static @async
+   * @method get - Retrieve a category type, based on its id
    *
-   * @param  {Number}  id - The categorys type identifier
-   * @return {Promise} - Promise Object represents a categorys type
+   * @param  {Number}  id - The category type identifier
+   * @return {Promise} - Promise Object represents a category type
    */
   static async get(id) {
     let data;
@@ -65,16 +87,16 @@ class CategoryBlog {
     } catch (err) {
       throw err;
     }
-    // FIXME En lugar de regresar el objeto de DB para vacio, debes construir
-    // tu propio objeto en el manejador de la base de datos
     return data.length !== 0 ? new CategoryBlog(data[0]) : [];
   }
 
   /**
-   * @method create - Inserts a categorys type into the database
-   * @param  {String}  name - The categorys type name
-   * @param  {String}  description - The categorys type description
-   * @return {Promise} - Promise Object represents the categorys type created
+   * @static @async
+   * @method create - Inserts a category type into the database
+   *
+   * @param  {String}  name - The category type name
+   * @param  {String}  description - The category type description
+   * @return {Promise} - Promise Object represents the category type created
    */
   static async create({ name }) {
     let response;
@@ -96,12 +118,14 @@ class CategoryBlog {
   }
 
   /**
-   * @method update - Modifies fields from this categorys type.
+   * @async
+   * @method update - Modifies fields from this category type.
    *
-   * @param  {Object}  keyVals - Represents the new values for this categorys type.
+   * @param  {Object}  name - Represents the new name for this category type.
    * @return {Promise} - Promise Object represents the the operation success (boolean)
    */
-  async update(keyVals) {
+  async update({ name }) {
+    const keyVals = generic.removeEmptyValues({ name });
     let updatedRows;
     try {
       const results = await db.advUpdate({
@@ -120,9 +144,10 @@ class CategoryBlog {
   }
 
   /**
-   * @method delete - Deletes this categorys type.
-   *                  Assigns true to deleted, in the database.
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   * @async
+   * @method delete - Deletes this category type.
+   *         Assigns true to deleted, in the database.
+   * @return {Promise} [Boolean] - Promise Object represents the operation success
    */
   async delete() {
     let deletedRows;
@@ -147,18 +172,9 @@ class CategoryBlog {
 }
 
 /**
- * Database table which categorys types are located.
- * @type {String}
- */
-CategoryBlog.table = 'blogs_categories';
-/**
- * Checks if a categorys type exists in the database, based on its id
+ * Checks if a category type exists in the database, based on its id
  * @type {asyncFunction}
  */
-CategoryBlog.exists = generic.exists(CategoryBlog.table);
-
-CategoryBlog.ValidFilters = {
-  name: 'asString',
-};
+CategoryBlog.exists = generic.exists(CategoryBlog.table, 'id');
 
 module.exports = CategoryBlog;

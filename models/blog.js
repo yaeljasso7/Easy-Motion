@@ -1,42 +1,61 @@
 const db = require('../db');
-const categoryBlog = require('./categoryBlog');
 const generic = require('./generic');
 
 /**
  * @class Blog
- * Represents an blog
+ * Represents a blog
  */
 class Blog {
   /**
    * Blog constructor
-   * @param {Number} id            - The blog id
-   * @param {String} date          - The date publicated
-   * @param {String} title          - The title blog
-   * @param {String} autor         - The autor
-   * @param {int} categoryBlog     - The reference id of the categoryBlog
+   * @param {Number} id        - The blog identifier
+   * @param {String} date      - The publication date
+   * @param {String} title     - The blog title
+   * @param {String} data      - The blog content
+   * @param {String} author    - The blog author
+   * @param {Number} category  - The reference id of the categoryBlog
    */
   constructor({
-    id, date, autor, data, category, title,
+    id, date, author, data, category, title,
   }) {
     this.id = id;
     this.date = date;
-    this.autor = autor;
+    this.author = author;
     this.data = data;
     this.category = category;
     this.title = title;
   }
 
+  static get table() {
+    return 'blogs';
+  }
+
+  static get vTable() {
+    return `v_${Blog.table}`;
+  }
+
+  static get ValidFilters() {
+    return {
+      author: 'asString',
+      title: 'asString',
+      category: 'asString',
+    };
+  }
+
   /**
+   * @static @async
    * @method getAll - Retrieve all the blogs from a page
    *
-   * @param  {Number}  [page=0]             - The page to retrieve the blog
+   * @param  {Number}  page - The page to retrieve the blogs
+   * @param  {String}  sorter - The sorter criteria
+   * @param  {Boolean} desc - Whether the sort order is descendent
+   * @param  {Object}  filters - The filters to be applied while getting all
    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
    * @return {Promise} - Promise Object represents, the blog from that page
    */
   static async getAll({
     page, sorter, desc, filters,
   }, deletedItems = false) {
-    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     const cond = {};
     if (!deletedItems) {
@@ -48,7 +67,7 @@ class Blog {
         where: { ...filters, ...cond },
         sorter,
         desc,
-        limit: [page * pageSize, pageSize],
+        limit: db.pageLimit(page),
       });
       data.forEach((row) => {
         response.push(new Blog(row));
@@ -60,13 +79,13 @@ class Blog {
   }
 
   /**
+   * @static @async
    * @method get - Retrieve a blog
    *
    * @param  {Number}  id - The blog identifier
    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
    * @return {Promise} - Promise Object represents a blog
    */
-
   static async get(id, deletedItems = false) {
     let data;
     const cond = { id };
@@ -86,23 +105,26 @@ class Blog {
   }
 
   /**
+   * @static @async
    * @method create - Inserts a blog into the database
    *
-   * @param {Number} id            - The blog id
-   * @param {String} date          - The date publicated
-   * @param {String} title         - The title blog
-   * @param {String} autor         - The autor
-   * @param {int} category         - The reference id of the categoryBlog
+   * @param {Number} id       - The blog id
+   * @param {String} data     - The blog content
+   * @param {String} title    - The blog title
+   * @param {String} author   - The author name
+   * @param {Number} category - The reference id of the categoryBlog
+   * @return {Promise} [Blog] - The blog created
    */
   static async create({
-    autor, title, data, category, date,
+    author, title, data, category,
   }) {
     let response;
+    const date = new Date();
     try {
       response = await db.insert({
         into: Blog.table,
         resource: {
-          data, title, autor, category,
+          date, data, title, author, category,
         },
       });
     } catch (e) {
@@ -112,20 +134,26 @@ class Blog {
 
     if (id > 0) {
       return new Blog({
-        id, date, title, autor, data, category,
+        id, date, title, author, data, category,
       });
     }
     return [];
   }
 
   /**
+   * @async
    * @method update - Modifies fields from this blog.
    *
    * @param  {Object}  keyVals - Represents the new values for this blog.
    * @return {Promise} - Promise Object represents the operation success (boolean)
    */
 
-  async update(keyVals) {
+  async update({
+    data, title, author, category,
+  }) {
+    const keyVals = generic.removeEmptyValues({
+      data, title, author, category,
+    });
     let updatedRows;
     try {
       const results = await db.advUpdate({
@@ -144,11 +172,12 @@ class Blog {
   }
 
   /**
+   * @async
    * @method delete - Deletes this blog
-   *                  Assigns true to deleted, in the database.
+   *         Assigns true to deleted, in the database.
    * @return {Promise} - Promise Object represents the operation success (boolean)
    */
-  static async deleteBlog() {
+  async delete() {
     let deletedRows;
     try {
       const results = await db.advUpdate({
@@ -170,13 +199,10 @@ class Blog {
   }
 }
 
+/**
+ * Checks if a blog exists in the database, based on its id
+ * @type {asyncFunction}
+ */
+Blog.exists = generic.exists(Blog.table, 'id');
 
-Blog.table = 'blogs';
-Blog.vTable = `v_${Blog.table}`;
-Blog.exists = generic.exists(Blog.table);
-Blog.ValidFilters = {
-  autor: 'asString',
-  title: 'asString',
-  category: 'asString',
-};
 module.exports = Blog;

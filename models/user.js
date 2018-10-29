@@ -17,7 +17,7 @@ class User {
    * @param {Number} weight      - The user weight
    * @param {Number} height      - The user height
    * @param {String} password    - The user name
-   * @param {Number} email        - The user email
+   * @param {Number} email       - The user email
    */
   constructor({
     id, name, mobile, weight, height, password, email, confirmed,
@@ -33,16 +33,63 @@ class User {
   }
 
   /**
+   * Database table which users are located
+   * @type {String}
+   */
+  static get table() {
+    return 'users';
+  }
+
+  /**
+   * Database table which progress, followed by users, are located
+   * @type {String}
+   */
+  static get calendarTable() {
+    return 'users_calendars';
+  }
+
+  /**
+   * Database table which users progress, are located
+   * @type {String}
+   */
+  static get progressTable() {
+    return 'users_progress';
+  }
+
+  /**
+   * The Users valid filters
+   * @type {Object}
+   */
+  static get ValidFilters() {
+    return {
+      email: 'asString',
+      role: 'asNumber',
+      name: 'asString',
+    };
+  }
+
+  /**
+   * SaltRounds used to hash the password
+   * @type {Number}
+   */
+  static get saltRounds() {
+    return Number(process.env.SALT);
+  }
+
+  /**
+   * @static @async
    * @method getAll - Retrieve all the users from a page
    *
-   * @param  {Number}  [page=0]             - The page to retrieve the users
+   * @param  {Number}  page - The page to retrieve the users
+   * @param  {String}  sorter - The sorter criteria
+   * @param  {Boolean} desc - Whether the sort order is descendent
+   * @param  {Object}  filters - The filters to be applied while getting all
    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
-   * @return {Promise} - Promise Object represents, the users from that page
+   * @return {Promise} [Array] - Promise Object represents, the users from that page
    */
   static async getAll({
     page, sorter, desc, filters,
-  }, deletedItems) {
-    const pageSize = Number(process.env.PAGE_SIZE);
+  }, deletedItems = false) {
     const response = [];
     const cond = {};
     if (!deletedItems) {
@@ -54,7 +101,7 @@ class User {
         where: { ...filters, ...cond },
         sorter,
         desc,
-        limit: [page * pageSize, pageSize],
+        limit: db.pageLimit(page),
       });
       data.forEach((row) => {
         response.push(new User({ ...row, password: undefined }));
@@ -66,11 +113,12 @@ class User {
   }
 
   /**
-   * @method get - Retrieve a user, based on their id
+   * @static @async
+   * @method get - Retrieve a user, based on its id
    *
    * @param  {Number}  id - The user identifier
    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
-   * @return {Promise} - Promise Object represents a user
+   * @return {Promise} [User] - Promise Object represents a user
    */
   static async get(id, deletedItems = false) {
     const cond = { id };
@@ -86,7 +134,6 @@ class User {
       if (data.length !== 0) {
         const user = new User(data[0]);
         user.permissions = await User.getPermissions(data[0].role);
-        // user.calendars = await user.getCalendars();
         return user;
       }
     } catch (err) {
@@ -95,7 +142,14 @@ class User {
     return [];
   }
 
-  static async getByEemail(email) {
+  /**
+   * @static @async
+   * @method getByEmail Retrieve a user based on its email
+   *
+   * @param  {[type]}  email The user email
+   * @return {Promise} [User] - The user whom the email belongs
+   */
+  static async getByEmail(email) {
     try {
       const userData = await db.select({
         from: User.table,
@@ -114,10 +168,11 @@ class User {
   }
 
   /**
+   * @static @async
    * @method getPermissions - Get all permissions for a user role
    *
-   * @param  {[type]}  role - Represents the user role
-   * @return {Promise} - Promise Object represents the role permissions
+   * @param  {Number}  role - Represents the user role
+   * @return {Promise} [Object] - Promise Object represents the role permissions
    */
   static async getPermissions(role) {
     const response = {};
@@ -153,7 +208,7 @@ class User {
    */
   static async login(email, password) {
     try {
-      const user = await User.getByEemail(email);
+      const user = await User.getByEmail(email);
       if (user.length !== 0) {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
@@ -167,6 +222,7 @@ class User {
   }
 
   /**
+   * @async
    * @method getCalendars - Retrieve the calendars assigned to the user
    *
    * @return {Promise} - Promise Object represents the calendars
@@ -174,15 +230,14 @@ class User {
   async getCalendars({
     page, sorter, desc, filters,
   }) {
-    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     try {
       const data = await db.select({
         from: User.calendarTable,
         join: {
-          table: 'calendars',
+          table: Calendar.table,
           on: {
-            calendarId: 'calendars.id',
+            calendarId: `${Calendar.table}.id`,
           },
         },
         where: {
@@ -191,18 +246,11 @@ class User {
         },
         sorter,
         desc,
-        limit: [page * pageSize, pageSize],
+        limit: db.pageLimit(page),
       });
       data.forEach((row) => {
         response.push(new Calendar(row));
       });
-      /*
-      const myPromises = data.map(async (row) => {
-        const calendar = await Calendar.get(row.calendarId, true);
-        response.push(calendar);
-      });
-      await Promise.all(myPromises); // si se cumplen todas las promesas
-      */
     } catch (err) {
       throw err;
     }
@@ -210,6 +258,7 @@ class User {
   }
 
   /**
+   * @static @async
    * @method create - Inserts a user into the database
    *
    * @param {Number} id          - The user id
@@ -251,14 +300,31 @@ class User {
   }
 
   /**
+   * @async
    * @method update - Modifies fields from this user.
+   *         If the email is modified, put confirmed to false
+   *         If the weight or height is modified, adds a progress
    *
    * @param  {Object}  keyVals - Represents the new values for this user.
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   * @return {Promise} [Boolean] - Promise Object represents the operation success
    */
-  async update(keyVals) {
+  async update({
+    name, mobile, email, weight, height,
+  }) {
+    const keyVals = generic.removeEmptyValues({
+      name, mobile, email, weight, height,
+    });
+    if (keyVals.email) {
+      keyVals.confirmed = false;
+    }
     let updatedRows;
     try {
+      if (keyVals.weight || keyVals.height) {
+        await this.addProgress({
+          weight: keyVals.weight || this.weight,
+          height: keyVals.height || this.height,
+        });
+      }
       const results = await db.advUpdate({
         table: User.table,
         assign: keyVals,
@@ -274,6 +340,12 @@ class User {
     return updatedRows > 0;
   }
 
+  /**
+   * @async
+   * @method confirm - Confirms the user email
+   *
+   * @return {Promise} [Boolean] - Promise object, represents the operation success
+   */
   async confirm() {
     try {
       return await this.update({ confirmed: true });
@@ -282,6 +354,12 @@ class User {
     }
   }
 
+  /**
+   * @static @async
+   * @method hashPassword - Returns a password hashed
+   * @param  {String}  password - The password to hash
+   * @return {Promise} [String] - Promise object, represents the password hashed
+   */
   static async hashPassword(password) {
     try {
       const hashedPassword = await bcrypt.hash(password, User.saltRounds);
@@ -292,8 +370,9 @@ class User {
   }
 
   /**
+   * @async
    * @method delete - Deletes this user.
-   *                  Assigns true to deleted, in the database.
+   *         Assigns true to deleted, in the database.
    * @return {Promise} - Promise Object represents the operation success (boolean)
    */
   async delete() {
@@ -318,9 +397,11 @@ class User {
   }
 
   /**
+   * @async
    * @method addCalendar - Adds a calendar to this user
+   *
    * @param  {Number}  calendarId  - The calendar id to be added
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   * @return {Promise} [Boolean] - Promise Object represents the operation success
    */
   async addCalendar({ calendarId }) {
     let response;
@@ -337,13 +418,14 @@ class User {
     }
     return response.affectedRows > 0;
   }
+
   /**
+   * @async
    * @method removeCalendar - Removes a calendar from this user
    *
    * @param  {Number}  calendarId - The calendar id
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   * @return {Promise} [Boolean] - Promise Object represents the operation success
    */
-
   async removeCalendar({ calendarId }) {
     let response;
     try {
@@ -362,8 +444,10 @@ class User {
   }
 
   /**
+   * @async
    * @method getProgress - Retrieve all the progress of this user
-   * @return {Promise} - Promise Object represents the exercises of this user
+   *
+   * @return {Promise} [Array] - Promise Object represents the progress of this user
    */
   async getProgress({
     page, sorter, desc, filters,
@@ -391,10 +475,12 @@ class User {
   }
 
   /**
+   * @async
    * @method addProgress - Adds a progress to this user
+   *
    * @param  {Number}  weight  - The weight to be added
    * @param  {Number}  height  - The height to be added
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   * @return {Promise} [Boolean] - Promise Object represents the operation success
    */
   async addProgress({ weight, height }) {
     let response;
@@ -413,22 +499,17 @@ class User {
     return response.affectedRows > 0;
   }
 
+  /**
+   * @method canDo - Verifies whether the user can do a specific task
+   *
+   * @param  {String} permission - The permission name
+   * @return {Boolean} - Returns if the permission exists in the user permissions object
+   */
   canDo(permission) {
     return Object.keys(this.permissions).includes(permission);
   }
 }
 
-User.table = 'users';
-User.progressTable = 'users_progress';
-User.calendarTable = 'users_calendars';
 User.exists = generic.exists(User.table);
-
-User.ValidFilters = {
-  email: 'asString',
-  role: 'asNumber',
-  name: 'asString',
-};
-
-User.saltRounds = Number(process.env.SALT);
 
 module.exports = User;
