@@ -267,8 +267,10 @@ class Auth {
    */
   static async confirm(req, res, next) {
     const { key } = req.query;
+    console.log('key:', key);
     try {
       const token = await Token.get(key, Token.confirm);
+      console.log('tokeen:', token);
       if (token.token) {
         const user = await User.get(token.userId);
         await user.confirm();
