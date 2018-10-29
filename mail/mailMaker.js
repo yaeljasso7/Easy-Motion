@@ -14,8 +14,8 @@ function MailMaker() {
     from: process.env.MAIL_FROM,
     to: mail,
     subject: 'Confirm your Email',
-    text: `http://easy-motion/auth/confirm?key=${token}`,
-    html: `<b>http://easy-motion/auth/confirm?key=${token}</b>`,
+    text: `https://easy-motion.herokuapp.com/auth/confirm?key=${token}`,
+    html: `<b>https://easy-motion.herokuapp.com/auth/confirm?key=${token}</b>`,
   });
 
   /**
@@ -30,9 +30,9 @@ function MailMaker() {
     subject: 'Reset your Account Password',
     text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n'
           + 'Please click on the following link, or paste this into your browser to complete the process:\n\n'
-          + `http://easy-motion/auth/reset?key=${token}\n\n`
+          + `https://easy-motion.herokuapp.com/auth/reset?key=${token}\n\n`
           + 'If you did not request this, please ignore this email and your password will remain unchanged.\n',
-    html: `<b>http://easy-motion/auth/reset?key=${token}</b>`,
+    html: `<b>https://easy-motion.herokuapp.com/auth/reset?key=${token}</b>`,
   });
 
   /**
