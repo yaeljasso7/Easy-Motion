@@ -5,18 +5,26 @@ DB_PASS=password
 DB_NAME=sampledb
 DB_HOST=localhost
 
-PAGE_SIZE=5
-DEFAULT_PAGE=0
+PAGE_SIZE=15
+DEFAULT_PAGE=1
 
 SECRET=randomString
-SESSION_LIVES=12
 SALT=10
 
+SESSION_LIVES=2.16e7 # 12hrs
+CONFIRM_LIVES=3.6e6  # 1hr
+RESET_LIVES=1.8e6    # 30min
+
+# Etherial mailer
+MAILER=Ethereal
+MAIL_FROM='"EasyMotion Service" <no-reply@easymotion.mail>'
 MAIL_PORT=587
 MAIL_HOST=smtp.ethereal.email
-MAIL_USER=user@email.com
-MAIL_PASS=password
+MAIL_USER=user@ethereal.email
+MAIL_PASS=etherial.password
 
+# Gmail mailer
+# MAILER=Gmail
 ID_CLIENTE=
 SECRET_CLIENTE=
 REFRESH_TOKEN=

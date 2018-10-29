@@ -2,12 +2,11 @@ const router = require('express').Router();
 const { blogCtrl } = require('../controllers');
 const mw = require('../middlewares');
 
-
-router.get('/', (req, res, next) => {
+router.get('/', [(req, res, next) => {
   mw.validator.validate(req, res, next, {
     query: {
       page: 'number',
-      autor: 'word',
+      author: 'word',
       title: 'word',
       category: 'word',
       sort: 'word',
@@ -16,7 +15,7 @@ router.get('/', (req, res, next) => {
   });
 }, (req, res, next) => {
   mw.filter.validate(req, res, next, 'Blog');
-}, blogCtrl.getAll);
+}], blogCtrl.getAll);
 
 router.get('/:blogId', (req, res, next) => {
   mw.validator.validate(req, res, next, {
@@ -34,9 +33,9 @@ router.use('/', [mw.auth.haveSession,
 router.post('/', [(req, res, next) => {
   mw.validator.validate(req, res, next, {
     body: {
-      autor: 'word,required',
+      author: 'word,required',
       data: 'required',
-      category: 'required',
+      category: 'number,required',
       title: 'word,required',
     },
   });
@@ -48,15 +47,24 @@ router.post('/', [(req, res, next) => {
   });
 }], blogCtrl.create);
 
-router.put('/:blogId', (req, res, next) => {
+router.put('/:blogId', [(req, res, next) => {
   mw.validator.validate(req, res, next, {
     body: {
+      author: 'word',
+      category: 'number',
+      title: 'word',
     },
     params: {
       blogId: 'number',
     },
   });
-}, blogCtrl.update);
+}, (req, res, next) => {
+  mw.reference.validate(req, res, next, {
+    body: {
+      category: 'categoryBlog',
+    },
+  });
+}], blogCtrl.update);
 
 router.delete('/:blogId', (req, res, next) => {
   mw.validator.validate(req, res, next, {

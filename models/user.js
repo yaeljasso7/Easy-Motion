@@ -347,11 +347,21 @@ class User {
    * @return {Promise} [Boolean] - Promise object, represents the operation success
    */
   async confirm() {
+    let updatedRows;
     try {
-      return await this.update({ confirmed: true });
+      const results = await db.advUpdate({
+        table: User.table,
+        assign: { confirmed: true },
+        where: {
+          id: this.id,
+        },
+        limit: 1,
+      });
+      updatedRows = results.affectedRows;
     } catch (err) {
       throw err;
     }
+    return updatedRows > 0;
   }
 
   /**

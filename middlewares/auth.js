@@ -130,9 +130,15 @@ class Auth {
       if (user.length !== 0) {
         Auth.sendMsg(user, Auth.confirmMsg);
         return res.status(201)
-          .send(ResponseMaker.created(Auth.type, user));
+          .send(ResponseMaker.created({
+            type: Auth.type,
+            data: user,
+          }));
       }
-      return next(ResponseMaker.conflict(Auth.type, user));
+      return next(ResponseMaker.conflict({
+        type: Auth.type,
+        data: user,
+      }));
     } catch (err) {
       return next(err);
     }

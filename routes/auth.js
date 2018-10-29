@@ -5,7 +5,7 @@ router.post('/register', (req, res, next) => {
   validator.validate(req, res, next, {
     body: {
       name: 'word,required',
-      mail: 'email,required',
+      email: 'email,required',
       mobile: 'iscellphone',
       height: 'isHeight,required',
       weight: 'isWeight,required',
@@ -17,7 +17,7 @@ router.post('/login', (req, res, next) => {
   validator.validate(req, res, next, {
     body: {
       password: 'required',
-      mail: 'email,required',
+      email: 'email,required',
     },
   });
 }, auth.login);

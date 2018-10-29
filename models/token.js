@@ -24,7 +24,7 @@ class Token {
     this.token = token;
     this.userId = userId;
     this.type = type;
-    this.createdAt = createdAt;
+    this.createdAt = new Date(createdAt);
     this.expires = expires;
     this.active = active;
   }
@@ -83,8 +83,8 @@ class Token {
     if (!this.active) {
       return false;
     }
-    const now = new Date();
-    if (now < this.createdAt + this.expires) {
+    const now = Date.now();
+    if (now >= this.createdAt.getTime() + this.expires) {
       try {
         await this.deactivate();
       } catch (err) {
@@ -234,5 +234,6 @@ class Token {
   }
 }
 
+Token.get('$2b$10$f1HHkhK/BFcx4AAjgt3vdOWyzyYopQTYz00.pqnhrKU.kuXKz3xZK');
 
 module.exports = Token;

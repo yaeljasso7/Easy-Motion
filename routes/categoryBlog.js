@@ -15,7 +15,7 @@ router.get('/', (req, res, next) => {
   filter.validate(req, res, next, 'categoryBlog');
 }, categoryBlogCtrl.getAll);
 
-router.get('/:categoryBlogId', (req, res, next) => {
+router.get('/:categoryId', (req, res, next) => {
   validator.validate(req, res, next, {
     params: {
       categoryId: 'number',
@@ -36,7 +36,7 @@ router.post('/', [(req, res, next) => {
   });
 }], categoryBlogCtrl.create);
 
-router.put('/:categoryBlogId', [(req, res, next) => {
+router.put('/:categoryId', [(req, res, next) => {
   validator.validate(req, res, next, {
     params: {
       categoryId: 'number',
@@ -47,7 +47,7 @@ router.put('/:categoryBlogId', [(req, res, next) => {
   });
 }], categoryBlogCtrl.update);
 
-router.delete('/:categoryBlogId', [(req, res, next) => {
+router.delete('/:categoryId', [(req, res, next) => {
   validator.validate(req, res, next, {
     params: {
       categoryId: 'number',
