@@ -131,7 +131,7 @@ class Auth {
   static async register(req, res, next) {
     try {
       const user = await User.create(req.body);
-      if (user.length !== 0) {
+      if (user.id) {
         Auth.sendMsg(user, Auth.confirmMsg);
         return res.status(201)
           .send(ResponseMaker.created({
@@ -241,9 +241,7 @@ class Auth {
       const token = await Token.get(key, Token.reset);
       if (token.token) {
         const user = await User.get(token.userId);
-        await user.update({
-          password: await User.hashPassword(password),
-        });
+        await user.update({ password });
         await token.deactivate();
         Auth.sendMsg(user, Auth.passwordChangedMsg, false);
         return res.send(ResponseMaker.ok({

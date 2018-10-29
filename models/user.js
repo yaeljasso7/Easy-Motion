@@ -146,7 +146,7 @@ class User {
    * @static @async
    * @method getByEmail Retrieve a user based on its email
    *
-   * @param  {[type]}  email The user email
+   * @param  {String}  email The user email
    * @return {Promise} [User] - The user whom the email belongs
    */
   static async getByEmail(email) {
@@ -309,7 +309,7 @@ class User {
    * @return {Promise} [Boolean] - Promise Object represents the operation success
    */
   async update({
-    name, mobile, email, weight, height,
+    name, mobile, email, weight, height, password,
   }) {
     const keyVals = generic.removeEmptyValues({
       name, mobile, email, weight, height,
@@ -324,6 +324,9 @@ class User {
           weight: keyVals.weight || this.weight,
           height: keyVals.height || this.height,
         });
+      }
+      if (password) {
+        keyVals.password = await User.hashPassword(password);
       }
       const results = await db.advUpdate({
         table: User.table,
@@ -462,7 +465,6 @@ class User {
   async getProgress({
     page, sorter, desc, filters,
   }) {
-    const pageSize = parseInt(process.env.PAGE_SIZE, 10);
     const response = [];
     try {
       const data = await db.select({
@@ -473,7 +475,7 @@ class User {
         },
         sorter,
         desc,
-        limit: [page * pageSize, pageSize],
+        limit: db.pageLimit(page),
       });
       data.forEach((row) => {
         response.push(new ProgressUser(row));
