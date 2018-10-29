@@ -27,7 +27,7 @@ router.post('/', [(req, res, next) => {
   mw.validator.validate(req, res, next, {
     body: {
       name: 'word,required',
-      mail: 'email,required',
+      email: 'email,required',
       mobile: 'iscellphone',
       height: 'isHeight,required',
       weight: 'isWeight,required',
@@ -64,6 +64,7 @@ router.put('/:userId', (req, res, next) => {
     },
     body: {
       mobile: 'iscellphone',
+      email: 'email',
       height: 'isHeight',
       weight: 'isWeight',
     },
