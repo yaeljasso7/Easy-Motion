@@ -7,7 +7,7 @@ const generic = require('./generic');
  */
 class Exercise {
   /**
-   * Exercise constructor
+   * @constructor
    * @param {Number} id           - The exercise id
    * @param {String} name         - The exercise name
    * @param {Number} difficulty   - The exercise difficulty
@@ -56,12 +56,14 @@ class Exercise {
   }
 
   /**
+   * @static @async
    * @method getAll - Retrieve all the exercises from a page
    *
    * @param  {Number}  page - The page to retrieve the exercises
    * @param  {String}  sorter - The sorter criteria
    * @param  {Boolean} desc - Whether the sort order is descendent
-   * @param  {Boolean} [deletedItems=false] - Whether include deleted items
+   * @param  {Object}  filters - The filters to be applied while getting all
+   * @param  {Boolean} [deletedItems=false] - Include deleted items in result?
    * @return {Promise} [Array] - Promise Object, represents the exercises from
    *         that page
    */
@@ -91,6 +93,7 @@ class Exercise {
   }
 
   /**
+   * @static @async
    * @method get - Retrieve an exercise, based on its id
    *
    * @param  {Number}  id - The exercise identifier
@@ -116,11 +119,12 @@ class Exercise {
   }
 
   /**
+   * @static @async
    * @method create - Inserts an exercise into the database.
    *
-   * @param  {[type]}  name         - The exercise name
-   * @param  {[type]}  difficulty   - The exercise difficulty
-   * @param  {[type]}  description  - The exercise description
+   * @param  {String}  name         - The exercise name
+   * @param  {Number}  difficulty   - The exercise difficulty
+   * @param  {String}  description  - The exercise description
    * @param  {Number}  trainingType - The training type identifier
    * @param  {Number}  bodyPart     - The body part identifier
    * @return {Promise} [Exercise] - Promise Object, represents the exercise created
@@ -150,6 +154,7 @@ class Exercise {
   }
 
   /**
+   * @async
    * @method update - Modifies fields from this exercise.
    *
    * @param  {Object}  keyVals - Represents the new values for this exercise.
@@ -158,9 +163,9 @@ class Exercise {
   async update({
     name, difficulty, description, trainingType, bodyPart,
   }) {
-    const keyVals = {
+    const keyVals = generic.removeEmptyValues({
       name, difficulty, description, trainingType, bodyPart,
-    };
+    });
     let updatedRows;
     try {
       const results = await db.advUpdate({
@@ -179,6 +184,7 @@ class Exercise {
   }
 
   /**
+   * @async
    * @method delete - Deletes this exercise.
    *         Assigns true to isDeleted, in the database.
    * @return {Promise} [Boolean] - Promise Object, represents the operation success

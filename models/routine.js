@@ -8,7 +8,7 @@ const generic = require('./generic');
  */
 class Routine {
   /**
-   * Routine constructor
+   * @constructor
    * @param {Number} id            - The routine id
    * @param {String} name          - The routine name
    * @param {String} description   - The routine description
@@ -24,16 +24,46 @@ class Routine {
   }
 
   /**
+   * Database table which routines are located
+   * @type {String}
+   */
+  static get table() {
+    return 'routines';
+  }
+
+  /**
+   * Database table which exercises, for each routine, are located
+   * @type {String}
+   */
+  static get exercisesTable() {
+    return 'exercises_routines';
+  }
+
+  /**
+   * The Routine Valid Filters
+   * @type {Object}
+   */
+  static get ValidFilters() {
+    return {
+      name: 'asString',
+      executionTime: 'asNumber',
+    };
+  }
+
+  /**
+   * @static @async
    * @method getAll - Retrieve all the routines from a page
    *
-   * @param  {Number}  [page=0]             - The page to retrieve the routines
-   * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
-   * @return {Promise} - Promise Object represents, the routines from that page
+   * @param  {Number}  page - The page to retrieve the exercises
+   * @param  {String}  sorter - The sorter criteria
+   * @param  {Boolean} desc - Whether the sort order is descendent
+   * @param  {Object}  filters - The filters to be applied while getting all
+   * @param  {Boolean} [deletedItems=false] - Include deleted items in result?
+   * @return {Promise} [Array] - Promise Object represents, the routines from that page
    */
   static async getAll({
     page, sorter, desc, filters,
   }, deletedItems = false) {
-    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     const cond = {};
     if (!deletedItems) {
@@ -45,7 +75,7 @@ class Routine {
         where: { ...filters, ...cond },
         sorter,
         desc,
-        limit: [page * pageSize, pageSize],
+        limit: db.pageLimit(page),
       });
       data.forEach((row) => {
         response.push(new Routine(row));
@@ -57,6 +87,7 @@ class Routine {
   }
 
   /**
+   * @static @async
    * @method get - Retrieve a routine and its exercises, based on their id
    *
    * @param  {Number}  id - The routine identifier
@@ -86,6 +117,7 @@ class Routine {
   }
 
   /**
+   * @static @async
    * @method create - Inserts a routine into the database
    *
    * @param {String} name          - The routine name
@@ -115,12 +147,16 @@ class Routine {
   }
 
   /**
+   * @async
    * @method update - Modifies fields from this routine.
    *
    * @param  {Object}  keyVals - Represents the new values for this routine.
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   * @return {Promise} [Boolean] - Promise Object, represents the operation success
    */
-  async update(keyVals) {
+  async update({ name, description, executionTime }) {
+    const keyVals = generic.removeEmptyValues({
+      name, description, executionTime,
+    });
     let updatedRows;
     try {
       const results = await db.advUpdate({
@@ -139,9 +175,10 @@ class Routine {
   }
 
   /**
+   * @async
    * @method delete - Deletes this routine.
-   *                  Assigns true to isDeleted, in the database.
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   *         Assigns true to isDeleted, in the database.
+   * @return {Promise} [Boolean] - Promise Object represents the operation success (boolean)
    */
   async delete() {
     let deletedRows;
@@ -165,10 +202,12 @@ class Routine {
   }
 
   /**
+   * @async
    * @method addExercise - Adds an exercise to this routine
+   *
    * @param  {Number}  exerciseId  - The exercise id to be added
    * @param  {Number}  repetitions - The times an exercise must be repeated
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   * @return {Promise} [Boolean] - Promise Object, represents the operation success
    */
   async addExercise({ exerciseId, repetitions }) {
     let response;
@@ -188,8 +227,10 @@ class Routine {
   }
 
   /**
+   * @async
    * @method getExercises - Retrieve all the exercises of this routine
-   * @return {Promise} - Promise Object represents the exercises of this routine
+   *
+   * @return {Promise} [Array] - Promise Object, represents the exercises of this routine
    */
   async getExercises() {
     const response = [];
@@ -213,10 +254,11 @@ class Routine {
   }
 
   /**
+   * @async
    * @method removeExercise - Removes an exercise from this routine
    *
    * @param  {Number}  exerciseId - The exercise id
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   * @return {Promise} [Boolean] - Promise Object represents the operation success
    */
   async removeExercise({ exerciseId }) {
     let deletedRows;
@@ -238,6 +280,7 @@ class Routine {
   }
 
   /**
+   * @async
    * @method updateExerciseReps - Modifies the times an exercise must be repeated
    *         for this routine.
    *
@@ -267,24 +310,9 @@ class Routine {
 }
 
 /**
- * Database table which routines are located
- * @type {String}
- */
-Routine.table = 'routines';
-/**
- * Database table which exercises, for each routine, are located
- * @type {String}
- */
-Routine.exercisesTable = 'exercises_routines';
-/**
  * Checks if a routine exists in the database, based on its id
- * @type {[type]}
+ * @type {asyncFunction}
  */
-Routine.exists = generic.exists(Routine.table);
-
-Routine.ValidFilters = {
-  name: 'asString',
-  executionTime: 'asNumber',
-};
+Routine.exists = generic.exists(Routine.table, 'id');
 
 module.exports = Routine;

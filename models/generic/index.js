@@ -34,4 +34,14 @@ function exists(table, columns = 'id') {
   };
 }
 
-module.exports = { exists };
+function removeEmptyValues(obj) {
+  const cleanObj = {};
+  Object.keys(obj).forEach((key) => {
+    if (obj[key]) {
+      cleanObj[key] = obj[key];
+    }
+  });
+  return cleanObj;
+}
+
+module.exports = { exists, removeEmptyValues };

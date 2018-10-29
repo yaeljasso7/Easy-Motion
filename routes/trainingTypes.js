@@ -42,7 +42,7 @@ router.put('/:trainingTypeId', [(req, res, next) => {
       trainingTypeId: 'number',
     },
     body: {
-      name: 'word,required',
+      name: 'word',
     },
   });
 }], trainingTypesCtrl.update);

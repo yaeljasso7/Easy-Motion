@@ -41,7 +41,7 @@ router.post('/', [(req, res, next) => {
 router.put('/:routineId', [(req, res, next) => {
   mw.validator.validate(req, res, next, {
     body: {
-      name: 'word,required',
+      name: 'word',
       executionTime: 'number',
     },
     params: {

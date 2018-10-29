@@ -6,10 +6,9 @@ const generic = require('./generic');
  * @class Calendar
  * Represents a calendar of routines
  */
-
 class Calendar {
   /**
-   * Routine constructor
+   * @constructor
    * @param {Number} id            - The calendar id
    * @param {String} name          - The calendar name
    */
@@ -18,21 +17,47 @@ class Calendar {
     this.name = name;
   }
 
-  save() {
-    db.new(this);
+  /**
+   * Database table which rotuine are located
+   * @type {String}
+   */
+  static get table() {
+    return 'calendars';
   }
 
   /**
+   * Database table which routines, for each calendar, are located
+   * @type {String}
+   */
+  static get routineDayTable() {
+    return 'routines_calendars';
+  }
+
+  /**
+   * The Calendar valid filters
+   * @type {String}
+   */
+  static get ValidFilters() {
+    return {
+      name: 'asString',
+    };
+  }
+
+  /**
+   * @static @async
    * @method getAll - Retrieve all the calendars from a page
    *
-   * @param  {Number}  [page=0]             - The page to retrieve the calendars
+   * @param  {Number}  page - The page to retrieve the body parts
+   * @param  {String}  sorter - The sorter criteria
+   * @param  {Boolean} desc - Whether the sort order is descendent
+   * @param  {Object}  filters - The filters to be applied while getting all
    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
-   * @return {Promise} - Promise Object represents, the calendars from that page
+   * @return {Promise} [Array] - Promise Object represents, the calendars from
+   *         that page
    */
   static async getAll({
     page, sorter, desc, filters,
   }, deletedItems = false) {
-    const pageSize = Number(process.env.PAGE_SIZE);
     const response = [];
     const cond = {};
     if (!deletedItems) {
@@ -44,7 +69,7 @@ class Calendar {
         where: { ...filters, ...cond },
         sorter,
         desc,
-        limit: [page * pageSize, pageSize],
+        limit: db.pageLimit(page),
       });
       data.forEach((row) => {
         response.push(new Calendar(row));
@@ -56,11 +81,12 @@ class Calendar {
   }
 
   /**
+   * @static @async
    * @method get - Retrieve a calendar and its routines, based on their id
    *
    * @param  {Number}  id - The calendar identifier
    * @param  {Boolean} [deletedItems=false] - Include deleted items in the result?
-   * @return {Promise} - Promise Object represents a calendar
+   * @return {Promise} [Calendar] - Promise Object represents a calendar
    */
   static async get(id, deletedItems = false) {
     const cond = { id };
@@ -85,8 +111,10 @@ class Calendar {
   }
 
   /**
+   * @async
    * @method get - Retrieve a routines of calendars
-   * @return {Promise} - Promise Object represents the routines
+   *
+   * @return {Promise} [Array] - Promise Object represents the routines
    */
   async getRoutines() {
     const response = [];
@@ -112,9 +140,11 @@ class Calendar {
   }
 
   /**
+   * @static @async
    * @method create - Inserts a calendar into database
    *
-   * @param {String} name - The rcalendar name
+   * @param  {String}   name - The rcalendar name
+   * @return {Promise}  [Calendar] - Promise object, represents the calendar created
    */
   static async create({ name }) {
     let response;
@@ -130,10 +160,11 @@ class Calendar {
     if (id > 0) {
       return new Calendar({ id, name });
     }
-    return [];
+    return id > 0 ? new Calendar({ id, name }) : [];
   }
 
   /**
+   * @async
    * @method delete - Deletes this calendar
    *                  Assigns true to isDeleted, in the database.
    * @return {Promise} - Promise Object represents the operation success (boolean)
@@ -160,12 +191,14 @@ class Calendar {
   }
 
   /**
+   * @async
    * @method update - Modifies fields from this calendar
    *
    * @param  {Object}  keyVals - Represents the new values for this calendar.
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   * @return {Promise} [Boolean] - Promise Object, represents the operation success
    */
-  async update(keyVals) {
+  async update({ name }) {
+    const keyVals = generic.removeEmptyValues({ name });
     let updatedRows;
     try {
       const results = await db.advUpdate({
@@ -184,10 +217,12 @@ class Calendar {
   }
 
   /**
+   * @async
    * @method addRoutine Adds an routine to this calendar
+   *
    * @param  {Number}  routineId  - The routine id to be added
    * @param  {Number}  day - The day where the routine must be done
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   * @return {Promise} [Boolean] - Promise Object represents the operation success
    */
   async addRoutine({ routineId, day }) {
     let response;
@@ -208,11 +243,12 @@ class Calendar {
   }
 
   /**
+   * @async
    * @method removeRoutine - Removes an routine from this calendar
    *
    * @param  {Number}  routineId - The routine id
    * @param  {Number}  day - The day
-   * @return {Promise} - Promise Object represents the operation success (boolean)
+   * @return {Promise} [Boolean] - Promise Object represents the operation success
    */
   async removeRoutine({ routineId, day }) {
     let deletedRows;
@@ -234,23 +270,11 @@ class Calendar {
     return deletedRows > 0;
   }
 }
-/**
- * Database table which rotuine are located
- * @type {String}
- */
-Calendar.table = 'calendars';
-/**
- * Database table which routines, for each calendar, are located
- * @type {String}
- */
-Calendar.routineDayTable = 'routines_calendars';
+
 /**
  * Checks if a calendar exists in the database, based on its id
- * @type {[type]}
+ * @type {asyncFunction}
  */
 Calendar.exists = generic.exists(Calendar.table);
-Calendar.ValidFilters = {
-  name: 'asString',
-};
 
 module.exports = Calendar;

@@ -4,8 +4,8 @@ function ResponseMaker() {
     status, type, data, msg,
   }) => ({
     status: status || 500,
-    msg: `${type}: ${msg}`,
-    data,
+    msg: `${type || '*'}: ${msg}`,
+    data: data || {},
   });
 
   const notFound = ({ type, data, msg }) => (

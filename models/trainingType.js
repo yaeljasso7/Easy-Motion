@@ -37,11 +37,13 @@ class TrainingType {
   }
 
   /**
+   * @static @async
    * @method getAll - Retrieve all the training types from a page
    *
    * @param  {Number}  page - The page to retrieve the training types
    * @param  {String}  sorter - The sorter criteria
    * @param  {Boolean} desc - Whether the sort order is descendent
+   * @param  {Object}  filters - The filters to be applied while getting all
    * @return {Promise} [Array]- Promise Object, represents the training types
    *         from that page.
    */
@@ -67,6 +69,7 @@ class TrainingType {
   }
 
   /**
+   * @static @async
    * @method get - Retrieve a training type, based on its id
    *
    * @param  {Number}  id - The training type identifier
@@ -90,7 +93,9 @@ class TrainingType {
   }
 
   /**
+   * @static @async
    * @method create - Inserts a training type into the database
+   *
    * @param  {String}  name - The training type name
    * @param  {String}  description - The training type description
    * @return {Promise} [TrainingType]- Promise Object, represents the
@@ -117,6 +122,7 @@ class TrainingType {
   }
 
   /**
+   * @async
    * @method update - Modifies fields from this training type.
    *
    * @param  {String}  name - The new name for this training type
@@ -124,14 +130,13 @@ class TrainingType {
    * @return {Promise} [Boolean] - Promise Object, represents the operation success
    */
   async update({ name, description }) {
+    const keyVals = generic.removeEmptyValues({ name, description });
+    console.log(keyVals);
     let updatedRows;
     try {
       const results = await db.advUpdate({
         table: TrainingType.table,
-        assign: {
-          name,
-          description,
-        },
+        assign: keyVals,
         where: {
           id: this.id,
         },
@@ -145,6 +150,7 @@ class TrainingType {
   }
 
   /**
+   * @async
    * @method delete - Deletes this training type.
    *         Assigns true to isDeleted, in the database.
    * @return {Promise} [Boolean] - Promise Object, represents the operation success

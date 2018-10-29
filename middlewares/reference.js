@@ -16,11 +16,9 @@ class Reference {
    * @return {Promise}           Promise object represents the objects existence
    */
   static async validate(req, res, next, sections) {
-    const error = {
-      message: 'Reference Error',
-      status: 404,
-      details: {},
-    };
+    const error = mdl.ResponseMaker.conflict({ msg: 'Reference Error' });
+    error.details = {};
+
     const bySection = Object.keys(sections).map(async (part) => {
       try {
         const byPart = Object.keys(sections[part]).map(async (field) => {

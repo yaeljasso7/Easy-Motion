@@ -37,11 +37,13 @@ class BodyPart {
   }
 
   /**
+   * @static @async
    * @method getAll - Retrieve all the body parts from a page
    *
    * @param  {Number}  page - The page to retrieve the body parts
    * @param  {String}  sorter - The sorter criteria
    * @param  {Boolean} desc - Whether the sort order is descendent
+   * @param  {Object}  filters - The filters to be applied while getting all
    * @return {Promise} [Array]- Promise Object, represents the body parts from that page
    */
   static async getAll({
@@ -67,6 +69,7 @@ class BodyPart {
   }
 
   /**
+   * @static @async
    * @method get - Retrieve a body part, based on its id
    *
    * @param  {Number}  id - The body part identifier
@@ -90,6 +93,7 @@ class BodyPart {
   }
 
   /**
+   * @static @async
    * @method create - Inserts a body part into the database
    *
    * @param  {String}  name - The body part name
@@ -115,17 +119,19 @@ class BodyPart {
   }
 
   /**
+   * @async
    * @method update - Modifies fields from this body part.
    *
    * @param  {String}  name - The new name for this body part.
    * @return {Promise} [Boolean] - Promise Object, represents the operation success.
    */
   async update({ name }) {
+    const keyVals = generic.removeEmptyValues({ name });
     let updatedRows;
     try {
       const results = await db.advUpdate({
         table: BodyPart.table,
-        assign: { name },
+        assign: keyVals,
         where: {
           id: this.id,
         },
@@ -139,6 +145,7 @@ class BodyPart {
   }
 
   /**
+   * @async
    * @method delete - Deletes this body part.
    *         Assigns true to isDeleted, in the database.
    * @return {Promise} [Boolean] - Promise Object, represents the operation success.

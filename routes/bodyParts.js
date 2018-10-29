@@ -39,7 +39,7 @@ router.post('/', (req, res, next) => {
 router.put('/:bodyPartId', (req, res, next) => {
   mw.validator.validate(req, res, next, {
     body: {
-      name: 'word,required',
+      name: 'word',
     },
     params: {
       bodyPartId: 'number',

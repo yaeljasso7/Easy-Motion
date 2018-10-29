@@ -74,7 +74,7 @@ class BodyPartsCtrl {
   async create(req, res, next) {
     try {
       const bodyPart = await BodyPart.create(req.body);
-      if (!bodyPart.id) {
+      if (bodyPart.id) {
         return res.status(201)
           .send(ResponseMaker.created({
             type: this.type,

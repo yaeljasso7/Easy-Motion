@@ -1,10 +1,9 @@
 const { Calendar, ResponseMaker } = require('../models');
 
 /**
- *
- * @class Class of controller Calendar
- * - Contain the getAll, get, create, delete, update
-    addRoutine, removeRoutine functions
+ * @class Calendar controller
+ * - Contains the getAll, get, create, delete, update
+ *    addRoutine & removeRoutine methods
  */
 class CalendarCtrl {
   constructor() {
@@ -15,27 +14,26 @@ class CalendarCtrl {
     this.update = this.update.bind(this);
     this.addRoutine = this.addRoutine.bind(this);
     this.removeRoutine = this.removeRoutine.bind(this);
-    this.type = 'calendar';
+    this.type = 'Calendar';
+    this.routinesCalendarType = 'Routine-Calendar';
   }
 
   /**
   * @async
   * Async function to get all calendars from database using the Calendar Model
   * @param  {Request Object}     req   Request to the function, includes information in params
-  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Response Object}    res   Response that will give this function
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async getAll(req, res, next) {
     try {
-      const data = await Calendar.getAll(req.query);
-
-      if (data.length === 0) {
-        return res.status(204)
-          .send(ResponseMaker.noContent(this.type));
-      }
-      return res.send(ResponseMaker.paginated(req.query.page, this.type, data));
+      const calendars = await Calendar.getAll(req.query);
+      return res.send(ResponseMaker.paginated({
+        page: req.query.page,
+        type: this.type,
+        data: calendars,
+      }));
     } catch (err) {
       return next(err);
     }
@@ -45,20 +43,25 @@ class CalendarCtrl {
   * @async
   * Async function to get specific calendar from database using the Calendar Model
   * @param  {Request Object}     req   Request to the function, includes information in params
-  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Response Object}    res   Response that will give this function
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async get(req, res, next) {
     const id = req.params.calendarId;
     try {
       const calendar = await Calendar.get(id);
-      if (calendar.length === 0) {
-        return res.status(404)
-          .send(ResponseMaker.notFound(this.type, { id }));
+      if (!calendar.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
       }
-      return res.send(ResponseMaker.ok('Found', this.type, calendar));
+      return res.send(ResponseMaker.ok({
+        msg: 'Found',
+        type: this.type,
+        data: calendar,
+      }));
     } catch (err) {
       return next(err);
     }
@@ -68,22 +71,25 @@ class CalendarCtrl {
   * @async
   * Async function to create a calendar into database using the Calendar Model
   * @param  {Request Object}     req   Request to the function, includes information in params
-  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Response Object}    res   Response that will give this function
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async create(req, res, next) {
     try {
-      const data = await Calendar.create(req.body);
-      if (data.length !== 0) {
+      const calendar = await Calendar.create(req.body);
+      if (calendar.id) {
         return res.status(201)
-          .send(ResponseMaker.created(this.type, data));
+          .send(ResponseMaker.created({
+            type: this.type,
+            data: calendar,
+          }));
       }
-      return res.status(409)
-        .send(ResponseMaker.conflict(this.type, data));
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: calendar,
+      }));
     } catch (err) {
-      // res.status(409).send(`Insert error: ${e.duplicated.message}`);
       return next(err);
     }
   }
@@ -92,29 +98,34 @@ class CalendarCtrl {
   * @async
   * Async function to delete specific calendar from database using the Calendar Model
   * @param  {Request Object}     req   Request to the function, includes information in params
-  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Response Object}    res   Response that will give this function
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async delete(req, res, next) {
     const id = req.params.calendarId;
     try {
-      const data = await Calendar.get(id);
+      const calendar = await Calendar.get(id);
 
-      if (data.length === 0) {
-        return res.status(404)
-          .send(ResponseMaker.notFound(this.type, { id }));
+      if (!calendar.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
       }
 
-      const deleted = await data.delete();
-
+      const deleted = await calendar.delete();
       if (deleted) {
-        return res.status(200)
-          .send(ResponseMaker.ok('Deleted', this.type, { id }));
+        return res.send(ResponseMaker.ok({
+          msg: 'Deleted',
+          type: this.type,
+          data: { id },
+        }));
       }
-      return res.status(409)
-        .send(ResponseMaker.conflict(this.type, req.body));
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: req.body,
+      }));
     } catch (err) {
       return next(err);
     }
@@ -124,28 +135,34 @@ class CalendarCtrl {
   * @async
   * Async function to update specific calendar from database using the Calendar Model
   * @param  {Request Object}     req   Request to the function, includes information in params
-  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Response Object}    res   Response that will give this function
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async update(req, res, next) {
     const id = req.params.calendarId;
     try {
-      const data = await Calendar.get(id);
+      const calendar = await Calendar.get(id);
 
-      if (data.length === 0) {
-        return res.status(404)
-          .send(ResponseMaker.notFound(this.type, { id }));
+      if (!calendar.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
       }
 
-      const updated = await data.update(req.body);
+      const updated = await calendar.update(req.body);
       if (updated) {
-        return res.status(200)
-          .send(ResponseMaker.ok('Updated', this.type, { ...data, ...req.body }));
+        return res.send(ResponseMaker.ok({
+          msg: 'Updated',
+          type: this.type,
+          data: { id },
+        }));
       }
-      return res.status(409)
-        .send(ResponseMaker.conflict(this.type, req.body));
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: req.body,
+      }));
     } catch (err) {
       return next(err);
     }
@@ -156,29 +173,35 @@ class CalendarCtrl {
   * Async function to add routine to calendar from database using the Calendar Model
       and Routine Model
   * @param  {Request Object}     req   Request to the function, includes information in params
-  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Response Object}    res   Response that will give this function
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async addRoutine(req, res, next) {
     const { calendarId } = req.params;
     try {
       const calendar = await Calendar.get(calendarId);
-      if (calendar.length === 0) {
-        return res.status(404)
-          .send(ResponseMaker.notFound(this.type, { id: calendarId }));
+      if (!calendar.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id: calendarId },
+        }));
       }
       const added = await calendar.addRoutine(req.body);
       if (added) {
         return res.status(201)
-          .send(ResponseMaker.created('routines_calendars', {
-            calendarId: calendar.id,
-            ...req.body,
+          .send(ResponseMaker.created({
+            type: this.routinesCalendarType,
+            data: {
+              calendarId: calendar.id,
+              ...req.body,
+            },
           }));
       }
-      return res.status(409)
-        .send(ResponseMaker.conflict('routines_calendars', req.body));
+      return next(ResponseMaker.conflict({
+        type: this.routinesCalendarType,
+        data: req.body,
+      }));
     } catch (err) {
       return next(err);
     }
@@ -186,28 +209,35 @@ class CalendarCtrl {
 
   /**
   * @async
-  * Async function to remove Routine assingned calendar from database using the Calendar Model
+  * Async function to remove a Routine assigned to this calendar from database
+  *   using the Calendar Model
   * @param  {Request Object}     req   Request to the function, includes information in params
-  * @param  {Response Object}    res   Response than will give the function
+  * @param  {Response Object}    res   Response that will give this function
   * @param  {Next Object}        next  In case of get error
   * @return {Promise}                  Promise to return the data results
   */
-
   async removeRoutine(req, res, next) {
     const { calendarId } = req.params;
     try {
       const calendar = await Calendar.get(calendarId);
-      if (calendar.length === 0) {
-        return res.status(404)
-          .send(ResponseMaker.notFound(this.type, { id: calendarId }));
+      if (!calendar.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id: calendarId },
+        }));
       }
       const deleted = await calendar.removeRoutine(req.body);
       if (deleted) {
-        return res.status(200)
-          .send(ResponseMaker.ok('Deleted', 'routines_calendars', req.body));
+        return res.send(ResponseMaker.ok({
+          msg: 'Deleted',
+          type: this.routinesCalendarType,
+          data: req.body,
+        }));
       }
-      return res.status(404)
-        .send(ResponseMaker.notFound('routines_calendars', req.body));
+      return next(ResponseMaker.notFound({
+        type: this.routinesCalendarType,
+        data: req.body,
+      }));
     } catch (err) {
       return next(err);
     }

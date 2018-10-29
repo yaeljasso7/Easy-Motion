@@ -17,26 +17,37 @@ class Filter {
     req.query.filters = {};
     const mdlFilters = mdl[type].ValidFilters;
     const mdlFilterKeys = Object.keys(mdlFilters);
+
     const page = Number(req.query.page);
-    req.query.page = Number.isNaN(page) ? Filter.DefaultPage : page;
+    req.query.page = !page ? Filter.DefaultPage : page;
+
     const { sort, order } = req.query;
     req.query.sorter = mdlFilterKeys.includes(sort) ? sort : undefined;
     req.query.desc = (order && order.toLowerCase() === 'desc');
+
     mdlFilterKeys.forEach((cond) => {
       if (req.query[cond] && req.query[cond].length !== 0) {
         const extraAction = mdlFilters[cond];
-        req.query.filters[cond] = Filter[extraAction](req.query[cond]);
+        const { op, key, data } = Filter[extraAction](cond, req.query[cond]);
+        if (op) {
+          if (!req.query.filters[op]) {
+            req.query.filters[op] = {};
+          }
+          req.query.filters[op][key] = data;
+        } else {
+          req.query.filters[key] = data;
+        }
       }
     });
     next();
   }
 
-  static asNumber(data) {
-    return Number(data);
+  static asNumber(key, data) {
+    return { key, data: Number(data) };
   }
 
-  static asString(data) {
-    return `%${data}%`;
+  static asString(key, data) {
+    return { op: 'like', key, data: `%${data}%` };
   }
 }
 

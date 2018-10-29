@@ -1,3 +1,5 @@
+const { ResponseMaker } = require('../models');
+
 class Validator {
   static get regex() {
     return {
@@ -9,11 +11,11 @@ class Validator {
   }
 
   static order(data) {
-    return !data.length || ['asc', 'desc'].includes(data.toLowerCase());
+    return !data || ['asc', 'desc'].includes(data.toLowerCase());
   }
 
   static word(data) {
-    return (Validator.regex.word.test(data)) || !data.length;
+    return !data || (Validator.regex.word.test(data));
   }
 
   static optionalDate(data) {
@@ -50,15 +52,12 @@ class Validator {
     if (req.body.password === req.body.rePassword) {
       return next();
     }
-    return next({ status: 409, msg: 'Passwords does not match!' });
+    return next(ResponseMaker.conflict({ msg: 'Passwords does not match!' }));
   }
 
   static validate(req, res, next, rules) {
-    const error = {
-      status: 409,
-      msg: 'Validation error',
-      details: {},
-    };
+    const error = ResponseMaker.conflict({ msg: 'Validation Error!' });
+    error.details = {};
 
     Object.keys(rules).forEach((part) => { // part = body
       Object.keys(rules[part]).forEach((field) => { // field = name,mail,mobile

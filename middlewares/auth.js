@@ -151,12 +151,20 @@ class Auth {
     const { mail, password } = req.body;
     try {
       const user = await User.login(mail, password);
-      if (user.length !== 0) {
+      if (user.id) {
         const token = await Token.create({ userId: user.id, type: Token.session });
         if (!token.token) {
-          return next(ResponseMaker.conflict('Token', mail));
+          return next(ResponseMaker.conflict({
+            msg: 'Cannot create the token',
+            type: Auth.type,
+            data: mail,
+          }));
         }
-        return res.send(ResponseMaker.ok('Logged in!', Auth.type, token));
+        return res.send(ResponseMaker.ok({
+          msg: 'Logged in!',
+          type: Auth.type,
+          data: token,
+        }));
       }
     } catch (err) {
       return next(err);
@@ -201,7 +209,9 @@ class Auth {
     } catch (err) {
       return next(err);
     }
-    return res.send('Check your email :)');
+    return res.send(ResponseMaker.ok({
+      msg: 'Check your email :)',
+    }));
   }
 
   /**
@@ -226,12 +236,14 @@ class Auth {
         });
         await token.deactivate();
         Auth.sendMsg(user, Auth.passwordChangedMsg, false);
-        return res.send(ResponseMaker.ok('Password reset succesfully'));
+        return res.send(ResponseMaker.ok({
+          msg: 'Password reset succesfully',
+        }));
       }
     } catch (err) {
       return next(err);
     }
-    return next(ResponseMaker.basic({ status: 409, msg: 'Expired token!' }));
+    return next(ResponseMaker.confict({ msg: 'Expired token!' }));
   }
 
   /**
@@ -251,12 +263,14 @@ class Auth {
         const user = await User.get(token.userId);
         await user.confirm();
         await token.deactivate();
-        return res.send(ResponseMaker.ok('Confirmation succesfully!'));
+        return res.send(ResponseMaker.ok({
+          msg: 'Confirmation succesfully!',
+        }));
       }
     } catch (err) {
       return next(err);
     }
-    return next(ResponseMaker.basic({ status: 409, msg: 'Expired token!' }));
+    return next(ResponseMaker.conflict({ msg: 'Expired token!' }));
   }
 
   /**
