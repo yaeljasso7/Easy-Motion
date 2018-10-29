@@ -67,7 +67,7 @@ class Auth {
     const hToken = Auth.getHeaderToken(req.headers.authorization);
     console.log('token recibido:', hToken);
     try {
-      console.log('token session:', Token.session);
+      console.log('env:', process.env.DB_HOST);
       const token = await Token.get(hToken, Token.session);
       console.log('token: ', token);
       if (token.token) {
