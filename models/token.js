@@ -84,6 +84,9 @@ class Token {
       return false;
     }
     const now = Date.now();
+    console.log('now: ', now);
+    console.log('this.createdAt: ', this.createdAt.getTime());
+    console.log('expires', this.expires);
     if (now >= this.createdAt.getTime() + this.expires) {
       try {
         await this.deactivate();
