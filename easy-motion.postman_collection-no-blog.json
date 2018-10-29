@@ -11,6 +11,16 @@
 				{
 					"name": "getAllExercises",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "$2b$10$vrAo//rVeEGN.HSypO2aU.siHrG.Lk14CamygvrKcmGLtEfyX7ixy",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -27,6 +37,26 @@
 								{
 									"key": "page",
 									"value": "1"
+								},
+								{
+									"key": "name",
+									"value": "Ejer",
+									"disabled": true
+								},
+								{
+									"key": "bodyPart",
+									"value": "brazo",
+									"disabled": true
+								},
+								{
+									"key": "trainingType",
+									"value": "flex",
+									"disabled": true
+								},
+								{
+									"key": "difficulty",
+									"value": "6",
+									"disabled": true
 								}
 							]
 						}
@@ -78,7 +108,7 @@
 							"variable": [
 								{
 									"key": "exerciseId",
-									"value": "12"
+									"value": "19"
 								}
 							]
 						}
@@ -111,17 +141,17 @@
 								},
 								{
 									"key": "trainingType",
-									"value": "8",
+									"value": "100",
 									"type": "text"
 								},
 								{
 									"key": "bodyPart",
-									"value": "88",
+									"value": "1",
 									"type": "text"
 								},
 								{
 									"key": "name",
-									"value": "Ejercicio de prueba",
+									"value": "Ejercicio 20",
 									"type": "text"
 								},
 								{
@@ -170,13 +200,12 @@
 								},
 								{
 									"key": "trainingType",
-									"value": "7",
-									"type": "text",
-									"disabled": true
+									"value": "77",
+									"type": "text"
 								},
 								{
 									"key": "bodyPart",
-									"value": "77",
+									"value": "88",
 									"type": "text"
 								},
 								{
@@ -199,7 +228,7 @@
 							"variable": [
 								{
 									"key": "exerciseId",
-									"value": "15"
+									"value": "19"
 								}
 							]
 						}
@@ -218,7 +247,7 @@
 						"header": [],
 						"body": {},
 						"url": {
-							"raw": "{{host}}:{{port}}/bodyParts?page=0",
+							"raw": "{{host}}:{{port}}/bodyParts?page=10",
 							"host": [
 								"{{host}}"
 							],
@@ -229,7 +258,12 @@
 							"query": [
 								{
 									"key": "page",
-									"value": "0"
+									"value": "10"
+								},
+								{
+									"key": "name",
+									"value": "de _",
+									"disabled": true
 								}
 							]
 						}
@@ -255,7 +289,7 @@
 							"variable": [
 								{
 									"key": "bodyPartId",
-									"value": "11"
+									"value": "12"
 								}
 							]
 						}
@@ -281,7 +315,7 @@
 							"variable": [
 								{
 									"key": "bodyPartId",
-									"value": "11"
+									"value": "100"
 								}
 							]
 						}
@@ -303,7 +337,7 @@
 							"urlencoded": [
 								{
 									"key": "name",
-									"value": "otra bodyPart",
+									"value": "la nueva",
 									"type": "text"
 								}
 							]
@@ -336,7 +370,7 @@
 							"urlencoded": [
 								{
 									"key": "name",
-									"value": "custom",
+									"value": "la custom",
 									"type": "text"
 								}
 							]
@@ -354,7 +388,7 @@
 							"variable": [
 								{
 									"key": "bodyPartId",
-									"value": "11"
+									"value": "12"
 								}
 							]
 						}
@@ -458,12 +492,12 @@
 							"urlencoded": [
 								{
 									"key": "name",
-									"value": "Calentamiento",
+									"value": "El nuevo",
 									"type": "text"
 								},
 								{
 									"key": "description",
-									"value": "",
+									"value": "algo de relleno",
 									"type": "text"
 								}
 							]
@@ -496,7 +530,13 @@
 							"urlencoded": [
 								{
 									"key": "name",
-									"value": "Equilibrio",
+									"value": "testeo nuevo update",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "description",
+									"value": "testeo nuevo update",
 									"type": "text"
 								}
 							]
@@ -618,7 +658,7 @@
 							"urlencoded": [
 								{
 									"key": "name",
-									"value": "Rutina 101",
+									"value": "Esta no",
 									"type": "text"
 								},
 								{
@@ -701,7 +741,7 @@
 							"urlencoded": [
 								{
 									"key": "exerciseId",
-									"value": "4",
+									"value": "1",
 									"type": "text"
 								},
 								{
@@ -828,10 +868,16 @@
 					"name": "getAllUsers",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "token",
+								"value": "$2b$10$rSpVmtYcO0TiVpDKZOR.B.5DwQzSB/svZBllf0MIkoLTXho6TewFi",
+								"type": "text"
+							}
+						],
 						"body": {},
 						"url": {
-							"raw": "{{host}}:{{port}}/users?page=1",
+							"raw": "{{host}}:{{port}}/users?role=1",
 							"host": [
 								"{{host}}"
 							],
@@ -841,7 +887,7 @@
 							],
 							"query": [
 								{
-									"key": "page",
+									"key": "role",
 									"value": "1"
 								}
 							]
@@ -852,6 +898,16 @@
 				{
 					"name": "getUserById",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "$2b$10$3NSV2BPaE.hfTtAZFxjUDeSwrtlxJTCi05KWpccbqI8pg2yYeKVWi",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -868,33 +924,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "8"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "deleteRoutine",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {},
-						"url": {
-							"raw": "{{host}}:{{port}}/routines/:routineId",
-							"host": [
-								"{{host}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"routines",
-								":routineId"
-							],
-							"variable": [
-								{
-									"key": "routineId",
-									"value": "11"
+									"value": "24"
 								}
 							]
 						}
@@ -1068,7 +1098,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "19"
+									"value": "23"
 								}
 							]
 						}
@@ -1114,7 +1144,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "19"
+									"value": "23"
 								}
 							]
 						}
@@ -1148,7 +1178,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{host}}:{{port}}/users/:userId/calendars",
+							"raw": "{{host}}:{{port}}/users/:userId/calendars?sort=name&order=desc",
 							"host": [
 								"{{host}}"
 							],
@@ -1158,10 +1188,20 @@
 								":userId",
 								"calendars"
 							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "name"
+								},
+								{
+									"key": "order",
+									"value": "desc"
+								}
+							],
 							"variable": [
 								{
 									"key": "userId",
-									"value": "19"
+									"value": "23"
 								}
 							]
 						}
@@ -1195,7 +1235,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{host}}:{{port}}/users/:userId/progress",
+							"raw": "{{host}}:{{port}}/users/:userId/progress?sort=date&order=desc",
 							"host": [
 								"{{host}}"
 							],
@@ -1205,10 +1245,20 @@
 								":userId",
 								"progress"
 							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "date"
+								},
+								{
+									"key": "order",
+									"value": "desc"
+								}
+							],
 							"variable": [
 								{
 									"key": "userId",
-									"value": "19"
+									"value": "23"
 								}
 							]
 						}
@@ -1353,7 +1403,7 @@
 							"urlencoded": [
 								{
 									"key": "name",
-									"value": "Calendario 101",
+									"value": "nuevo Calendario",
 									"type": "text"
 								}
 							]
@@ -1426,7 +1476,7 @@
 							"urlencoded": [
 								{
 									"key": "routineId",
-									"value": "3",
+									"value": "3000",
 									"type": "text"
 								},
 								{
@@ -1504,6 +1554,301 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "token",
+								"value": "$2b$04$Ik2ZwgrB3rV07vgja7dpfeSMyRHgqligFwx5HGBmRv4byA79wNeI6",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "mail",
+									"value": "r39@email.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "jajaja",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/auth/login",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reset",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "session",
+								"type": "text",
+								"value": "$2b$10$rSpVmtYcO0TiVpDKZOR.B.5DwQzSB/svZBllf0MIkoLTXho6TewFi",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "password",
+									"value": "jajaja",
+									"type": "text"
+								},
+								{
+									"key": "rePassword",
+									"value": "jajaja",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/auth/reset?key=$2b$10$5h7oPnuHBHuKs2HemNMu3eU5TfWO/VYsxpIPLEfEUheAzv7CZA146",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"auth",
+								"reset"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "$2b$10$5h7oPnuHBHuKs2HemNMu3eU5TfWO/VYsxpIPLEfEUheAzv7CZA146"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "rrr01",
+									"type": "text"
+								},
+								{
+									"key": "mobile",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "weight",
+									"value": "51",
+									"type": "text"
+								},
+								{
+									"key": "height",
+									"value": "151",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "holasoy01",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "r01@email.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/auth/register",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/auth/logout",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "forgot",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "mail",
+									"value": "r39@email.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/auth/forgot",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"auth",
+								"forgot"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "confirm",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/auth/confirm?key=$2b$10$L2oG9oR8sSQINMuKejaWP.fmqj5VgkQORf9NA.rxCJzxRMq8wTekK",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"auth",
+								"confirm"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "$2b$10$L2oG9oR8sSQINMuKejaWP.fmqj5VgkQORf9NA.rxCJzxRMq8wTekK"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "f780f47b-f93e-453d-892d-2523e3f8e28f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "933b346a-e2f0-4f8b-b91e-7d864a4f9e32",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
