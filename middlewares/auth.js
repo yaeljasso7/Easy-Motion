@@ -247,7 +247,7 @@ class Auth {
     } catch (err) {
       return next(err);
     }
-    return next(ResponseMaker.confict({ msg: 'Expired token!' }));
+    return next(ResponseMaker.conflict({ msg: 'Expired token!' }));
   }
 
   /**

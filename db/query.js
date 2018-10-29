@@ -3,7 +3,6 @@ const mysql = require('mysql');
 const First = 0;
 const Zero = 0;
 const One = 1;
-const Like = 7;
 
 /**
  * @class Query

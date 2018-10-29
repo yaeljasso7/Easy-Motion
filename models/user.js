@@ -146,7 +146,7 @@ class User {
    * @static @async
    * @method getByEmail Retrieve a user based on its email
    *
-   * @param  {[type]}  email The user email
+   * @param  {String}  email The user email
    * @return {Promise} [User] - The user whom the email belongs
    */
   static async getByEmail(email) {
@@ -158,7 +158,7 @@ class User {
         },
         limit: 1,
       });
-      if (userData !== 0) {
+      if (userData.length !== 0) {
         return new User(userData[0]);
       }
     } catch (err) {
