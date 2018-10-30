@@ -32,12 +32,12 @@ class Validator {
 
   static isWeight(data) {
     const weight = Number(data);
-    return (weight > 0 && weight < 400) || Number.isNaN(weight);
+    return (weight > 0 && weight < 400) || Number.isNaN(weight) || data.length === 0;
   }
 
   static isHeight(data) {
     const height = Number(data);
-    return (height > 0 && height < 250) || Number.isNaN(height);
+    return (height > 0 && height < 250) || Number.isNaN(height) || data.length === 0;
   }
 
   static required(data) {
@@ -45,7 +45,7 @@ class Validator {
   }
 
   static email(data) {
-    return (Validator.regex.email.test(data));
+    return (Validator.regex.email.test(data)) || data.length === 0;
   }
 
   static matchPassword(req, res, next) {
