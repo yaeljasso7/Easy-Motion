@@ -77,8 +77,8 @@ Ejecutar
 
 ### User
 
-| Path                      | Verbo  | Descripcion                                           |
-|---------------------------|--------|-------------------------------------------------------|
+| Path                      | Verbo  | Descripción                                           |
+|---------------------------|:------:|-------------------------------------------------------|
 | /users                    | GET    | Muestra a todos los usuarios                          |
 | /users/{userId}           | GET    | Muestra un usuario                                    |
 | /users/{userId}/calendars | GET    | Muestra calendarios asignados al usuario              |
@@ -91,8 +91,8 @@ Ejecutar
 
 ### Auth
 
-| Path                    | Verbo | Descripcion                                   |
-|-------------------------|-------|-----------------------------------------------|
+| Path                    | Verbo | Descripción                                   |
+|-------------------------|:-----:|-----------------------------------------------|
 | /auth/logout            | GET   | Desactiva el token de sesión                  |
 | /auth/confirm           | GET   | Confirmación de correo                        |
 | /auth/login             | POST  | Login para user                               |
@@ -102,7 +102,7 @@ Ejecutar
 
 ### BodyParts
 | Path | Verbo | Descripción |
-|---|:---:|:---:|
+|---|:---:|---|
 | /bodyparts | GET | Muestra todas las partes del cuerpo |
 | /bodyparts/{id} | GET | Muestra una parte del cuerpo |
 | /bodyparts/{id} | POST | Crea una parte del cuerpo |
@@ -111,7 +111,7 @@ Ejecutar
 
 ### TrainingTypes
 | Path | Verbo | Descripción |
-|---|:---:|:---:|
+|---|:---:|---|
 | /trainingtypes | GET | Muestra todos los tipos de entrenamiento |
 | /trainingtypes/{id} | GET | Muestra un tipo de entrenamiento |
 | /trainingtypes/{id} | POST | Crea un tipo de entrenamiento |
@@ -120,7 +120,7 @@ Ejecutar
 
 ### Exercises
 | Path | Verbo | Descripción |
-|---|:---:|:---:|
+|---|:---:|---|
 | /exercises | GET | Muestra todos los ejercicios |
 | /exercises/{id} | GET | Muestra un ejercicio |
 | /exercises/{id} | POST | Crea un ejercicio |
@@ -129,7 +129,7 @@ Ejecutar
 
 ### Routines
 | Path | Verbo | Descripción |
-|---|:---:|:---:|
+|---|:---:|---|
 | /routines | GET | Muestra todas las rutinas |
 | /routines/{id} | GET | Muestra una rutina |
 | /routines/{id} | POST | Crea una rutina |
@@ -141,7 +141,7 @@ Ejecutar
 
 ### Calendars
 | Path | Verbo | Descripción |
-|---|:---:|:---:|
+|---|:---:|---|
 | /calendars | GET | Muestra todos los calendarios |
 | /calendars/{id} | GET | Muestra un calendario |
 | /calendars/{id} | POST | Crea un calendario |
@@ -152,7 +152,7 @@ Ejecutar
 
 ### Blog
 | Path | Verbo | Descripción |
-|---|:---:|:---:|
+|---|:---:|---|
 | /blog | GET | Muestra todos los blogs |
 | /blog/{id} | GET | Muestra un blog |
 | /blog/{id} | POST | Crea un blog |
@@ -161,7 +161,7 @@ Ejecutar
 
 ### BlogCategory
 | Path | Verbo | Descripción |
-|---|:---:|:---:|
+|---|:---:|---|
 | /categoryBlog | GET | Muestra todas las categorías de blogs |
 | /categoryBlog/{id} | GET | Muestra una categoría de blog |
 | /categoryBlog/{id} | POST | Crea una categoría de blog |
