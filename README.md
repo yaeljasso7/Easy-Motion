@@ -9,12 +9,12 @@ Brindar al usuario las herramientas necesarias para conseguir sus objetivos fitn
 ## Características
 
 * Blogs con diferentes temáticas fitness que brinden información relevante al usuario.
-* Calendarios con actividades diarias para diferees tipos de propósitos.
+* Calendarios con actividades diarias para diferentes tipos de propósitos.
 * El usuario podrá asignarse los calendarios que sean relevantes para él.
 * Se podrá actualizar el peso del usuario para ver sus avances.
 * Los ejercicios estarán organizados con el fin de que el usuario logre desarrollar la habilidad de manera responsable.
-* Logeo a traves de tokens
-* Envio de correos (Confirmar usuario, Restaurar contraseña)
+* Logeo a través de tokens
+* Envió de correos (Confirmar usuario, Restaurar contraseña)
 
 ## Roles
 
@@ -48,14 +48,26 @@ Importar base de datos en su gestor favorito
   Para instalar las dependencias ejecute:
   Npm install
 
-Cree sus variables de entorno
+Use el archivo .sample-env la cual maneja las variables de entorno necesarias para que la aplicación corra exitosamente
   
   En la carpeta de la repo crear un nuevo archivo .env y escribir lo siguiente
   DB_HOST= 'host de su maquina'
   DB_USER= 'usuario'
   DB_PASS= 'contraseña del usuario'
   PORT= 'Puerto - Default 3000'
-    
+  PAGE_SIZE= 'número de elementos por página'
+  DEFAULT_PAGE= 'página por defecto'
+  SECRET= 'frase cualquiera'
+  SALT= 'numero de saltos para encriptar'
+  SESSION_LIVES=2.16e7 # 12hrs
+  CONFIRM_LIVES=3.6e6  # 1hr
+  RESET_LIVES=1.8e6    # 30min
+  # Gmail mailer
+  # MAILER= 'Servidor de correo'
+  ID_CLIENTE= 'Id Mail'
+  SECRET_CLIENTE= 'Secret Mail'
+  REFRESH_TOKEN=  'Refresh Token'
+  
 Ejecutar
   
   Npm start
@@ -82,6 +94,7 @@ Ejecutar
 | Path                    | Verbo | Descripcion                                   |
 |-------------------------|-------|-----------------------------------------------|
 | /auth/logout            | GET   | Desactiva el token de sesión                  |
+| /auth/confirm           | GET   | Confirmación de correo                        |
 | /auth/login             | POST  | Login para user                               |
 | /auth/forgot            | POST  | Manda un correo de recuperación de contraseña |
 | /auth/register          | POST  | Registra a un usuario                         |
@@ -166,7 +179,7 @@ Ejecutar
   
 ## Colaboradores
 
-* Larios Perez Christopher Alejandro
+* Larios Peréz Christopher Alejandro
 * Ricardo Esteban Peralta Martínez
 * Aldair Yael Jasso Aburto
 * Braulio Jiménez Milanés
