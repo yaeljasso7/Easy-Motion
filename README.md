@@ -23,56 +23,59 @@ Brindar al usuario las herramientas necesarias para conseguir sus objetivos fitn
 * Usuario - Administrar { Su propio perfil usuario }
 
 ## Requerimientos
-```
-Instalar Git
+
+### Instalar Git
 
   Siga los pasos para instalar git de acuerdo a sus sistema operativo.
   https://git-scm.com/book/es/v1/Empezando-Instalando-Git
   
-Instalar NodeJs
+### Instalar NodeJs
   
   Siga los pasos para instalar NodeJs de acuerdo a sus sistema operativo.
   https://nodejs.org/es/download/
   
-Clonar Repo
+### Clonar Repo
   
    Situece en la carpeta de preferencia, habra la terminal y ejecute:
    git clone https://github.com/yaeljasso7/EasyMotion-API.git
  
-Importar base de datos en su gestor favorito
+### Importar base de datos en su gestor favorito
   
   https://drive.google.com/file/d/109uomqne51BVIOL7ZgvYVeo5WW3RmGU4/view
   
- Instalar dependencias
+### Instalar dependencias
   
   Para instalar las dependencias ejecute:
   Npm install
 
-Use el archivo .sample-env la cual maneja las variables de entorno necesarias para que la aplicación corra exitosamente
+### Use el archivo .sample-env la cual maneja las variables de entorno necesarias para que la aplicación corra exitosamente
   
   En la carpeta de la repo crear un nuevo archivo .env y escribir lo siguiente
-  DB_HOST= 'host de su maquina'
-  DB_USER= 'usuario'
-  DB_PASS= 'contraseña del usuario'
-  PORT= 'Puerto - Default 3000'
-  PAGE_SIZE= 'número de elementos por página'
-  DEFAULT_PAGE= 'página por defecto'
-  SECRET= 'frase cualquiera'
-  SALT= 'numero de saltos para encriptar'
-  SESSION_LIVES=2.16e7 # 12hrs
-  CONFIRM_LIVES=3.6e6  # 1hr
-  RESET_LIVES=1.8e6    # 30min
-  # Gmail mailer
-  # MAILER= 'Servidor de correo'
-  ID_CLIENTE= 'Id Mail'
-  SECRET_CLIENTE= 'Secret Mail'
-  REFRESH_TOKEN=  'Refresh Token'
   
-Ejecutar
+
+| KEY            | VALUE                                |
+|----------------|--------------------------------------|
+| DB_HOST        | 'host de su maquina'                 |
+| DB_USER        | 'usuario'                            |
+| DB_PASS        | 'contraseña'                         |
+| PORT           | 'Puerto - Default 3000'              |
+| PAGE_SIZE      | 'número de elementos por página'     |
+| DEFAULT_PAGE   | 'página por defecto'                 |
+| SECRET         | 'frase cualquiera'                   |
+| SALT           | 'numero de saltos para encriptar'    |
+| SESSION_LIVES  | 2.16e7 # 12hrs                       |
+| CONFIRM_LIVES  | 3.6e6  # 1hr                         |
+| RESET_LIVES    | 1.8e6  # 30min                       |
+| MAILER         | 'Servidor de correo'                 |
+| ID_CLIENTE     | 'Id Mail'                            |
+| SECRET_CLIENTE | 'Secret Mail'                        |
+| REFRESH_TOKEN  | 'Refresh Token'                      |
+
+### Ejecutar
   
   Npm start
   
-```
+
 ## Rutas
 
 ### User
