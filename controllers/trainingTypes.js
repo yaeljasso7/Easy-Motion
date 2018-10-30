@@ -1,5 +1,9 @@
-const { TrainingType } = require('../models');
+const { TrainingType, ResponseMaker } = require('../models');
 
+/**
+ * @class TrainingType controller
+ * - Contains the getAll, get, create, delete & update methods
+ */
 class TrainingTypesCtrl {
   constructor() {
     this.getAll = this.getAll.bind(this);
@@ -7,77 +11,164 @@ class TrainingTypesCtrl {
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
+    this.type = 'TrainingType';
   }
 
-  async getAll(req, res) {
-    const data = await TrainingType.getAll();
-    const json = {
-      data,
-      total_count: data.length,
-      per_page: data.length,
-      page: 0,
-    };
-    if (data.length === 0) {
-      res.status(204);
+  /**
+  * @async
+  * Async function to get all TrainingTypes from database using the TrainingType Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that will give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+  async getAll(req, res, next) {
+    try {
+      const trainingTypes = await TrainingType.getAll(req.query);
+      return res.send(ResponseMaker.paginated({
+        page: req.query.page,
+        type: this.type,
+        data: trainingTypes,
+      }));
+    } catch (err) {
+      return next(err);
     }
-    res.send(json);
   }
 
-  async get(req, res) {
-    const data = await TrainingType.get(req.params.trainingTypeId);
-    const json = {
-      data,
-    };
-    if (data.length === 0) {
-      res.status(204);
+  /**
+  * @async
+  * Async function to get specific TrainingType from database using the
+  * TrainingType Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that vill give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+  async get(req, res, next) {
+    const id = req.params.trainingTypeId;
+    try {
+      const trainingType = await TrainingType.get(id);
+      if (!trainingType.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
+      }
+      return res.send(ResponseMaker.ok({
+        msg: 'Found',
+        type: this.type,
+        data: trainingType,
+      }));
+    } catch (err) {
+      return next(err);
     }
-    res.send(json);
   }
 
+  /**
+  * @async
+  * Async function to create specific TrainingType into database using the
+  * TrainingType Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that vill give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async create(req, res, next) {
     try {
-      const data = await TrainingType.create(req.body);
-      res.status(201).send(data);
+      const trainingType = await TrainingType.create(req.body);
+      if (trainingType.id) {
+        return res.status(201)
+          .send(ResponseMaker.created({
+            type: this.type,
+            data: trainingType,
+          }));
+      }
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: trainingType,
+      }));
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
+  /**
+  * @async
+  * Async function to update specific TrainingType from database using the
+  * TrainingType Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that vill give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async update(req, res, next) {
+    const id = req.params.trainingTypeId;
+    try {
+      const trainingType = await TrainingType.get(id);
 
-   const data = await TrainingType.get(req.params.trainingTypeId);
+      if (!trainingType.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
+      }
 
-   if (data.length === 0) {
-     res.status(404).send(data); // Not Found
-   }
+      const updated = await trainingType.update(req.body);
 
-   try{
-     const updated = await data.update(req.body);
-     if (updated) {
-       res.status(200); // OK
-     } else {
-       res.status(409); // Conflict
-     }
-   }catch(e){
-     res.status(409);
-     next(e);
-   }
+      if (updated) {
+        return res.send(ResponseMaker.ok({
+          msg: 'Updated',
+          type: this.type,
+          data: { ...trainingType, ...req.body },
+        }));
+      }
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: req.body,
+      }));
+    } catch (err) {
+      return next(err);
+    }
+  }
 
-   res.send( Object.assign(data, req.body) );
- }
+  /**
+  * @async
+  * Async function to delete specific TrainingType from database using the
+  * TrainingType Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that vill give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+  async delete(req, res, next) {
+    const id = req.params.trainingTypeId;
+    try {
+      const trainingType = await TrainingType.get(id);
 
- async delete(req, res, next){
-   const deleted = await TrainingType.delete(req.params.trainingTypeId);
+      if (!trainingType.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
+      }
 
-     if (deleted) {
-       res.status(200); // OK
-     } else {
-       res.status(404); // Not Found
-     }
+      const deleted = await trainingType.delete();
 
-     res.send();
- }
-
+      if (deleted) {
+        return res.send(ResponseMaker.ok({
+          msg: 'Deleted',
+          type: this.type,
+          data: { id },
+        }));
+      }
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: req.body,
+      }));
+    } catch (err) {
+      return next(err);
+    }
+  }
 }
 
 module.exports = new TrainingTypesCtrl();

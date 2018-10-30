@@ -1,181 +1,363 @@
 const mysql = require('mysql');
-//const User = require('../models/user');
+const Qry = require('./query');
 
+/**
+ * @class DB
+ * Database abstraction
+ */
 class DB {
-
-  constructor(){
-    this.keywords = ['and', 'or'];
-    this.con = mysql.createConnection({
+  /**
+   * Creates an mysql connection
+   * @constructor
+   */
+  constructor() {
+    this.pageSize = Number(process.env.PAGE_SIZE);
+    this.conn = mysql.createConnection({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       password: process.env.DB_PASS,
-      database: process.env.DB_NAME
+      database: process.env.DB_NAME,
     });
 
-//    this.con.connect();
-    this.con.connect((err) => {
-      if(err){
+    this.conn.connect((err) => {
+      if (err) {
         console.log(err);
-      }else{
+      } else {
         console.log('Db Conect!');
       }
     });
   }
 
-  where(qryCond) {
-    const Default = '1';
-    let sqry;
-    const keys = Object.keys(qryCond);
-    if (keys.length === 0) return Default; // si no hay keys regresa valor por defecto
-    if (keys.length > 1) { // si n_keys > 1 utiliza AND como valor por defecto
-      const tmp = {};
-      tmp[this.keywords[0]] = qryCond;
-      return this.where(tmp);
-    }
-    const key = keys[0]; // sólo 1 key? procesa cada hijo
-    const conds = [];
-    if (this.keywords.includes(key.toLowerCase())) {
-      Object.keys(qryCond[key]).forEach((cond) => { // itera sobre cada hijo
-        const tmp = {};
-        tmp[cond] = qryCond[key][cond];
-        conds.push(this.where(tmp));
-      });
-      sqry = conds.length > 0 ? conds.join(` ${key.toUpperCase()} `) : Default;
-    } else {
-      sqry = `${this.con.escapeId(key)} = ${this.con.escape(qryCond[key])}`;
-    }
-    return sqry;
+  /**
+   * @method pageLimit - Format page as sql limit
+   *
+   * @param  {Number} page - The page number
+   * @return {Number[]} - The page formated as sql limit
+   */
+  pageLimit(page) {
+    return [(page - 1) * this.pageSize, this.pageSize];
   }
 
-  select(table, qryCond = {}) {
+  /**
+   * @method select - Retrieve rows selected from one or more tables.
+   *
+   * @param  {(String|String[])} columns - The column or columns that you want
+   *         to retrieve.
+   *         ----------
+   *         Usage:
+   *           columns: [ 'col_name1', ... , 'col_nameN' ]
+   *           columns: 'col_name'
+   *
+   *         If no columns specified, all columns are retrieved.
+   *
+   * @param  {(String|String[])} from - The table or tables from which to
+   *         retrieve rows.
+   *         ----------
+   *         Usage:
+   *           from: [ 'tbl_name1', ... , 'tbl_nameN' ]
+   *           from: 'tbl_name'
+   *
+   * @param  {Object|Object[]} join - The tables and conditions to join with
+   *         ----------
+   *         Usage:
+   *           join: {
+   *             table: 'tbl_name',           <- the table to join
+   *             on: {
+   *               'tbl1_field': 'tbl_field'  <- the condition to join
+   *             }
+   *           }
+   *
+   *           join: [
+   *             {
+   *               table: 'tbl_name1',
+   *               on: {
+   *                 'tbl_field': 'tbl1_field'
+   *               }
+   *             },
+   *             {
+   *               table: 'tbl_name2',
+   *               on: {
+   *                 'tbl_field': 'tbl2_field'
+   *               }
+   *             }
+   *           ]
+   *
+   * @param  {Object} where - The condition or conditions that rows must to
+   *         satisfy to be selected.
+   *         ----------
+   *         Usage:
+   *           where: {
+   *             <conditional>
+   *             ...
+   *             <conditional>
+   *           }
+   *
+   *           <conditional>
+   *           logic: { <- [Optional] Logic Operator
+   *             <expression>
+   *             ...
+   *             <expression>
+   *             }
+   *           }
+   *
+   *          <expression>
+   *          operator: { <- [Optional] Comparison Operator
+   *            col_name: value
+   *          }
+   *
+   *         Available logic operators
+   *           and, or
+   *         Available comparison operators
+   *           =, <>, <, <=, >, >=, like, in
+   *
+   *         If no logical operator specified, uses AND by default
+   *         If no comparison operator specified, uses = by default
+   *
+   *         If no condition specified, all records are selected.
+   *
+   * @param  {(String|String[])} sorter - Sort the records in a result set.
+   *         ----------
+   *         Usage:
+   *           sorter: ['key_part1', 'key_part2']
+   *           sorter: 'key_part'
+   *
+   *         If no sorter specified, the results aren't sorted.
+   *
+   * @param  {Boolean} desc - Sorts the result set in descending order.
+   *         ----------
+   *         Usage:
+   *           desc: true
+   *           desc: false  <-  Optional
+   *
+   * @param  {(Number|Number[])} limit - Limit the Number of records returned.
+   *         ----------
+   *         Usage:
+   *           limit: [start_from, row_count]
+   *           limit: row_count
+   *
+   * @return {Promise} - Promise object represents the query results.
+   */
+  select({
+    columns, from, where, join, sorter, desc, limit,
+  }) {
     return new Promise((resolve, reject) => {
-      this.con.query(`SELECT * FROM ?? WHERE ${this.where(qryCond)}`, [table], (error, results) => {
-        if (error) return reject(this.processError(error));
+      this.conn.query(Qry.select({
+        columns, from, where, join, sorter, desc, limit,
+      }), (error, results) => {
+        if (error) {
+          return reject(this.processError(error));
+        }
         return resolve(results);
       });
     });
   }
 
-  // advanced delete
-  adv_delete(table, qryCond = {}) { // sin condición borra todo
+  /**
+   * @method advDelete - Remove rows from a table
+   *
+   * @param  {(String|String[])} from - The table or tables from which to
+   *         delete rows.
+   * @param  {Object} where - Identify which rows to delete, with no WHERE,
+   *         all rows are deleted.
+   * @param  {(String|String[])} sorter - Delete rows in the specified order.
+   * @param  {boolean} desc - Delete the rows in descending order.
+   * @param  {(Number|Number[])} limit - Limit the Number of rows deleted.
+   * @return {Promise} - Promise object represents the query results.
+   */
+  advDelete({
+    from, where, sorter, desc, limit,
+  }) {
     return new Promise((resolve, reject) => {
-      this.con.query(`DELETE FROM ?? WHERE ${this.where(qryCond)}`, [table], (error, results) => {
-        if (error) return reject(this.processError(error));
+      this.conn.query(Qry.delete({
+        from, where, sorter, desc, limit,
+      }), (error, results) => {
+        if (error) {
+          return reject(this.processError(error));
+        }
         return resolve(results);
       });
     });
   }
 
-  adv_update(table, obj, qryCond = {}) {
+  /**
+   * @method advUpdate - Modifies rows in a table
+   *
+   * @param  {(String|String[])} table - The table or tables from which to
+   *         modify rows.
+   * @param  {Object} assign - Indicates which columns to modify and the values
+   *         they should be given.
+   * @param  {Object} where - Identify which rows to modify, with no WHERE,
+   *         all rows are modified.
+   * @param  {(String|String[])} sorter - Modify rows in the specified order.
+   * @param  {boolean} desc - Modify rows in descending order.
+   * @param  {(Number|Number[])} limit - Limit the Number of rows modified.
+   * @return {Promise} - Promise object represents the query results.
+   */
+  advUpdate({
+    table, assign, where, sorter, desc, limit,
+  }) {
     return new Promise((resolve, reject) => {
-      this.con.query(`UPDATE ?? SET ? WHERE ${this.where(qryCond)}`, [table, obj], (error, results) => {
-        if (error) return reject(this.processError(error));
+      this.conn.query(Qry.update({
+        table, assign, where, sorter, desc, limit,
+      }), (error, results) => {
+        if (error) {
+          return reject(this.processError(error));
+        }
         return resolve(results);
       });
     });
   }
 
+  /**
+   * @method getAll - Retrieve all elements from a table.
+   *
+   * @param  {String} table The table from which to retrieve the records.
+   * @return {Promise} - Promise object represents the query results.
+   */
   getAll(table) {
     return new Promise((resolve, reject) => {
-      this.con.query('SELECT * FROM ??', [table], (error, results) => {
-        if (error) return reject(this.processError(error));
+      this.conn.query(Qry.select({ from: table }), (error, results) => {
+        if (error) {
+          return reject(this.processError(error));
+        }
         return resolve(results);
       });
     });
   }
 
+  /**
+   * @method get - Retrieve elements from a table, based on their id.
+   *
+   * @param  {String} table The table from which to retrieve records.
+   * @param  {Number} id - Object id to select.
+   * @return {Promise} - Promise object represents the query results.
+   */
   get(table, id) {
     return new Promise((resolve, reject) => {
-      this.con.query('SELECT * FROM ?? WHERE id = ?', [table, id], (error, results) => {
-        if (error) return reject(this.processError(error));
-        console.log("db-get",results);
+      this.conn.query(Qry.select({
+        from: table,
+        where: { id },
+      }), (error, results) => {
+        if (error) {
+          return reject(this.processError(error));
+        }
         return resolve(results);
       });
     });
   }
 
+  /**
+   * @method delete - Delete elements from a table, based on their id.
+   *
+   * @param  {String} table The table from which to delete rows.
+   * @param  {Number} id - Object id to delete.
+   * @return {Promise} - Promise object represents the query results.
+   */
   delete(table, id) {
     return new Promise((resolve, reject) => {
-      this.con.query('DELETE FROM ?? WHERE id = ?', [table, id], (error, results) => {
+      this.conn.query(Qry.delete({
+        from: table,
+        where: { id },
+      }), (error, results) => {
         if (error) {
-            //error de la base de datos como mail repetido...
-          let err = this.processError(error);
-          return reject(err);
+          return reject(this.processError(error));
         }
-
-        //console.log("db-delete",results);
         return resolve(results);
       });
     });
   }
 
+  /**
+   * @method update - Modifies elements in a table, based on their id.
+   *
+   * @param  {String} table The table from which to modify rows.
+   * @param  {Object} obj - Indicates which columns to modify and the values
+   *         they should be given.
+   * @param  {Number} id - Object id to modify.
+   * @return {Promise} - Promise object represents the query results.
+   */
   update(table, obj, id) {
     return new Promise((resolve, reject) => {
-      this.con.query('UPDATE ?? SET ? WHERE id = ?', [table, obj, id], (error, results) => {
+      this.conn.query(Qry.update({
+        table,
+        assign: obj,
+        where: { id },
+      }), (error, results) => {
         if (error) {
-          console.log("el famoso:",error);
-          let err = this.processError(error);
-          return reject(err);
-        }
-        //console.log("rows--update", results);
-        resolve(results);
-      //  console.log(results);
-      });
-    });
-  }
-
-  insert(table, resource) {
-    //console.log("Resourse Db Insert: ",resource); //{ name: juan, mobile: 21421, }
-    return new Promise((resolve, reject) => {
-      this.con.query('INSERT INTO ?? SET ?', [table, resource], (error, results) => {
-        if (error) {
-            //error de la base de datos como mail repetido...
-        //console.log("Insert DB Error: ", error);
-          let err = this.processError(error);
-          return reject(err);
+          return reject(this.processError(error));
         }
         return resolve(results);
       });
     });
   }
 
+  /**
+   * @method insert - Inserts new rows into an existing table.
+   *
+   * @param  {String} into - Table to which insert the Object.
+   * @param  {Object} resource - The object to insert into the table.
+   * @return {Promise} - Promise object represents the query results.
+   */
+  insert({ into, resource }) {
+    return new Promise((resolve, reject) => {
+      this.conn.query(Qry.insert({ into, resource }), (error, results) => {
+        if (error) {
+          return reject(this.processError(error));
+        }
+        return resolve(results);
+      });
+    });
+  }
+
+  /**
+   * @method processError - Process the error message from database,
+   *         into a readable error message.
+   *
+   * @param  {Object} err - The database error message
+   * @return {Object} - The error message processed
+   */
   processError(err) {
-    //console.log("soy error");
     const error = {};
-    console.log("soy error", err);
+    let data;
     switch (err.code) {
       case 'ER_DUP_ENTRY':
-        let data = this.getDataFromErrorMsg(err.sqlMessage);
-        error['duplicated'] = {
-          message: `The ${data.field} ${data.data} already exists on the system`,
+        data = this.getDataFromErrorMsg(err.sqlMessage);
+        error.duplicated = {
+          message: `${data.field} with value ${data.data} already exists!`,
           field: data.field,
           sql: err.sql,
         };
         break;
-        case 'ER_NO_REFERENCED_ROW_2':
-          error['La llave foranea no existe'] = {
-            message: `The ${err.sqlMessage} Existeee`,
-            sql: err.sql,
-          };
+      case 'ER_NO_REFERENCED_ROW_2':
+        data = this.getDataFromErrorMsg(err.sqlMessage);
+        error.noReference = {
+          message: `${data.field} with value ${data.data} doesn't exist!`,
+          sql: err.sql,
+        };
         break;
-
       default:
-
+        error[err.code] = {
+          message: err.sqlMessage,
+          sql: err.sql,
+        };
     }
-
     return error;
   }
 
+  /**
+   * @method getDataFromErrorMsg - Convert String error message into an object.
+   *
+   * @param  {String} message - The message error from database.
+   * @return {Object} - The error message as an object.
+   */
   getDataFromErrorMsg(message) {
-    let data = unescape(message).match(/'([^']+)'/g);
+    this.void = '';
+    const data = unescape(message).match(/'([^']+)'/g);
     return {
-      field: data[1].slice(1,-1),
-      data: data[0].slice(1,-1),
-    }
+      field: data[1].slice(1, -1),
+      data: data[0].slice(1, -1),
+    };
   }
-
-
-
 }
 
-module.exports = new DB(); //singleton
+module.exports = new DB();

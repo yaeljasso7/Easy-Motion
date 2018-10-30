@@ -1,32 +1,43 @@
+const { ResponseMaker } = require('../models');
+
 class Validator {
   static get regex() {
     return {
       word: /[a-zA-ZñÑ ]{3,}/,
       number: /^([0-9])*$/,
-      email: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      email: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      date: /^\d{4}-\d{2}-{2}$/,
     };
   }
 
-  static word(data) {
-    return (Validator.regex.word.test(data));
+  static order(data) {
+    return !data || ['asc', 'desc'].includes(data.toLowerCase());
   }
 
-  static number(data) { //valida que sea solo numeros
+  static word(data) {
+    return !data || (Validator.regex.word.test(data));
+  }
+
+  static optionalDate(data) {
+    return (!data.length || Validator.regex.date.test(data));
+  }
+
+  static number(data) { // valida que sea solo numeros
     return (Validator.regex.number.test(data));
   }
 
-  static iscellphone(data){
-    return data.length == 10 || data.length == 0; // ==0 por si el usuario no envia el mobile
+  static iscellphone(data) {
+    return data.length === 10 || data.length === 0;
   }
 
-  static isWeight(data){
-    data = parseInt(data);
-    return (data > 0 && data < 400) || isNaN(data); //isNaN por si no envia el usuario el Weight
+  static isWeight(data) {
+    const weight = Number(data);
+    return (weight > 0 && weight < 400) || Number.isNaN(weight);
   }
 
-  static isHeight(data){
-    data = parseInt(data);
-    return (data > 0 && data < 250) || isNaN(data); //isNaN por si no envia el usuario el Height
+  static isHeight(data) {
+    const height = Number(data);
+    return (height > 0 && height < 250) || Number.isNaN(height);
   }
 
   static required(data) {
@@ -37,16 +48,20 @@ class Validator {
     return (Validator.regex.email.test(data));
   }
 
-  static validate(req, res, next, rules) {
-    const error = {
-      message: 'Validation Error',
-      status: 409,
-      details: {},
-    };
+  static matchPassword(req, res, next) {
+    if (req.body.password === req.body.rePassword) {
+      return next();
+    }
+    return next(ResponseMaker.conflict({ msg: 'Passwords does not match!' }));
+  }
 
-    for (let part in rules) { //part = body
-      for (let field in rules[part]) { //field = name,mail,mobile
-        let validators = rules[part][field].split(','); //rules[part][field] = 'email,required'
+  static validate(req, res, next, rules) {
+    const error = ResponseMaker.conflict({ msg: 'Validation Error!' });
+    error.details = {};
+
+    Object.keys(rules).forEach((part) => { // part = body
+      Object.keys(rules[part]).forEach((field) => { // field = name,mail,mobile
+        const validators = rules[part][field].split(','); // rules[part][field] = 'email,required'
         validators.forEach((f) => {
           if (!Validator[f](req[part][field] || '')) {
             if (Array.isArray(error.details[field])) {
@@ -56,9 +71,9 @@ class Validator {
             }
           }
         });
-      }
-    }
-    Object.keys(error.details).length ? next(error) : next(); //si hay erores next(error) si no next()
+      });
+    });
+    return Object.keys(error.details).length ? next(error) : next();
   }
 }
 

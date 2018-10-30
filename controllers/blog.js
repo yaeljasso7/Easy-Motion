@@ -1,93 +1,167 @@
-//controladores blog
-const { Blog } = require('../models');
+// blog controller
+const { Blog, ResponseMaker } = require('../models');
 
-class BlogCtrl{
-  constructor(){
+/**
+ *
+ * @class Class of controller Blog
+ * - Contains the getAll, get, create, delete & update methods
+ */
+class BlogCtrl {
+  constructor() {
     this.getAll = this.getAll.bind(this);
     this.get = this.get.bind(this);
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
+    this.type = 'Blog';
   }
 
-   async getAll(req, res){
-
-     let data = await Blog.getBlogs();
-
-     const json = {
-       data: data,
-       total_count: data.length,
-       per_page: data.length,
-       page: 0,
-     };
-
-     // In case Blog was not found
-     if (data.length === 0) {
-       res.status(204);
-     }
-
-     res.send(json);
-  }
-
-  async get(req, res){
-      let data = await Blog.getBlog(req.params.idBlog);
-      console.log("ctl-get", data);
-      if (data.length === 0) {
-        res.status(204);
-      }
-
-      res.send(data);
-  }
-
-  async create(req, res, next){
+  /**
+  * @async
+  * Async function to get all blogs from database using the Blog Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that will give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+  async getAll(req, res, next) {
     try {
-      let data = await Blog.createBlog(req.body); //req.body {}
-      console.log("ctrl-create",data);
-      res.status(201).send(data);
-    } catch (e) {
-      //db error
-      console.log("eee:" ,e);
-      res.status (409).send("Error al insertar: " + e.duplicated.message);
-      next(e);
+      const blogs = await Blog.getAll(req.query);
+      return res.send(ResponseMaker.paginated({
+        page: req.query.page,
+        type: this.type,
+        data: blogs,
+      }));
+    } catch (err) {
+      return next(err);
     }
   }
 
-  async delete(req, res, next){
-    const deleted = await Blog.deleteBlog(req.params.idBlog);
-
-      if (deleted) {
-        res.status(200); // OK
-      } else {
-        res.status(404); // Not Found
+  /**
+  * @async
+  * Async function to get a specific blog from database using the Blog Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that will give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+  async get(req, res, next) {
+    const id = req.params.blogId;
+    try {
+      const blog = await Blog.get(id);
+      if (!blog.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
       }
-
-      res.send();
+      return res.send(ResponseMaker.ok({
+        msg: 'Found',
+        type: this.type,
+        data: blog,
+      }));
+    } catch (err) {
+      return next(err);
+    }
   }
 
+  /**
+  * @async
+  * Async function to create a blog finto database using the Blog Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that will give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+  async create(req, res, next) {
+    try {
+      const blog = await Blog.create(req.body);
+      if (blog.id) {
+        return res.status(201)
+          .send(ResponseMaker.created({
+            type: this.type,
+            data: blog,
+          }));
+      }
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: blog,
+      }));
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  /**
+  * @async
+  * Async function to delete a specific blog from database using the Blog Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that will give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+  async delete(req, res, next) {
+    const id = req.params.blogId;
+    try {
+      const blog = await Blog.get(id);
+
+      if (!blog.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
+      }
+
+      const deleted = await blog.delete();
+      if (deleted) {
+        return res.send(ResponseMaker.ok({
+          msg: 'Deleted',
+          type: this.type,
+          data: { id },
+        }));
+      }
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: req.body,
+      }));
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  /**
+  * @async
+  * Async function to iptate a specific blog from database using the Blog Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that will give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async update(req, res, next) {
-
-   const data = await Blog.getBlog(req.params.idBlog);
-
-   if (data.length === 0) {
-     res.status(404).send(data); // Not Found
-   }
-
-   try{
-     const updated = await data.updateBlog(req.body);
-     if (updated) {
-       res.status(200); // OK
-     } else {
-       res.status(409); // Conflict
-     }
-   }catch(e){
-     res.status(409);
-     next(e);
-   }
-
-   res.send( Object.assign(data, req.body) );
- }
-
-
-
+    const id = req.params.blogId;
+    try {
+      const blog = await Blog.get(id);
+      if (!blog.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
+      }
+      const updated = await blog.update(req.body);
+      if (updated) {
+        return res.send(ResponseMaker.ok({
+          msg: 'Updated',
+          type: this.type,
+          data: { ...blog, ...req.body },
+        }));
+      }
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: req.body,
+      }));
+    } catch (err) {
+      return next(err);
+    }
+  }
 }
 module.exports = new BlogCtrl();

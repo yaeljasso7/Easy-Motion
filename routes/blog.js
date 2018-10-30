@@ -1,51 +1,77 @@
 const router = require('express').Router();
 const { blogCtrl } = require('../controllers');
-const middlewares = require('../middlewares');
+const mw = require('../middlewares');
 
-//rutas
-//request  /info relativa del cliente
-//response /enviar cliente
-//regresa usuarios todos
-router.get('/', blogCtrl.getAll);
-
-router.get('/:idBlog', (req,res,next) => {
-  middlewares.validator.validate(req, res, next, {
-  params: {
-    idBlog: 'number',
-  },
-  });
-},blogCtrl.get);
-
-router.post('/', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
-  body: {
-      autor: 'word,required',
-      data: 'required',
+router.get('/', [(req, res, next) => {
+  mw.validator.validate(req, res, next, {
+    query: {
+      page: 'number',
+      author: 'word',
+      title: 'word',
+      category: 'word',
+      sort: 'word',
+      order: 'order',
     },
   });
-},blogCtrl.create);
+}, (req, res, next) => {
+  mw.filter.validate(req, res, next, 'Blog');
+}], blogCtrl.getAll);
 
-router.put('/:idBlog',  (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
-  body: {
-      autor: 'required',
-      data: 'required',
+router.get('/:blogId', (req, res, next) => {
+  mw.validator.validate(req, res, next, {
+    params: {
+      blogId: 'number',
     },
-  params: {
-        idBlog: 'number',
-      },
   });
-},blogCtrl.update);
+}, blogCtrl.get);
 
-router.delete('/:idBlog', (req,res,next) => {
-  middlewares.validator.validate(req, res, next, {
-  params: {
-    idBlog: 'number',
-  },
-});
-},blogCtrl.delete);
+router.use('/', [mw.auth.haveSession,
+  (req, res, next) => {
+    mw.auth.havePermission(req, res, next, 'manageBlogs');
+  }]);
 
+router.post('/', [(req, res, next) => {
+  mw.validator.validate(req, res, next, {
+    body: {
+      author: 'word,required',
+      data: 'required',
+      category: 'number,required',
+      title: 'word,required',
+    },
+  });
+}, (req, res, next) => {
+  mw.reference.validate(req, res, next, {
+    body: {
+      category: 'categoryBlog',
+    },
+  });
+}], blogCtrl.create);
 
+router.put('/:blogId', [(req, res, next) => {
+  mw.validator.validate(req, res, next, {
+    body: {
+      author: 'word',
+      category: 'number',
+      title: 'word',
+    },
+    params: {
+      blogId: 'number',
+    },
+  });
+}, (req, res, next) => {
+  mw.reference.validate(req, res, next, {
+    body: {
+      category: 'categoryBlog',
+    },
+  });
+}], blogCtrl.update);
 
+router.delete('/:blogId', (req, res, next) => {
+  mw.validator.validate(req, res, next, {
+    params: {
+      blogId: 'number',
+    },
+  });
+}, blogCtrl.delete);
 
 module.exports = router;

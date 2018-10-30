@@ -1,43 +1,58 @@
 const router = require('express').Router();
 const { trainingTypesCtrl } = require('../controllers');
-const middlewares = require('../middlewares');
+const { auth, validator, filter } = require('../middlewares');
 
-router.get('/', trainingTypesCtrl.getAll);
+router.get('/', (req, res, next) => {
+  validator.validate(req, res, next, {
+    query: {
+      page: 'number',
+      name: 'word',
+      sort: 'word',
+      order: 'order',
+    },
+  });
+}, (req, res, next) => {
+  filter.validate(req, res, next, 'TrainingType');
+}, trainingTypesCtrl.getAll);
 
 router.get('/:trainingTypeId', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+  validator.validate(req, res, next, {
     params: {
       trainingTypeId: 'number',
     },
   });
-
 }, trainingTypesCtrl.get);
 
-router.post('/', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+router.use('/', auth.haveSession,
+  (req, res, next) => {
+    auth.havePermission(req, res, next, 'manageTrainingTypes');
+  });
+
+router.post('/', [(req, res, next) => {
+  validator.validate(req, res, next, {
     body: {
       name: 'word,required',
     },
   });
-}, trainingTypesCtrl.create);
+}], trainingTypesCtrl.create);
 
-router.put('/:trainingTypeId', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+router.put('/:trainingTypeId', [(req, res, next) => {
+  validator.validate(req, res, next, {
     params: {
       trainingTypeId: 'number',
     },
     body: {
-      name: 'word,required',
+      name: 'word',
     },
   });
-}, trainingTypesCtrl.update);
+}], trainingTypesCtrl.update);
 
-router.delete('/:trainingTypeId', (req, res, next) => {
-  middlewares.validator.validate(req, res, next, {
+router.delete('/:trainingTypeId', [(req, res, next) => {
+  validator.validate(req, res, next, {
     params: {
       trainingTypeId: 'number',
     },
   });
-}, trainingTypesCtrl.delete);
+}], trainingTypesCtrl.delete);
 
 module.exports = router;

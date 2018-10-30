@@ -1,5 +1,10 @@
-const { Exercise } = require('../models');
+const { Exercise, ResponseMaker } = require('../models');
 
+/**
+ *
+ * @class Exercise Controller
+ * - Contains the getAll, get, create, delete & update methods
+ */
 class ExercisesCtrl {
   constructor() {
     this.getAll = this.getAll.bind(this);
@@ -7,71 +12,158 @@ class ExercisesCtrl {
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
+    this.type = 'Exercise';
   }
 
-  async getAll(req, res) {
-    const data = await Exercise.getAll();
-    const json = {
-      data,
-      total_count: data.length,
-      per_page: data.length,
-      page: 0,
-    };
-    if (data.length === 0) {
-      res.status(204);
+  /**
+  * @async
+  * Async function to get all exercises from database using the Exercise Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that will give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+  async getAll(req, res, next) {
+    try {
+      const exercises = await Exercise.getAll(req.query);
+      return res.send(ResponseMaker.paginated({
+        page: req.query.page,
+        type: this.type,
+        data: exercises,
+      }));
+    } catch (err) {
+      return next(err);
     }
-    res.send(json);
   }
 
-  async get(req, res) {
-    let data = await Exercise.get(req.params.exerciseId);
-    if (data.length === 0) {
-      res.status(204);
+  /**
+  * @async
+  * Async function to get a specific exercise from database using the Exercise Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that will give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+
+  async get(req, res, next) {
+    const id = req.params.exerciseId;
+    try {
+      const exercise = await Exercise.get(id);
+      if (!exercise.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
+      }
+      return res.send(ResponseMaker.ok({
+        msg: 'Found',
+        type: this.type,
+        data: exercise,
+      }));
+    } catch (err) {
+      return next(err);
     }
-    res.send(data);
   }
+
+  /**
+  * @async
+  * Async function to create a exercise into database using the Exercise Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that vill give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
 
   async create(req, res, next) {
     try {
-      const data = await Exercise.create(req.body);
-      res.status(201).send(data);
+      const exercise = await Exercise.create(req.body);
+      if (!exercise.id) {
+        return res.status(201)
+          .send(ResponseMaker.created({
+            type: this.type,
+            data: exercise,
+          }));
+      }
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: exercise,
+      }));
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
+  /**
+  * @async
+  * Async function to update specific exercise from database using the Exercise Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that vill give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
   async update(req, res, next) {
     const id = req.params.exerciseId;
-    const data = await Exercise.get(id);
-    if (data.length === 0) {
-      res.status(404).send(data);
-    }
+    try {
+      const exercise = await Exercise.get(id);
 
-    try{
-      const updated = await data.update(req.body);
-      if (updated) {
-        res.status(200); // OK
-      } else {
-        res.status(409); // Conflict
+      if (!exercise.id) {
+        return next(ResponseMaker.notFound({
+          type: this.type,
+          data: { id },
+        }));
       }
-    }catch(e){
-      res.status(409);
-      next(e);
-    }
 
-    res.send( Object.assign(data, req.body) );
+      const updated = await exercise.update(req.body);
+
+      if (updated) {
+        return res.send(ResponseMaker.ok({
+          msg: 'Updated',
+          type: this.type,
+          data: { ...exercise, ...req.body },
+        }));
+      }
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: req.body,
+      }));
+    } catch (err) {
+      return next(err);
+    }
   }
 
-  async delete(req, res, next){
-    const deleted = await Exercise.delete(req.params.exerciseId);
+  /**
+  * @async
+  * Async function to delete a specific exercise from database using the Exercise Model
+  * @param  {Request Object}     req   Request to the function, includes information in params
+  * @param  {Response Object}    res   Response that vill give this function
+  * @param  {Next Object}        next  In case of get error
+  * @return {Promise}                  Promise to return the data results
+  */
+  async delete(req, res, next) {
+    const id = await req.params.exerciseId;
+    try {
+      const exercise = await Exercise.get(id);
 
-      if (deleted) {
-        res.status(200); // OK
-      } else {
-        res.status(404); // Not Found
+      if (!exercise.id) {
+        return next(ResponseMaker.notFound(this.type, { id }));
       }
 
-      res.send();
+      const deleted = await exercise.delete();
+
+      if (deleted) {
+        return res.send(ResponseMaker.ok({
+          msg: 'Deleted',
+          type: this.type,
+          data: { id },
+        }));
+      }
+      return next(ResponseMaker.conflict({
+        type: this.type,
+        data: req.body,
+      }));
+    } catch (err) {
+      return next(err);
+    }
   }
 }
 
