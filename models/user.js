@@ -328,13 +328,18 @@ class User {
    * @param  {Object}  keyVals - Represents the new values for this user.
    * @return {Promise} [Boolean] - Promise Object represents the operation success
    */
-  async update({ name, mobile, email }) {
+  async update({
+    name, mobile, email, password,
+  }) {
     const keyVals = generic.removeEmptyValues({ name, mobile, email });
+    let updatedRows;
     if (keyVals.email) {
       keyVals.confirmed = false;
     }
-    let updatedRows;
     try {
+      if (keyVals.password) {
+        keyVals.password = await User.hashPassword(password);
+      }
       const results = await db.advUpdate({
         table: User.table,
         assign: keyVals,
