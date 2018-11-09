@@ -27,10 +27,10 @@ router.post('/', [(req, res, next) => {
   mw.validator.validate(req, res, next, {
     body: {
       name: 'word,required',
-      mail: 'email,required',
+      email: 'email,required',
       mobile: 'iscellphone',
-      height: 'isHeight,required',
-      weight: 'isWeight,required',
+      height: 'number,isHeight,required',
+      weight: 'number,isWeight,required',
     },
   });
 }], usersCtrl.create);
@@ -45,38 +45,32 @@ router.delete('/:userId', (req, res, next) => {
   });
 }, usersCtrl.delete);
 
-router.use('/:userId', (req, res, next) => {
-  mw.auth.havePermission(req, res, next, 'manageMyUser');
-});
-
-router.get('/:userId', [(req, res, next) => {
+router.use('/:userId', [(req, res, next) => {
   mw.validator.validate(req, res, next, {
     params: {
       userId: 'number',
     },
   });
-}], usersCtrl.get);
+}, (req, res, next) => {
+  mw.auth.havePermission(req, res, next, 'manageMyUser');
+}]);
+
+router.get('/:userId', usersCtrl.get);
 
 router.put('/:userId', (req, res, next) => {
   mw.validator.validate(req, res, next, {
-    params: {
-      userId: 'number',
-    },
     body: {
+      name: 'word',
       mobile: 'iscellphone',
-      height: 'isHeight',
-      weight: 'isWeight',
+      email: 'email',
     },
   });
 }, usersCtrl.update);
 
 router.post('/:userId/calendars', [(req, res, next) => {
   mw.validator.validate(req, res, next, {
-    params: {
-      userId: 'number',
-    },
     body: {
-      calendarId: 'number',
+      calendarId: 'number,required',
     },
   });
 }, (req, res, next) => {
@@ -89,11 +83,8 @@ router.post('/:userId/calendars', [(req, res, next) => {
 
 router.delete('/:userId/calendars', [(req, res, next) => {
   mw.validator.validate(req, res, next, {
-    params: {
-      userId: 'number',
-    },
     body: {
-      calendarId: 'number',
+      calendarId: 'number,required',
     },
   });
 }, (req, res, next) => {
@@ -106,9 +97,6 @@ router.delete('/:userId/calendars', [(req, res, next) => {
 
 router.get('/:userId/calendars', [(req, res, next) => {
   mw.validator.validate(req, res, next, {
-    params: {
-      userId: 'number',
-    },
     query: {
       page: 'number',
       name: 'word',
@@ -122,15 +110,11 @@ router.get('/:userId/calendars', [(req, res, next) => {
 
 router.get('/:userId/progress', [(req, res, next) => {
   mw.validator.validate(req, res, next, {
-    params: {
-      userId: 'number',
-    },
     query: {
       page: 'number',
-      height: 'number',
-      weight: 'number',
-      date: 'optionalDate',
+      date: 'date',
       sort: 'word',
+      order: 'order',
     },
   });
 }, (req, res, next) => {
@@ -139,12 +123,9 @@ router.get('/:userId/progress', [(req, res, next) => {
 
 router.post('/:userId/progress', (req, res, next) => {
   mw.validator.validate(req, res, next, {
-    params: {
-      userId: 'number',
-    },
     body: {
-      weight: 'number,isWeight',
-      height: 'number,isHeight',
+      weight: 'number,isWeight,required',
+      height: 'number,isHeight,required',
     },
   });
 }, usersCtrl.addProgress);
