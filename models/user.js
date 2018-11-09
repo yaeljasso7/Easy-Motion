@@ -77,6 +77,21 @@ class User {
   }
 
   /**
+   * @method mask - Hide attributes.
+   * @param  {(String|String[])}  fileds - Attributes to hide.
+   * @return {Object} [User] - This user, with masked attributes.
+   */
+  mask(fields) {
+    const properties = fields.constructor === Array ? fields : [fields];
+    properties.forEach((attr) => {
+      if (attr in this) {
+        this[attr] = undefined;
+      }
+    });
+    return this;
+  }
+
+  /**
    * @static @async
    * @method getAll - Retrieve all the users from a page
    *
@@ -104,7 +119,7 @@ class User {
         limit: db.pageLimit(page),
       });
       data.forEach((row) => {
-        response.push(new User({ ...row, password: undefined }));
+        response.push((new User(row)).mask('password'));
       });
     } catch (err) {
       throw err;
@@ -128,13 +143,21 @@ class User {
     try {
       const data = await db.select({
         from: User.table,
+        join: {
+          table: User.progressTable,
+          on: {
+            id: `${User.progressTable}.userId`,
+          },
+        },
+        sorter: `${User.progressTable}.date`,
+        desc: true,
         where: cond,
         limit: 1,
       });
       if (data.length !== 0) {
         const user = new User(data[0]);
         user.permissions = await User.getPermissions(data[0].role);
-        return user;
+        return user.mask('password');
       }
     } catch (err) {
       throw err;
@@ -279,8 +302,6 @@ class User {
         resource: {
           name,
           mobile,
-          weight,
-          height,
           password: await User.hashPassword(password),
           email,
         },
@@ -288,7 +309,7 @@ class User {
       const id = response.insertId;
       if (id > 0) {
         const user = new User({
-          id, name, mobile, weight, height, email,
+          id, name, mobile, email,
         });
         await user.addProgress({ weight, height });
         return user;
@@ -302,32 +323,18 @@ class User {
   /**
    * @async
    * @method update - Modifies fields from this user.
-   *         If the email is modified, put confirmed to false
-   *         If the weight or height is modified, adds a progress
+   *         If the email is modified, set confirmed to false
    *
    * @param  {Object}  keyVals - Represents the new values for this user.
    * @return {Promise} [Boolean] - Promise Object represents the operation success
    */
-  async update({
-    name, mobile, email, weight, height, password,
-  }) {
-    const keyVals = generic.removeEmptyValues({
-      name, mobile, email, weight, height,
-    });
+  async update({ name, mobile, email }) {
+    const keyVals = generic.removeEmptyValues({ name, mobile, email });
     if (keyVals.email) {
       keyVals.confirmed = false;
     }
     let updatedRows;
     try {
-      if (keyVals.weight || keyVals.height) {
-        await this.addProgress({
-          weight: keyVals.weight || this.weight,
-          height: keyVals.height || this.height,
-        });
-      }
-      if (password) {
-        keyVals.password = await User.hashPassword(password);
-      }
       const results = await db.advUpdate({
         table: User.table,
         assign: keyVals,
@@ -505,6 +512,8 @@ class User {
           height,
         },
       });
+      this.height = height;
+      this.weight = weight;
     } catch (err) {
       throw err;
     }

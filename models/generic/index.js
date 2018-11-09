@@ -34,6 +34,11 @@ function exists(table, columns = 'id') {
   };
 }
 
+/**
+ * @function removeEmptyValues  - Remove empty values from an Object
+ * @param  {Object} obj - The object which the empty values will be removed
+ * @return {Object}     - Clean object, whitout empty values
+ */
 function removeEmptyValues(obj) {
   const cleanObj = {};
   Object.keys(obj).forEach((key) => {

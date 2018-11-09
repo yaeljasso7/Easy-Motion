@@ -259,7 +259,7 @@ class UserCtrl {
     const { userId } = req.params;
     try {
       const user = await User.get(userId);
-      if (user.length === 0) {
+      if (!user.id) {
         return next(ResponseMaker.notFound({
           type: this.type,
           data: { userId },
