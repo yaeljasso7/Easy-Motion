@@ -38,5 +38,9 @@ router.patch('/reset', [(req, res, next) => {
 }, validator.matchPassword], auth.reset);
 
 router.get('/confirm', auth.confirm);
+router.post('/confirm', auth.haveSession, (req, res) => {
+  auth.sendMsg(req.session.user, auth.confirmMsg);
+  res.send('Check your email');
+});
 
 module.exports = router;
