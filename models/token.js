@@ -138,6 +138,8 @@ class Token {
    * @return {Promise} - Promise object, represents the token.
    */
   static async get(token, type = Token.session) {
+    console.log(type);
+    console.log(token);
     try {
       const data = await db.select({
         from: Token.table,
@@ -148,6 +150,7 @@ class Token {
         },
         limit: 1,
       });
+      console.log(data, "data");
       if (data.length !== 0) {
         const tk = new Token(data[0]);
         const validToken = await tk.isActive();
