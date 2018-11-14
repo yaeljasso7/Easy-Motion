@@ -26,12 +26,19 @@ class BlogCtrl {
   */
   async getAll(req, res, next) {
     try {
+      console.log('req:', req.query);
       const blogs = await Blog.getAll(req.query);
-      return res.send(ResponseMaker.paginated({
+      console.log('blogs:', blogs);
+      return res.render('blogs', ResponseMaker.paginated({
         page: req.query.page,
         type: this.type,
         data: blogs,
       }));
+      /*
+      return res.render('blogs', {
+        bgs: blogs,
+      });
+      */
     } catch (err) {
       return next(err);
     }

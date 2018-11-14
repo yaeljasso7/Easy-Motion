@@ -10,9 +10,18 @@ const trainingTypesRouter = require('./trainingTypes');
 const routinesRouter = require('./routines');
 const authRouter = require('./auth');
 
+
 router.get('/', (req, res) => {
-  res.send('hello');
+  res.render('index');
 });
+/*
+router.get('/', (req, res) => {
+  res.render('home', {
+    message: 'Hola',
+    sub: 'viajero',
+  });
+});
+*/
 router.use('/users', usersRouter);
 router.use('/blog', blogRouter);
 router.use('/categoryBlog', categoryBlogRouter);

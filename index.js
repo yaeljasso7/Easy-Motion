@@ -9,12 +9,12 @@ const { errorHandler } = require('./middlewares');
 const app = express();
 
 
-app.engine('.hbs', mustacheExpress({
-  extname: '.hbs',
-  defaultLayout: 'main',
-}));
+app.engine('mustache', mustacheExpress());
+app.set('views', './views');
+app.use(express.static('public'));
+app.set('view engine', 'mustache');
+app.set('views', `${__dirname}/views`);
 
-app.set('view engine', '.hbs');
 
 /* const path = require('path');
 const http = require('http'); */

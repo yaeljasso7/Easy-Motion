@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="./styles.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <title>EasyMotion</title>
+  </head>
+  <body>
+    {{{ body }}}
+
+    <nav class="navbar">
+    <span class="navbar-toggle" id="js-navbar-toggle">
+            <i class="fas fa-bars"></i>
+    </span>
+    <a href="#" class="logo">logo</a>
+    <ul class="main-nav" id="js-menu">
+      <li>
+        <a href="#" class="nav-links">Home</a>
+      </li>
+      <li>
+        <a href="#" class="nav-links">Products</a>
+      </li>
+      <li>
+        <a href="#" class="nav-links">About Us</a>
+      </li>
+      <li>
+        <a href="#" class="nav-links">Contact Us</a>
+      </li>
+      <li>
+        <a href="#" class="nav-links">Blog</a>
+      </li>
+    </ul>
+  </nav>
+
+  <script type="text/javascript">
+      let mainNav = document.getElementById("js-menu");
+      let navBarToggle = document.getElementById("js-navbar-toggle");
+      console.log(mainNav);
+      console.log(navBarToggle);
+      if(navBarToggle){
+        navBarToggle.addEventListener('click', function(){
+          mainNav.classList.toggle("active");
+        });
+      }
+  </script>
+  
+</body>
+</html>
