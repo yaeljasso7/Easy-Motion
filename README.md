@@ -179,6 +179,10 @@ Brindar al usuario las herramientas necesarias para conseguir sus objetivos fitn
 ## Url [Heroku + Mysql]
   
   https://easy-motion.herokuapp.com
+
+## Web View
+
+ https://github.com/iChris96/Easy-Motion-Web
   
 ## Colaboradores
 
