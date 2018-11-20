@@ -182,7 +182,7 @@ Brindar al usuario las herramientas necesarias para conseguir sus objetivos fitn
 
 ## Web View
 
- https://github.com/iChris96/Easy-Motion-Web
+ https://ichris96.github.io/Easy-Motion-Web/index.html
   
 ## Colaboradores
 
