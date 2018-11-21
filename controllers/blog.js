@@ -26,9 +26,7 @@ class BlogCtrl {
   */
   async getAll(req, res, next) {
     try {
-      console.log('req:', req.query);
       const blogs = await Blog.getAll(req.query);
-      console.log('blogs:', blogs);
       return res.render('blogs', ResponseMaker.paginated({
         page: req.query.page,
         type: this.type,
