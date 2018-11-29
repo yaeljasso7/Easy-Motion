@@ -55,7 +55,7 @@ class Validator {
   }
 
   /**
-   * Cellphone validator
+   * Cellphone validato             r
    * @param  {String} data - Data to be matched as valid phone
    * @return {Boolean} - data validation
    */
