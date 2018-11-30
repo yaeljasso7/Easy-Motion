@@ -80,11 +80,8 @@ class Validator {
    */
   static isHeight(data) {
     const height = Number(data);
-<<<<<<< HEAD
     return !data || (height > 0 && height < 250);
-=======
-    return (height > 0 && height < 250) || data.length === 0;
->>>>>>> 0de7ba33a11a587a1acdc885418478d6fcc18488
+
   }
 
   /**
@@ -102,11 +99,7 @@ class Validator {
    * @return {Boolean} - data validation
    */
   static email(data) {
-<<<<<<< HEAD
     return !data || (Validator.regex.email.test(data));
-=======
-    return (Validator.regex.email.test(data)) || data.length === 0;
->>>>>>> 0de7ba33a11a587a1acdc885418478d6fcc18488
   }
 
   static matchPassword(req, res, next) {
