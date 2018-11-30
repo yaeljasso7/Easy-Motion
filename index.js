@@ -1,13 +1,14 @@
 // app.js
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const mustacheExpress = require('mustache-express');
 const router = require('./routes');
 const { errorHandler } = require('./middlewares');
 
 const app = express();
-
+app.use(cors());
 
 app.engine('mustache', mustacheExpress());
 app.set('views', './views');
