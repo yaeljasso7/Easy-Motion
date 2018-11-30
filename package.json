@@ -2,6 +2,9 @@
   "name": "Easy-Motion",
   "version": "1.0.0",
   "description": "Easy Motion es una platafprma que te ofrece distintas rutinas y planes rutinarios para seguirlos y lograr tus metas",
+  "engines": {
+    "node:": "8.11.1"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -65,15 +65,17 @@ class Auth {
    */
   static async haveSession(req, res, next) {
     const hToken = Auth.getHeaderToken(req.headers.authorization);
-    console.log(hToken);
-    console.log("1");
+    console.log('token recibido:', hToken);
     try {
+      console.log('env:', process.env.DB_HOST);
       const token = await Token.get(hToken, Token.session);
+      console.log('token: ', token);
       if (token.token) {
         req.session = {
           token,
           user: await User.get(token.userId),
         };
+        console.log('req.session: ', req.session);
         return next();
       }
     } catch (err) {
@@ -267,8 +269,10 @@ class Auth {
    */
   static async confirm(req, res, next) {
     const { key } = req.query;
+    console.log('key:', key);
     try {
       const token = await Token.get(key, Token.confirm);
+      console.log('tokeen:', token);
       if (token.token) {
         const user = await User.get(token.userId);
         await user.confirm();

@@ -46,6 +46,7 @@ function MailMaker() {
     to: mail,
     subject: 'Password changed',
     text: 'Your account password has been changed!',
+    html: '<b>Your account password has been changed!</b>',
   });
 
   return {
