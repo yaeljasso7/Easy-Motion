@@ -14,8 +14,8 @@ function MailMaker() {
     from: process.env.MAIL_FROM,
     to: mail,
     subject: 'Confirm your Email',
-    text: `http://easy-motion/auth/confirm?key=${token}`,
-    html: `<b>http://easy-motion/auth/confirm?key=${token}</b>`,
+    text: `https://easy-motion.herokuapp.com/auth/confirm?key=${token}`,
+    html: `<b>https://easy-motion.herokuapp.com/confirm?key=${token}</b>`,
   });
 
   /**
