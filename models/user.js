@@ -20,7 +20,7 @@ class User {
    * @param {Number} email       - The user email
    */
   constructor({
-    id, name, mobile, weight, height, password, email, confirmed,
+    id, name, mobile, weight, height, password, email, role, confirmed,
   }) {
     this.id = id;
     this.name = name;
@@ -30,6 +30,7 @@ class User {
     this.password = password;
     this.email = email;
     this.confirmed = confirmed;
+    this.role = role;
   }
 
   /**

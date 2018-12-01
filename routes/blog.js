@@ -30,6 +30,7 @@ router.use('/', [mw.auth.haveSession,
     mw.auth.havePermission(req, res, next, 'manageBlogs');
   }]);
 
+
 router.post('/', [(req, res, next) => {
   mw.validator.validate(req, res, next, {
     body: {

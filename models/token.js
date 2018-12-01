@@ -106,7 +106,7 @@ class Token {
    * @param  {String}  type - The token type, to be generated
    * @return {Promise} - Promise object, represents the pair (userId, token)
    */
-  static async create({ userId, type }) {
+  static async create({ userId, userRole, type }) {
     const createdAt = new Date();
     try {
       const token = await bcrypt.hash(`${process.env.SECRET}${userId}${createdAt}`, Number(process.env.SALT));
@@ -122,7 +122,7 @@ class Token {
         },
       });
       if (response.insertId > 0) {
-        return { userId, token };
+        return { userId, userRole, token };
       }
     } catch (err) {
       throw err;

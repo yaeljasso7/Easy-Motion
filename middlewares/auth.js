@@ -166,7 +166,11 @@ class Auth {
     try {
       const user = await User.login(email, password);
       if (user.id) {
-        const token = await Token.create({ userId: user.id, type: Token.session });
+        const token = await Token.create({
+          userId: user.id,
+          userRole: user.role,
+          type: Token.session,
+        });
         if (!token.token) {
           return next(ResponseMaker.conflict({
             msg: 'Cannot create the token',

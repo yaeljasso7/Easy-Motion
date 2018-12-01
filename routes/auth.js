@@ -26,6 +26,10 @@ router.get('/logout', [auth.haveSession, auth.logout], (req, res) => {
   res.send('Logged out!');
 });
 
+router.get('/logout', [auth.haveSession, auth.logout], (req, res) => {
+  res.send('Logged out!');
+});
+
 router.post('/forgot', auth.forgot);
 
 router.patch('/reset', [(req, res, next) => {
@@ -42,5 +46,10 @@ router.post('/confirm', auth.haveSession, (req, res) => {
   auth.sendMsg(req.session.user, auth.confirmMsg);
   res.send('Check your email');
 });
+
+router.get('/haveSession', auth.haveSession, (req, res) => {
+  res.send(JSON.stringify({ a: 1 }));
+});
+
 
 module.exports = router;
