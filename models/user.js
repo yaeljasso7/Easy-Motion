@@ -29,8 +29,8 @@ class User {
     this.height = height;
     this.password = password;
     this.email = email;
-    this.confirmed = confirmed;
     this.role = role;
+    this.confirmed = confirmed;
   }
 
   /**
@@ -330,10 +330,10 @@ class User {
    * @return {Promise} [Boolean] - Promise Object represents the operation success
    */
   async update({
-    name, mobile, email, password,
+    name, mobile, email, password, confirmed,
   }) {
     const keyVals = generic.removeEmptyValues({
-      name, mobile, email, password,
+      name, mobile, email, password, confirmed,
     });
     let updatedRows;
     if (keyVals.email) {
@@ -343,6 +343,7 @@ class User {
       if (keyVals.password) {
         keyVals.password = await User.hashPassword(password);
       }
+      console.log('key --------------', keyVals);
       const results = await db.advUpdate({
         table: User.table,
         assign: keyVals,

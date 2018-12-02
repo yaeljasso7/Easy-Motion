@@ -81,7 +81,6 @@ class Validator {
   static isHeight(data) {
     const height = Number(data);
     return !data || (height > 0 && height < 250);
-
   }
 
   /**
