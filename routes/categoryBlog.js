@@ -23,6 +23,7 @@ router.get('/:categoryId', (req, res, next) => {
   });
 }, categoryBlogCtrl.get);
 
+// FIXME por claridad este use deberia estar al inicio antes que todas las rutas para dejar claro que todas pasan por este middleware
 router.use('/', auth.haveSession,
   (req, res, next) => {
     auth.havePermission(req, res, next, 'manageCategoryBlogs');

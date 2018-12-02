@@ -26,6 +26,7 @@ router.get('/:exerciseId', (req, res, next) => {
   });
 }, exercisesCtrl.get);
 
+// FIXME por claridad este use deberia estar al inicio antes que todas las rutas para dejar claro que todas pasan por este middleware
 router.use('/', [mw.auth.haveSession,
   (req, res, next) => {
     mw.auth.havePermission(req, res, next, 'manageExercises');
