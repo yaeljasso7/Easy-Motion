@@ -330,15 +330,17 @@ class User {
    * @return {Promise} [Boolean] - Promise Object represents the operation success
    */
   async update({
-    name, mobile, email, password, confirmed,
+    name, mobile, email, password,
   }) {
     const keyVals = generic.removeEmptyValues({
-      name, mobile, email, password, confirmed,
+      name, mobile, email, password,
     });
     let updatedRows;
+    /*
     if (keyVals.email) {
       keyVals.confirmed = false;
     }
+    */
     try {
       if (keyVals.password) {
         keyVals.password = await User.hashPassword(password);
