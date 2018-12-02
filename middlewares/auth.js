@@ -65,13 +65,17 @@ class Auth {
    */
   static async haveSession(req, res, next) {
     const hToken = Auth.getHeaderToken(req.headers.authorization);
+    console.log('token recibido:', hToken);
     try {
+      console.log('env:', process.env.DB_HOST);
       const token = await Token.get(hToken, Token.session);
+      console.log('token: ', token);
       if (token.token) {
         req.session = {
           token,
           user: await User.get(token.userId),
         };
+        console.log('req.session: ', req.session);
         return next();
       }
     } catch (err) {
@@ -91,10 +95,13 @@ class Auth {
    */
   static havePermission(req, res, next, permission) {
     const { user } = req.session;
+    if (!user.confirmed) {
+      return next(ResponseMaker.unauthorized('Your account is not confirmed yet!'));
+    }
     if (user.canDo(permission)) {
       const condition = user.permissions[permission];
       if (condition) {
-        if (Auth[condition](req, user)) {
+        if (Auth[condition](req)) {
           return next();
         }
       } else {
@@ -105,14 +112,15 @@ class Auth {
   }
 
   /**
-   * [equalsId description]
+   * @static
+   * @method equalsId - Checks whether the user param is equals to user session
+   *
    * @param  {Object} req  - The Request Object
-   * @param  {User} user   - The user, to compare with
+   * @param  {User}   user - The user, to compare with
    * @return {Boolean}     - whether the param userId is equals to the user id
    */
-  static equalsId(req, user) {
-    const userId = Number(req.params.userId);
-    return user.id === userId;
+  static equalsId(req) {
+    return req.session.user.id === Number(req.params.userId);
   }
 
   /**
@@ -132,7 +140,7 @@ class Auth {
         return res.status(201)
           .send(ResponseMaker.created({
             type: Auth.type,
-            data: user,
+            msg: 'Register successfully',
           }));
       }
       return next(ResponseMaker.conflict({
@@ -158,7 +166,11 @@ class Auth {
     try {
       const user = await User.login(email, password);
       if (user.id) {
-        const token = await Token.create({ userId: user.id, type: Token.session });
+        const token = await Token.create({
+          userId: user.id,
+          userRole: user.role,
+          type: Token.session,
+        });
         if (!token.token) {
           return next(ResponseMaker.conflict({
             msg: 'Cannot create the token',
@@ -261,8 +273,10 @@ class Auth {
    */
   static async confirm(req, res, next) {
     const { key } = req.query;
+    console.log('key:', key);
     try {
       const token = await Token.get(key, Token.confirm);
+      console.log('tokeen:', token);
       if (token.token) {
         const user = await User.get(token.userId);
         await user.confirm();

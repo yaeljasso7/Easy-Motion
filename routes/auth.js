@@ -26,9 +26,14 @@ router.get('/logout', [auth.haveSession, auth.logout], (req, res) => {
   res.send('Logged out!');
 });
 
+router.get('/logout', [auth.haveSession, auth.logout], (req, res) => {
+  res.send('Logged out!');
+});
+
 router.post('/forgot', auth.forgot);
 
-router.patch('/reset', [(req, res, next) => {
+router.get('/reset', auth.confirm);
+router.post('/reset', [(req, res, next) => {
   validator.validate(req, res, next, {
     body: {
       password: 'required',
@@ -38,5 +43,14 @@ router.patch('/reset', [(req, res, next) => {
 }, validator.matchPassword], auth.reset);
 
 router.get('/confirm', auth.confirm);
+router.post('/confirm', auth.haveSession, (req, res) => {
+  auth.sendMsg(req.session.user, auth.confirmMsg);
+  res.send('Check your email');
+});
+
+router.get('/haveSession', auth.haveSession, (req, res) => {
+  res.send(JSON.stringify({ a: 1 }));
+});
+
 
 module.exports = router;

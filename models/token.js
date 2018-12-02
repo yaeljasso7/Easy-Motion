@@ -84,6 +84,9 @@ class Token {
       return false;
     }
     const now = Date.now();
+    console.log('now: ', now);
+    console.log('this.createdAt: ', this.createdAt.getTime());
+    console.log('expires', this.expires);
     if (now >= this.createdAt.getTime() + this.expires) {
       try {
         await this.deactivate();
@@ -103,7 +106,7 @@ class Token {
    * @param  {String}  type - The token type, to be generated
    * @return {Promise} - Promise object, represents the pair (userId, token)
    */
-  static async create({ userId, type }) {
+  static async create({ userId, userRole, type }) {
     const createdAt = new Date();
     try {
       const token = await bcrypt.hash(`${process.env.SECRET}${userId}${createdAt}`, Number(process.env.SALT));
@@ -119,7 +122,7 @@ class Token {
         },
       });
       if (response.insertId > 0) {
-        return { userId, token };
+        return { userId, userRole, token };
       }
     } catch (err) {
       throw err;
@@ -138,6 +141,8 @@ class Token {
    * @return {Promise} - Promise object, represents the token.
    */
   static async get(token, type = Token.session) {
+    console.log(type);
+    console.log(token);
     try {
       const data = await db.select({
         from: Token.table,
@@ -148,6 +153,7 @@ class Token {
         },
         limit: 1,
       });
+      console.log(data);
       if (data.length !== 0) {
         const tk = new Token(data[0]);
         const validToken = await tk.isActive();

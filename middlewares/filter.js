@@ -6,7 +6,7 @@ const mdl = require('../models');
  */
 class Filter {
   /**
-   * @method validate - Parse the query attributes, and adds some default values
+   * @method validate - Parse the query attributes, adding some default values
    *
    * @param  {Object}   req  - The Request Object
    * @param  {Object}   res  - The Respose Object
