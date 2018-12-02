@@ -32,7 +32,7 @@ router.get('/logout', [auth.haveSession, auth.logout], (req, res) => {
 
 router.post('/forgot', auth.forgot);
 
-router.patch('/reset', [(req, res, next) => {
+router.post('/reset', [(req, res, next) => {
   validator.validate(req, res, next, {
     body: {
       password: 'required',
