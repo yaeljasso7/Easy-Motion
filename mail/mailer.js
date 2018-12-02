@@ -72,7 +72,7 @@ class Mailer {
       service: 'gmail',
       auth: {
         type: 'OAuth2',
-        user: 'christopherx10x@gmail.com',
+        user: 'christopherx10x@gmail.com', // FIXME this information should be on the .env file
         clientId: process.env.ID_CLIENTE,
         clientSecret: process.env.SECRET_CLIENTE,
         refreshToken: process.env.REFRESH_TOKEN,
